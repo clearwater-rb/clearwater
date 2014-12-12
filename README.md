@@ -48,9 +48,13 @@ class ApplicationView < Clearwater::View
   template 'application'
 end
 
-ClearwaterBlog = Clearwater::Application.new(
+MyApp = Clearwater::Application.new(
   controller: ApplicationController.new
 )
+
+Document.ready? do
+  MyApp.call
+end
 ```
 
 #### app/assets/javascripts/templates/application.slim
