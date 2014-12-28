@@ -39,6 +39,11 @@ module Clearwater
       end
     end
 
+    def bind model, property, &block
+      model.add_binding property, self, &block
+      "<span id='model-#{model.object_id}-#{property}'>#{yield}</span>"
+    end
+
     def self.template *args
       if args.any?
         @template = Template[args.first]
