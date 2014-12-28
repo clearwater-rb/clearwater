@@ -56,10 +56,7 @@ module Clearwater
     def navigate_to path
       push_state path
       set_outlets
-
-      if application && application.controller
-        application.controller.call
-      end
+      render_application
     end
 
     def navigate_to_remote path
@@ -91,6 +88,12 @@ module Clearwater
 
     def push_state path
       history.pushState({}, nil, path)
+    end
+
+    def render_application
+      if application && application.controller
+        application.controller.call
+      end
     end
   end
 end
