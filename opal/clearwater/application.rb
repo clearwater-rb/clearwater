@@ -25,14 +25,15 @@ module Clearwater
 
     def trap_clicks
       Element['body'].on :click, 'a' do |event|
+        remote_url = %r{^\w+://|^//}
         href = event.current_target[:href]
-        event.prevent_default unless href.to_s =~ %r{^\w+://}
+        event.prevent_default unless href.to_s =~ remote_url
 
         if href.nil? || href.empty?
           # Do nothing. There is nowhere to go.
         elsif href == router.current_path
           # Do nothing. We clicked a link to right here.
-        elsif href.to_s =~ %r{^\w+://}
+        elsif href.to_s =~ remote_url
           # Don't try to route remote URLs
         else
           router.navigate_to href
