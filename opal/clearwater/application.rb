@@ -20,6 +20,7 @@ module Clearwater
       router.set_outlets
       controller.call
       trap_clicks
+      watch_url
     end
 
     def trap_clicks
@@ -36,6 +37,19 @@ module Clearwater
         else
           router.navigate_to href
         end
+      end
+
+      def watch_url
+        @path = router.current_path
+        check_rerender = proc do
+          if @path != router.current_path
+            router.set_outlets
+            controller && controller.call
+            @path = router.current_path
+          end
+        end
+        set_interval = Native(`window.setInterval`)
+        set_interval.call check_rerender, 100
       end
     end
   end
