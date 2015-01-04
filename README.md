@@ -65,10 +65,7 @@ h1 This is a Ruby app!
 
 ## Known issues
 
-- Back button is broken.
-- Cmd-clicking a link doesn't open in a new tab
 - Click events on links that don't begin with `%r{(\w+)://}` are trapped by Clearwater
-  - Protocol-relative hrefs (such as `//google.com/`) will be trapped.
   - No way to indicate a link we *don't* want the app to handle, even if it is host-relative.
 
 ## Contributing
