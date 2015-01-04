@@ -17,8 +17,7 @@ module Clearwater
     end
 
     def call
-      router.set_outlets
-      controller.call
+      render_current_url
       trap_clicks
       watch_url
     end
@@ -39,19 +38,19 @@ module Clearwater
           router.navigate_to href
         end
       end
+    end
 
-      def watch_url
-        @path = router.current_path
-        check_rerender = proc do
-          if @path != router.current_path
-            router.set_outlets
-            controller && controller.call
-            @path = router.current_path
-          end
-        end
-        set_interval = Native(`window.setInterval`)
-        set_interval.call check_rerender, 100
+    def watch_url
+      check_rerender = proc do
+        render_current_url
       end
+
+      %x{ window.onpopstate = check_rerender }
+    end
+
+    def render_current_url
+      router.set_outlets
+      controller && controller.call
     end
   end
 end
