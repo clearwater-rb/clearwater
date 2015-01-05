@@ -1,3 +1,6 @@
+require 'opal'
+require 'jquery'
+require 'opal-jquery'
 require 'clearwater/store'
 require 'clearwater/router'
 require 'clearwater/controller'
