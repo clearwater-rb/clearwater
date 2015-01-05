@@ -34,7 +34,7 @@ module Clearwater
           elsif href == router.current_path
             # Do nothing. We clicked a link to right here.
           elsif href.to_s =~ remote_url
-            # Don't try to route remote URLs
+            # Don't try to route remote URLs. Just let the browser do its thing.
           else
             router.navigate_to href
           end
