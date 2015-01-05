@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["jgaskins@gmail.com"]
   spec.summary       = %q{Front-end web framework built on Opal}
   spec.description   = %q{Front-end web framework built on Opal}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/jgaskins/clearwater"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
