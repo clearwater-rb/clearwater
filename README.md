@@ -67,6 +67,7 @@ h1 This is a Ruby app!
 
 - Click events on links that don't begin with `%r{(\w+)://}` are trapped by Clearwater
   - No way to indicate a link we *don't* want the app to handle, even if it is host-relative.
+- Click events rely on the GitHub version of `opal-jquery`. They haven't yet released a new version with the changes made in [this PR](https://github.com/opal/opal-jquery/pull/65).
 
 ## Contributing
 
