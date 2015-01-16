@@ -8,12 +8,13 @@ require 'clearwater/view'
 
 module Clearwater
   class Application
-    attr_reader :store, :router, :controller
+    attr_reader :store, :router, :controller, :api_client
 
     def initialize options={}
       @store      = options.fetch(:store)      { Store.new }
       @router     = options.fetch(:router)     { Router.new }
       @controller = options.fetch(:controller) { ApplicationController.new }
+      @api_client = options.fetch(:api_client) { nil }
 
       router.application = self
       controller.router = router
