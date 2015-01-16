@@ -7,7 +7,7 @@ module Clearwater
 
     def initialize options={}
       @element_selector = options.fetch(:element) { self.class.element }
-      @template = options.fetch(:template) { self.class.template }
+      @template = Template[options.fetch(:template) { self.class.template }]
     end
 
     def element
@@ -46,7 +46,7 @@ module Clearwater
 
     def self.template *args
       if args.any?
-        @template = Template[args.first]
+        @template = args.first
       else
         @template
       end

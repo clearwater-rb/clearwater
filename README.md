@@ -36,16 +36,10 @@ require 'opal-slim'
 require 'clearwater/application'
 
 # You have to load your templates.
-# Alternatively: require_tree './templates'
 require 'templates/application'
 
 class ApplicationController < Clearwater::Controller
-  view { ApplicationView.new }
-end
-
-class ApplicationView < Clearwater::View
-  element '#app'
-  template 'application'
+  view { Clearwater::View.new(element: '#app', template: 'application') }
 end
 
 MyApp = Clearwater::Application.new(
