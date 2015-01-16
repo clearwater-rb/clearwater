@@ -10,6 +10,19 @@ Add this line to your application's Gemfile:
 gem 'clearwater', github: 'jgaskins/clearwater'
 ```
 
+You may need to add this line, as well, until a new version of Opal is released:
+
+```ruby
+gem 'opal',       github: 'opal/opal'
+```
+
+If you'd like to use Slim or Haml templates, you'll want to add one of these two lines:
+
+```ruby
+gem 'opal-slim'
+gem 'opal-haml'
+```
+
 And then execute:
 
     $ bundle
