@@ -4,10 +4,11 @@ Clearwater is a browser MVC framework, similar to Ember.js or Backbone.js. The p
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add these lines to your application's Gemfile:
 
 ```ruby
 gem 'clearwater', github: 'jgaskins/clearwater'
+gem 'opal-rails', '~> 0.7.0.beta2' # For asset-pipeline integration
 ```
 
 You may need to add this line, as well, until a new version of Opal is released:
@@ -36,17 +37,12 @@ Clearwater targets the Rails asset pipeline, so it will work best in a Rails app
 #### app/assets/javascripts/application.rb
 
 ```ruby
-# These three just bootstrap Opal and load the jQuery bindings
-require 'opal'
-require 'jquery'
-require 'opal-jquery'
+# Load Clearwater
+require 'clearwater/application'
 
 # Pick one of these two depending on which template engine you like most.
 require 'opal-haml'
 require 'opal-slim'
-
-# Load Clearwater
-require 'clearwater/application'
 
 # You have to load your templates.
 require 'templates/application'
@@ -59,6 +55,7 @@ MyApp = Clearwater::Application.new(
   controller: ApplicationController.new
 )
 
+# Run the app when document ready event fires
 Document.ready? do
   MyApp.call
 end
@@ -69,6 +66,8 @@ end
 ```slim
 h1 This is a Ruby app!
 ```
+
+And then edit your Rails Application layout to have nothing but a `div` with the id `app` inside it.
 
 ## Known issues
 
