@@ -14,7 +14,7 @@ gem 'opal-rails', '~> 0.7.0.beta2' # For asset-pipeline integration
 You may need to add this line, as well, until a new version of Opal is released:
 
 ```ruby
-gem 'opal',       github: 'opal/opal'
+gem 'opal-jquery', github: 'opal/opal-jquery'
 ```
 
 If you'd like to use Slim or Haml templates, you'll want to add one of these two lines:
