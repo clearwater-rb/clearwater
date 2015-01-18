@@ -88,11 +88,7 @@ module Clearwater
     end
 
     def method_missing *args, &block
-      if args.first.to_s.end_with? '_path'
-        router.public_send *args, &block
-      else
-        controller.public_send *args, &block
-      end
+      controller.public_send *args, &block
     end
   end
 end
