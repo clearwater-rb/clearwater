@@ -21,7 +21,7 @@ If you'd like to use Slim or Haml templates, you'll want to add one of these two
 
 ```ruby
 gem 'opal-slim'
-gem 'opal-haml'
+gem 'opal-haml', github: 'opal/opal-haml' # Released gem is outdated
 ```
 
 And then execute:
