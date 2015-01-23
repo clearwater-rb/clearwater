@@ -6,8 +6,8 @@ module Clearwater
 
     attr_reader :base_url
 
-    def initialize(base_url: nil)
-      @base_url = base_url
+    def initialize attributes={}
+      @base_url = attributes.fetch(:base_url) { nil }
     end
 
     def fetch resource, id, params
