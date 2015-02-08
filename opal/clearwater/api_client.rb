@@ -24,18 +24,18 @@ module Clearwater
                path_for_resource(resource)
              end
 
-      HTTP.post(path, data: data)
-      nil
+      response = HTTP.post(path, data: data)
+      Response.new(response)
     end
 
     def update resource, id, data
-      HTTP.patch path_for_resource(resource, id), data: data
-      nil
+      response = HTTP.patch path_for_resource(resource, id), data: data
+      Response.new(response)
     end
 
     def delete resource, id
-      HTTP.delete path_for_resource(resource, id)
-      nil
+      response = HTTP.delete path_for_resource(resource, id)
+      Response.new(response)
     end
 
     private
