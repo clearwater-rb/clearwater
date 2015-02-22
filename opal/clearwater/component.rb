@@ -1,3 +1,5 @@
+require 'clearwater/binding'
+
 module Clearwater
   class Component
     attr_reader :options
@@ -54,19 +56,20 @@ module Clearwater
     end
 
     def bind model, property, &block
-      model.add_binding property, self, &block
-      "<span id='model-#{model.object_id}-#{property}'>#{yield}</span>"
+      binding = model.add_binding property, &block
+      binding.to_html
     end
 
     def bind_attribute attribute, &block
-      binding = Binding.new(attribute, self, block)
+      binding = Binding.new(self, attribute, &block)
       @bindings[attribute].delete_if(&:dead?)
       @bindings[attribute] << binding
       binding.to_html
     end
 
     def remove_binding attribute, binding
-      @bindings[attribute].delete binding
+      binding_set = @bindings[attribute]
+      binding_set.delete binding
     end
 
     def element_id
@@ -86,45 +89,6 @@ module Clearwater
         options[args.first]
       else
         raise NoMethodError, "no method #{args.shift}(#{args.join(',')}) for #{self.class}"
-      end
-    end
-
-    class Binding
-      def initialize attribute, component, block
-        @attribute = attribute
-        @component = component
-        @block = block
-        @dead = false
-      end
-
-      def call
-        element = Element[selector]
-        html = @block.call
-        if element.any?
-          element.html = html
-        else
-          dead!
-        end
-      end
-
-      def selector
-        "##{id}"
-      end
-
-      def id
-        "#{@component.class}-#{@component.object_id}-binding-#{object_id}-#{@attribute}"
-      end
-
-      def to_html
-        "<span id=#{id.inspect}>#{@block.call}</span>"
-      end
-
-      def dead?
-        @dead
-      end
-
-      def dead!
-        @dead = true
       end
     end
   end

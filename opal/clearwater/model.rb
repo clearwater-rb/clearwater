@@ -1,3 +1,5 @@
+require 'clearwater/binding'
+
 module Clearwater
   class Model
     def initialize attributes={}
@@ -8,7 +10,10 @@ module Clearwater
     end
 
     def add_binding attribute, &block
-      @_bindings[attribute] << Binding.new(self, attribute, &block)
+      binding = Binding.new(self, attribute, &block)
+      @_bindings[attribute].delete_if(&:dead?)
+      @_bindings[attribute] << binding
+      binding
     end
 
     def self.attributes *args
@@ -19,23 +24,10 @@ module Clearwater
         define_method "#{attr}=" do |value|
           instance_variable_set "@#{attr}", value
           @_bindings[attr].each(&:call)
+          @_bindings[attr].delete_if(&:dead?)
         end
       end
       @attributes.concat args
-    end
-
-    class Binding
-      attr_reader :model, :attribute, :block
-
-      def initialize model, attribute, &block
-        @model = model
-        @attribute = attribute
-        @block = block
-      end
-
-      def call
-        Element["#model-#{model.object_id}-#{attribute}"].html = block.call
-      end
     end
   end
 end
