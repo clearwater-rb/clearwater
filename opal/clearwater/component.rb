@@ -66,10 +66,7 @@ module Clearwater
     end
 
     def remove_binding attribute, binding
-      binding_set = @bindings[attribute]
-      puts "#{binding_set.inspect}#delete #{binding.inspect}"
-      binding_set.delete binding
-      puts "Deleted"
+      @bindings[attribute].delete binding
     end
 
     def element_id
