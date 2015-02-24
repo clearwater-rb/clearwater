@@ -1,3 +1,5 @@
+require 'clearwater/renderer'
+
 module Clearwater
   class Controller
     attr_accessor :view, :outlet, :router, :default_outlet, :parent
@@ -12,15 +14,19 @@ module Clearwater
     end
 
     def call
-      view.render
+      renderer = Renderer.new
+      output = view.render(renderer)
+      renderer.add_events_to_dom
+
+      output
     end
 
-    def call_outlet
-      outlet && outlet.render_html
+    def call_outlet renderer
+      outlet && outlet.render_html(renderer)
     end
 
-    def render_html
-      view && view.render_html
+    def render_html renderer
+      view && view.render_html(renderer)
     end
 
     def params
