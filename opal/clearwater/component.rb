@@ -2,7 +2,7 @@ require 'clearwater/binding'
 
 module Clearwater
   class Component
-    attr_reader :options
+    attr_reader :options, :events, :renderer
 
     def self.template template_name
       @template_name = template_name
@@ -20,6 +20,8 @@ module Clearwater
           instance_variable_set "@#{attr}", new_value
           @bindings[attr].each(&:call)
           @bindings[attr].delete_if(&:dead?)
+          renderer.add_events_to_dom
+          renderer.clear_events
         end
       end
     end
@@ -33,26 +35,44 @@ module Clearwater
       @class_name = 'clearwater-component'
 
       @bindings = Hash.new { |h, k| h[k] = [] }
+      @renderer = options[:renderer]
+      @events = []
     end
 
     def event event_type, target_selector, &block
-      document_body.on event_type, "##{element_id} #{target_selector}", &block
+      # document_body.on event_type, "##{element_id} #{target_selector}", &block
+      event = Clearwater::Event.new("##{element_id}", event_type, target_selector, &block)
+      events << event
     end
 
-    def render
-      element.html = to_html
+    def render(renderer: Renderer.new)
+      element.html = output = to_html(renderer)
+      renderer.add_events_to_dom
+      output
     end
 
-    def to_html
+    def to_html(renderer: renderer)
+      renderer.add_events events
       "<#@tag_name id=#{element_id.inspect} class=#{@class_name.inspect}>#{inner_html}</#@tag_name>"
     end
 
     def to_s
-      to_html
+      to_html(renderer: renderer)
     end
 
-    def inner_html
-      @template.render(self)
+    def inner_html(renderer: renderer)
+      with_renderer renderer do
+        @template.render(self)
+      end
+    end
+
+    def with_renderer renderer
+      old_renderer = @renderer
+      @renderer = renderer
+      output = yield
+      @renderer = old_renderer
+
+      output
     end
 
     def bind model, property, &block
@@ -73,7 +93,7 @@ module Clearwater
     end
 
     def element_id
-      "#{self.class.name}-#{object_id}"
+      "#{self.class.name}-#{object_id}-component"
     end
 
     def element

@@ -13,5 +13,9 @@ module Clearwater
     def add_events_to_dom
       events.each(&:set_browser_event)
     end
+
+    def clear_events
+      events.clear
+    end
   end
 end
