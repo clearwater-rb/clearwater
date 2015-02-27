@@ -9,8 +9,8 @@ module Clearwater
 
     def call
       html = @block.call
-      if element.any?
-        element.html = html
+      if (e = element).any?
+        e.html = html
       else
         dead!
       end
