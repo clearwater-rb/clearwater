@@ -11,6 +11,7 @@ module Clearwater
     def initialize options={}
       @element_selector = options.fetch(:element) { self.class.element }
       @template = Template[options.fetch(:template) { self.class.template }]
+      raise "No template for #{self.class}" unless @template
       @events = []
     end
 
