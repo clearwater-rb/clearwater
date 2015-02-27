@@ -6,7 +6,7 @@ require 'opal-jquery'
 module Clearwater
   class View
     attr_accessor :controller
-    attr_reader :events
+    attr_reader :events, :renderer
 
     def initialize options={}
       @element_selector = options.fetch(:element) { self.class.element }
