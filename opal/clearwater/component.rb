@@ -40,7 +40,6 @@ module Clearwater
     end
 
     def event event_type, target_selector, &block
-      # document_body.on event_type, "##{element_id} #{target_selector}", &block
       event = Clearwater::Event.new("##{element_id}", event_type, target_selector, &block)
       events << event
     end
