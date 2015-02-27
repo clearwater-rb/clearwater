@@ -4,7 +4,7 @@ module Clearwater
   class Event
     attr_reader :view_selector, :event_type, :target_selector
 
-    def initialize view_selector, event_type, target_selector, &block
+    def initialize view_selector, event_type, target_selector=nil, &block
       @view_selector = view_selector
       @event_type = event_type
       @target_selector = target_selector
