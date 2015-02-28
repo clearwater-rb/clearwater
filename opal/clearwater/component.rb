@@ -56,7 +56,7 @@ module Clearwater
 
     def to_html(renderer: renderer)
       renderer.add_events events
-      "<#@tag_name id=#{element_id.inspect} class=#{@class_name.inspect}>#{inner_html}</#@tag_name>"
+      "<#@tag_name id=#{element_id.inspect} class=#{@class_name.inspect}>#{inner_html(renderer: renderer)}</#@tag_name>"
     end
 
     def to_s
