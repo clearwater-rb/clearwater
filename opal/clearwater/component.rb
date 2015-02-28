@@ -19,10 +19,13 @@ module Clearwater
 
         define_method "#{attr}=" do |new_value|
           instance_variable_set "@#{attr}", new_value
+
           @bindings[attr].each(&:call)
           @bindings[attr].delete_if(&:dead?)
-          renderer.add_events_to_dom
-          renderer.clear_events
+
+          renderer.add_events_to_dom { |event|
+            event.reset_binding? @bindings[attr]
+          }
         end
       end
     end

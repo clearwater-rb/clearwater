@@ -19,5 +19,14 @@ module Clearwater
       selector = "#{view_selector} #{target_selector}"
       Element[selector].on event_type, &@block
     end
+
+    def reset_binding? bindings
+      bindings.any? { |binding|
+        Element[view_selector]
+          .find(target_selector)
+          .closest(binding.selector)
+          .any?
+      }
+    end
   end
 end

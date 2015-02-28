@@ -10,12 +10,14 @@ module Clearwater
       events.concat Array(new_events)
     end
 
-    def add_events_to_dom
-      events.each(&:set_browser_event)
-    end
+    def add_events_to_dom &block
+      events = if block_given?
+                 self.events.select(&block)
+               else
+                 self.events
+               end
 
-    def clear_events
-      events.clear
+      events.each(&:set_browser_event)
     end
   end
 end
