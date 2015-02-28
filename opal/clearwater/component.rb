@@ -1,4 +1,5 @@
 require 'clearwater/binding'
+require 'clearwater/event'
 
 module Clearwater
   class Component
