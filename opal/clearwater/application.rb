@@ -21,6 +21,7 @@ module Clearwater
     end
 
     def call
+      render_current_url
       trap_clicks
       watch_url
     end
