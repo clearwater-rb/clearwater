@@ -27,7 +27,13 @@ module Clearwater
       output = render_html(renderer)
       renderer.add_events_to_dom
 
-      element.html = output
+      target_element = Element["##{wrapper_id}"]
+
+      if target_element.none?
+        target_element = element
+      end
+
+      target_element.html = output
     end
 
     def render_html renderer
@@ -56,7 +62,8 @@ module Clearwater
     end
 
     def wrapper_id
-      "#{self.class}-#{object_id}-view"
+      class_name = self.class.name.gsub(/::/, '-')
+      "#{class_name}-#{object_id}-view"
     end
 
     def bind model, property, &block
