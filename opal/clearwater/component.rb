@@ -100,11 +100,7 @@ module Clearwater
     end
 
     def element
-      document_body.find("##{element_id}")
-    end
-
-    def document_body
-      Element[`document.body`]
+      Element["##{element_id}"]
     end
 
     def method_missing *args, &block
