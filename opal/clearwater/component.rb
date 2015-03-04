@@ -13,8 +13,8 @@ module Clearwater
       @template_name
     end
 
-    def self.attributes attributes
-      Array(attributes).each do |attr|
+    def self.attributes *args
+      Array(args).each do |attr|
         attr_reader attr
 
         define_method "#{attr}=" do |new_value|
