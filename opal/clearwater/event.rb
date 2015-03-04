@@ -21,11 +21,10 @@ module Clearwater
     end
 
     def reset_binding? bindings
+      selector = "#{view_selector} #{target_selector}"
+      element = Element[selector]
       bindings.any? { |binding|
-        Element[view_selector]
-          .find(target_selector)
-          .closest(binding.selector)
-          .any?
+        element.closest(binding.selector).any?
       }
     end
   end
