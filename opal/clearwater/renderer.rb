@@ -19,5 +19,9 @@ module Clearwater
 
       events.each(&:set_browser_event)
     end
+
+    def remove_dead_events
+      events.delete_if { |e| Element[e.view_selector].none? }
+    end
   end
 end

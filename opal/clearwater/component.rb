@@ -23,6 +23,7 @@ module Clearwater
           @bindings[attr].each(&:call)
           @bindings[attr].delete_if(&:dead?)
 
+          renderer.remove_dead_events
           renderer.add_events_to_dom { |event|
             event.reset_binding? @bindings[attr]
           }
