@@ -16,16 +16,18 @@ module Clearwater
     end
 
     def set_browser_event
-      selector = "#{view_selector} #{target_selector}"
       Element[selector].on event_type, &@block
     end
 
     def reset_binding? bindings
-      selector = "#{view_selector} #{target_selector}"
       element = Element[selector]
       bindings.any? { |binding|
         element.closest(binding.selector).any?
       }
+    end
+
+    def selector
+      @selector ||= "#{view_selector} #{target_selector}"
     end
   end
 end
