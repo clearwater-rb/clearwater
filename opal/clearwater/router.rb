@@ -73,14 +73,13 @@ module Clearwater
 
     def set_outlets targets=targets_for_path(current_path)
       if targets.any?
-        (targets.count - 1).times do |index|
+        (targets.count).times do |index|
           targets[index].outlet = targets[index + 1]
         end
-        targets.last.default_outlet!
 
-        application && application.controller.outlet = targets.first
+        application && application.component.outlet = targets.first
       else
-        application && application.controller.default_outlet!
+        application && application.component.outlet = nil
       end
     end
 
@@ -91,8 +90,8 @@ module Clearwater
     end
 
     def render_application
-      if application && application.controller
-        application.controller.call
+      if application && application.component
+        application.component.call
       end
     end
   end
