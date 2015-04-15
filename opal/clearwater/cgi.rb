@@ -8,7 +8,7 @@ module Clearwater
         else
           ch
         end
-      end.join.tr(' ', '+')
+      end.join.tr(" ", "+")
     end
   end
 end

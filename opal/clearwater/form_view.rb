@@ -1,4 +1,4 @@
-require 'clearwater/view'
+require "clearwater/view"
 
 module Clearwater
   class FormView < View
@@ -13,7 +13,7 @@ module Clearwater
     end
 
     def label attribute, text=attribute.capitalize
-      "<label for='#{attribute}'>#{text}</label>"
+      %|<label for="#{attribute}">#{text}</label>|
     end
 
     def text_field attribute, options={}

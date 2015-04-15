@@ -1,4 +1,4 @@
-require 'clearwater/router/route_collection'
+require "clearwater/router/route_collection"
 
 module Clearwater
   class Router
@@ -16,7 +16,7 @@ module Clearwater
       end
 
       def canonical_path
-        @canonical_path ||= "#{parent.canonical_path}/#{key}".gsub('//', '/')
+        @canonical_path ||= "#{parent.canonical_path}/#{key}".gsub("//", "/")
       end
 
       def match key, other_parts=[]
@@ -32,7 +32,7 @@ module Clearwater
       private
 
       def param_key?
-        @param_key ||= key.start_with? ':'
+        @param_key ||= key.start_with? ":"
       end
 
       def nested_routes

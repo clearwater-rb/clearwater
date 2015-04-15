@@ -1,10 +1,10 @@
-require 'opal'
-require 'jquery'
-require 'opal-jquery'
-require 'clearwater/store'
-require 'clearwater/router'
-require 'clearwater/controller'
-require 'clearwater/view'
+require "opal"
+require "jquery"
+require "opal-jquery"
+require "clearwater/store"
+require "clearwater/router"
+require "clearwater/controller"
+require "clearwater/view"
 
 module Clearwater
   class Application
@@ -27,7 +27,7 @@ module Clearwater
     end
 
     def trap_clicks
-      Element['body'].on :click, 'a' do |event|
+      Element["body"].on :click, "a" do |event|
         unless event.meta_key || event.ctrl_key || event.shift_key || event.alt_key
           remote_url = %r{^\w+://|^//}
           href = event.current_target[:href]

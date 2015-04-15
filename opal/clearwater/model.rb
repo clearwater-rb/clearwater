@@ -1,4 +1,4 @@
-require 'clearwater/binding'
+require "clearwater/binding"
 
 module Clearwater
   class Model

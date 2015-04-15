@@ -1,7 +1,7 @@
 # coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'clearwater/version'
+require "clearwater/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "clearwater"
@@ -18,8 +18,8 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency 'opal', '~> 0.7.0'
-  spec.add_dependency 'opal-jquery', '~> 0.3.0'
+  spec.add_dependency "opal", "~> 0.7.0"
+  spec.add_dependency "opal-jquery", "~> 0.3.0"
 
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"

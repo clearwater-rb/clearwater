@@ -1,4 +1,4 @@
-require 'clearwater/router/route'
+require "clearwater/router/route"
 
 module Clearwater
   class Router
@@ -32,7 +32,7 @@ module Clearwater
         routes = @routes.map { |r|
           r.match route_names.first, route_names[1..-1]
         }.compact ||
-          raise(ArgumentError, "No route matches #{route_names.join('/')}")
+          raise(ArgumentError, "No route matches #{route_names.join("/")}")
         routes.flatten
       end
 

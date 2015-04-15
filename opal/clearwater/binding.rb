@@ -29,8 +29,8 @@ module Clearwater
     end
 
     def id
-      # HTML tag ids can't have '::' in them, apparently.
-      @class_name ||= @component.class.name.gsub(/::/, '-')
+      # HTML tag ids can"t have "::" in them, apparently.
+      @class_name ||= @component.class.name.gsub(/::/, "-")
 
       "#{@class_name}-#{@component.object_id}-binding-#{object_id}-#{@attribute}"
     end
