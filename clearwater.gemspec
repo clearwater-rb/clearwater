@@ -1,4 +1,5 @@
 lib = File.expand_path("../lib", __FILE__)
+#!/usr/bin/env ruby
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "clearwater/version"
 
