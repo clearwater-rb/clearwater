@@ -9,9 +9,9 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Jamie Gaskins"]
   spec.email         = ["jgaskins@gmail.com"]
   spec.summary       = %q{Front-end web framework built on Opal}
-  spec.homepage      = "https://github.com/jgaskins/clearwater"
   spec.license       = "MIT"
   spec.description = spec.summary
+  spec.homepage = "https://clearwater-rb.github.io/"
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
