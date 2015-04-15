@@ -4,14 +4,14 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "clearwater/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "clearwater"
-  spec.version       = Clearwater::VERSION
-  spec.authors       = ["Jamie Gaskins"]
-  spec.email         = ["jgaskins@gmail.com"]
-  spec.summary       = %q{Front-end web framework built on Opal}
-  spec.license       = "MIT"
+  spec.name = "clearwater"
+  spec.version = Clearwater::VERSION
+  spec.authors = ["Jamie Gaskins"]
+  spec.email = ["jgaskins@gmail.com"]
+  spec.summary = %q{Front-end web framework built on Opal}
   spec.description = spec.summary
   spec.homepage = "https://clearwater-rb.github.io/"
+  spec.license = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
