@@ -2,8 +2,6 @@
 
 Clearwater is a front-end framework for web applications written in Ruby. It renders to a virtual DOM and applies the virtual DOM to the browser's actual DOM to update only what has changed on the page.
 
-## Installation
-
   - [![Quality](http://img.shields.io/codeclimate/github/clearwater-rb/clearwater.svg?style=flat-square)](https://codeclimate.com/github/clearwater-rb/clearwater)
   - [![Coverage](http://img.shields.io/codeclimate/coverage/github/clearwater-rb/clearwater.svg?style=flat-square)](https://codeclimate.com/github/clearwater-rb/clearwater)
   - [![Build](http://img.shields.io/travis-ci/clearwater-rb/clearwater.svg?style=flat-square)](https://travis-ci.org/clearwater-rb/clearwater)
@@ -15,19 +13,24 @@ Clearwater is a front-end framework for web applications written in Ruby. It ren
   - [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](http://opensource.org/licenses/MIT)
   - [![Version](http://img.shields.io/gem/v/clearwater.svg?style=flat-square)](https://rubygems.org/gems/clearwater)
 
-Add these lines to your application's Gemfile:
+Installing
+==========
 
-```ruby
+If you're using this as a standalone application then just install via:
+
+    $ gem install clearwater
+
+If you're using rails then add these lines to your application's Gemfile:
+
+``` ruby
 gem 'clearwater', github: 'clearwater-rb/clearwater'
-gem 'opal-browser', github: 'opal/opal-browser' # Released version is out of date
-gem 'opal-rails' # For Rails apps
+gem 'opal-browser', github: 'opal/opal-browser'
+gem 'opal-rails', github: 'opal-rails'
 ```
 
-And then execute:
 
-    $ bundle
-
-## Usage
+Usage
+=====
 
 Clearwater targets the Rails asset pipeline, so it will work best in a Rails app. It may work fine with other server-side web frameworks, but I haven't tried it yet.
 
