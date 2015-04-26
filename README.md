@@ -1,6 +1,5 @@
-# Clearwater
-
-Clearwater is a front-end framework for web applications written in Ruby. It renders to a virtual DOM and applies the virtual DOM to the browser's actual DOM to update only what has changed on the page.
+clearwater
+----------
 
   - [![Quality](http://img.shields.io/codeclimate/github/clearwater-rb/clearwater.svg?style=flat-square)](https://codeclimate.com/github/clearwater-rb/clearwater)
   - [![Coverage](http://img.shields.io/codeclimate/coverage/github/clearwater-rb/clearwater.svg?style=flat-square)](https://codeclimate.com/github/clearwater-rb/clearwater)
@@ -12,6 +11,10 @@ Clearwater is a front-end framework for web applications written in Ruby. It ren
   - [![Issues](http://img.shields.io/github/issues/clearwater-rb/clearwater.svg?style=flat-square)](http://github.com/clearwater-rb/clearwater/issues)
   - [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](http://opensource.org/licenses/MIT)
   - [![Version](http://img.shields.io/gem/v/clearwater.svg?style=flat-square)](https://rubygems.org/gems/clearwater)
+
+Clearwater is a rich front-end framework for building fast, reasonable, and easily composible browser applications in Ruby. It renders to a virtual DOM and applies the virtual DOM to the browser's actual DOM to update only what has changed on the page.
+
+**Many of the details in this readme are based on FUTURE WORKS IN PROGRESS and shouldn't be relied on for now.**
 
 
 Installing
