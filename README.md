@@ -143,6 +143,12 @@ MyApp.call # Render the app
 5. Create a new Pull Request
 
 
+Changelog
+=========
+
+  - 1.0.0: Initial release
+
+
 Conduct
 =======
 
