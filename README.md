@@ -189,12 +189,6 @@ Contributing
   5. Create new Pull Request
 
 
-Changelog
-=========
-
-  - 1.0.0: Initial release
-
-
 Conduct
 =======
 
