@@ -1,4 +1,4 @@
-require 'clearwater/cgi'
+require "clearwater/cgi"
 
 module Clearwater
   class APIClient
@@ -59,7 +59,7 @@ module Clearwater
     def query_string params
       query_params = params.map { |key, value|
         "#{CGI.escape(key)}=#{CGI.escape(value)}"
-      }.join('&')
+      }.join("&")
     end
 
     class Response

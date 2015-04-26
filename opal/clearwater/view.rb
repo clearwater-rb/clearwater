@@ -1,7 +1,7 @@
-require 'clearwater/renderer'
-require 'clearwater/event'
-require 'template'
-require 'opal-jquery'
+require "clearwater/renderer"
+require "clearwater/event"
+require "template"
+require "opal-jquery"
 
 module Clearwater
   class View
@@ -62,13 +62,13 @@ module Clearwater
     end
 
     def wrapper_id
-      class_name = self.class.name.gsub(/::/, '-')
+      class_name = self.class.name.gsub(/::/, "-")
       "#{class_name}-#{object_id}-view"
     end
 
     def bind model, property, &block
       model.add_binding property, self, &block
-      "<span id='model-#{model.object_id}-#{property}'>#{yield}</span>"
+      %|<span id="model-#{model.object_id}-#{property}">#{yield}</span>|
     end
 
     def self.template *args
@@ -88,11 +88,11 @@ module Clearwater
     end
 
     def root_path
-      '/'
+      "/"
     end
 
     def link_to text, path=nil, attributes={}
-      "<a href='#{path}'" + attributes.map { |attr, value|
+      %|<a href="#{path}"| + attributes.map { |attr, value|
         " #{attr}=#{value.inspect}"
       }.join + ">#{text}</a>"
     end
@@ -111,7 +111,7 @@ module Clearwater
     alias h html_escape
 
     def simple_format text
-      text.split("\n\n").map {|paragraph| "<p>#{paragraph}</p>" }.join.gsub("\n", '<br/>')
+      text.split("\n\n").map {|paragraph| "<p>#{paragraph}</p>" }.join.gsub("\n", "<br/>")
     end
 
     def method_missing *args, &block

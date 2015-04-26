@@ -1,4 +1,4 @@
-require 'clearwater/router/route_collection'
+require "clearwater/router/route_collection"
 
 module Clearwater
   class Router
@@ -20,7 +20,7 @@ module Clearwater
     end
 
     def routes_for_path path
-      parts = path.split('/').reject(&:empty?)
+      parts = path.split("/").reject(&:empty?)
       @routes[parts]
     end
 
@@ -33,12 +33,12 @@ module Clearwater
     end
 
     def params_for_path path
-      path_parts = path.split('/').reject(&:empty?)
-      canonical_parts = canonical_path_for_path(path).split('/').reject(&:empty?)
+      path_parts = path.split("/").reject(&:empty?)
+      canonical_parts = canonical_path_for_path(path).split("/").reject(&:empty?)
       params = {}
       canonical_parts.each_with_object(params)
                      .each_with_index { |(part, params), index|
-        if part.start_with? ':'
+        if part.start_with? ":"
           param = part[1..-1].to_sym
           params[param] = path_parts[index]
         end

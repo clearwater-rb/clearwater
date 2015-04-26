@@ -1,4 +1,4 @@
-require 'opal-jquery'
+require "opal-jquery"
 
 module Clearwater
   class Event

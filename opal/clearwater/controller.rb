@@ -1,4 +1,4 @@
-require 'clearwater/renderer'
+require "clearwater/renderer"
 
 module Clearwater
   class Controller
@@ -44,8 +44,8 @@ module Clearwater
 
     def set_csrf_token
       ->(xhr) {
-        token = Element['meta[name="csrf-token"]']['content']
-        `xhr.setRequestHeader('X-CSRF-Token', #{token})`
+        token = Element[%|meta[name="csrf-token"]|]["content"]
+        `xhr.setRequestHeader("X-CSRF-Token", #{token})`
       }
     end
 

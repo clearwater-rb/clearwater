@@ -1,4 +1,4 @@
-require 'json'
+require "json"
 
 module Clearwater
   class Store
@@ -49,8 +49,8 @@ module Clearwater
     end
 
     def url_for klass, id=nil
-      @url.gsub(':model', mapping[klass])
-          .gsub(':id', id.to_s)
+      @url.gsub(":model", mapping[klass])
+          .gsub(":id", id.to_s)
     end
 
     def url_for_model model
@@ -78,7 +78,7 @@ module Clearwater
 
     def [] klass
       @custom_mappings.fetch(klass) { |*args|
-        klass.name.downcase.gsub('::', '/') + 's'
+        klass.name.downcase.gsub("::", "/") + "s"
       }
     end
   end

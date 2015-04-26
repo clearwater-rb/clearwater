@@ -1,5 +1,5 @@
-require 'clearwater/binding'
-require 'clearwater/event'
+require "clearwater/binding"
+require "clearwater/event"
 
 module Clearwater
   class Component
@@ -36,8 +36,8 @@ module Clearwater
       @template = Template[self.class.template_name]
       raise "No template for #{self.class}" unless @template
 
-      @tag_name = 'div'
-      @class_name = 'clearwater-component'
+      @tag_name = "div"
+      @class_name = "clearwater-component"
 
       @bindings = Hash.new { |h, k| h[k] = [] }
       @renderer = options[:renderer]
@@ -108,7 +108,7 @@ module Clearwater
       if args.one? && @options.key?(args.first) && !block_given?
         options[args.first]
       else
-        raise NoMethodError, "no method #{args.shift}(#{args.join(',')}) for #{self.class}"
+        raise NoMethodError, "no method #{args.shift}(#{args.join(",")}) for #{self.class}"
       end
     end
   end
