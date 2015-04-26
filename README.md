@@ -13,6 +13,7 @@ Clearwater is a front-end framework for web applications written in Ruby. It ren
   - [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](http://opensource.org/licenses/MIT)
   - [![Version](http://img.shields.io/gem/v/clearwater.svg?style=flat-square)](https://rubygems.org/gems/clearwater)
 
+
 Installing
 ==========
 
@@ -29,19 +30,56 @@ gem 'opal-rails', github: 'opal-rails'
 ```
 
 
-Usage
+Using
 =====
 
-Clearwater targets the Rails asset pipeline, so it will work best in a Rails app. It may work fine with other server-side web frameworks, but I haven't tried it yet.
+There are two ways to use clearwater, either as a standalone application or as part of the Rails framework. We'll show you the stand-alone application steps first:
 
-### Create your application
+  1. Install the clearwater gem:
+    ```
+    $ gem install clearwater
+    ```
+  2. Use the CLI in order to create a new application:
+    ```
+    $ clearwater new [application name] [options]
+    ```
+  3. Now go into the newly created project:
+    ```
+    $ cd [application name]
+    ```
+  4. Finally start a local server
+    ```
+    $ clearwater [application name] server start
+    ```
 
-#### app/assets/javascripts/application.rb
+The Clearwater has three clear distinct parts:
 
-```ruby
-# Load Clearwater
+  1. The router, the dispatcher and control
+  2. The model, the domain object and state holder
+  3. The component, the presenter and template engine
+
+**The Router**
+
+``` ruby
+# SHOW A ROUTER HERE
+```
+
+**The Model**
+``` ruby
+# SHOW A MODEL HERE
+```
+
+**The Component**
+``` ruby
+# SHOW A COMPONENT HERE
+```
+
+You can also use Clearwater as part of the Rails asset pipeline. First create your application:
+
+``` ruby
+# file: app/assets/javascripts/application.rb
 require 'opal' # Not necessary if you load Opal from CDN
-require 'clearwater'
+require 'clearwater' # Load Clearwater
 
 class Layout
   include Clearwater::Component
