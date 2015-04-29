@@ -1,5 +1,7 @@
 # Clearwater
 
+[![Join the chat at https://gitter.im/clearwater-rb/clearwater](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/clearwater-rb/clearwater?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Clearwater is a browser MVC framework, similar to Ember.js or Backbone.js. The primary difference is that Clearwater is written in Ruby and compiled using Opal.
 
 ## Installation
