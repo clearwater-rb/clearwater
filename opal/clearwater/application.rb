@@ -1,62 +1,113 @@
-require "opal"
-require "jquery"
-require "opal-jquery"
-require "clearwater/store"
-require "clearwater/router"
-require "clearwater/controller"
-require "clearwater/view"
+require 'opal'
+require 'clearwater/router'
+require 'clearwater/application_registry'
+require 'clearwater/virtual_dom_component'
+require 'browser'
+require 'browser/delay'
+require 'clearwater/link'
 
 module Clearwater
   class Application
-    attr_reader :store, :router, :controller, :api_client
+    RENDER_FPS = 60
+    AppRegistry = ApplicationRegistry.new
+
+    attr_reader :store, :router, :component, :api_client
+
+    def self.render
+      AppRegistry.render_all
+    end
 
     def initialize options={}
-      @store      = options.fetch(:store)      { Store.new }
+      @store      = options.fetch(:store)      { nil }
       @router     = options.fetch(:router)     { Router.new }
-      @controller = options.fetch(:controller) { ApplicationController.new }
+      @component  = options.fetch(:component)  { nil }
       @api_client = options.fetch(:api_client) { nil }
+      @element    = options.fetch(:element)    { nil }
 
       router.application = self
-      controller.router = router
+      component.router = router
     end
 
     def call
+      AppRegistry << self
       render_current_url
-      trap_clicks
       watch_url
     end
 
-    def trap_clicks
-      Element["body"].on :click, "a" do |event|
-        unless event.meta_key || event.ctrl_key || event.shift_key || event.alt_key
-          remote_url = %r{^\w+://|^//}
-          href = event.current_target[:href]
-          event.prevent_default unless href.to_s =~ remote_url
-
-          if href.nil? || href.empty?
-            # Do nothing. There is nowhere to go.
-          elsif href == router.current_path
-            # Do nothing. We clicked a link to right here.
-          elsif href.to_s =~ remote_url
-            # Don't try to route remote URLs. Just let the browser do its thing.
-          else
-            router.navigate_to href
-          end
-        end
-      end
-    end
-
     def watch_url
-      check_rerender = proc do
-        render_current_url
+      unless @watching_url
+        @watching_url = true
+        $window.on('popstate') { render_current_url }
       end
-
-      %x{ window.onpopstate = check_rerender }
     end
 
     def render_current_url
       router.set_outlets
-      controller && controller.call
+      render
+    end
+
+    def render
+      # Throttle rendering
+      if Time.now - last_render < time_between_renders
+        delay_render
+      else
+        if element.nil?
+          raise TypeError, "Cannot render to a non-existent element. Make sure the document ready event has been triggered before invoking the application."
+        end
+
+        @_virtual_dom ||= VirtualDOM::Document.new(element)
+
+        rendered = benchmark('Generated virtual DOM') { component.render }
+        benchmark('Rendered to actual DOM') { @_virtual_dom.render rendered }
+        @last_render = Time.now
+      end
+
+      nil
+    end
+
+    def element
+      @element ||= begin
+                     if `document.body != null` || `document.body != undefined`
+                       $document.body
+                     else
+                       nil
+                     end
+                   end
+    end
+
+    def benchmark message
+      if debug?
+        start = Time.now
+        result = yield
+        finish = Time.now
+        puts "#{message} in #{(finish - start) * 1000}ms"
+        result
+      else
+        yield
+      end
+    end
+
+    def debug?
+      false
+    end
+
+    def delay_render
+      unless @next_render
+        @next_render = last_render + time_between_renders
+        now = Time.now
+        after [@next_render - now, time_between_renders].max do
+          render
+          @next_render = nil
+        end
+      end
+    end
+
+    def last_render
+      @last_render ||= Time.now - 10
+    end
+
+    def time_between_renders
+      1 / RENDER_FPS
     end
   end
 end

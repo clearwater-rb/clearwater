@@ -1,4 +1,5 @@
 require "clearwater/cgi"
+require "browser/http"
 
 module Clearwater
   class APIClient
@@ -11,7 +12,7 @@ module Clearwater
     end
 
     def fetch resource, id, params
-      response = HTTP.get(path_for_resource(resource, id, params))
+      response = Browser::HTTP.get(path_for_resource(resource, id, params))
       Response.new(response)
     end
 
@@ -24,17 +25,17 @@ module Clearwater
                path_for_resource(resource)
              end
 
-      response = HTTP.post(path, data: data)
+      response = Browser::HTTP.post(path, data)
       Response.new(response)
     end
 
     def update resource, id, data
-      response = HTTP.patch path_for_resource(resource, id), data: data
+      response = Browser::HTTP.patch path_for_resource(resource, id), data: data
       Response.new(response)
     end
 
     def delete resource, id
-      response = HTTP.delete path_for_resource(resource, id)
+      response = Browser::HTTP.delete path_for_resource(resource, id)
       Response.new(response)
     end
 

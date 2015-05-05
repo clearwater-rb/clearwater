@@ -1,5 +1,4 @@
 require "opal"
-require "opal/jquery"
 
 module Clearwater
   require_relative "clearwater/version"

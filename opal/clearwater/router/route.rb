@@ -20,8 +20,8 @@ module Clearwater
       end
 
       def match key, other_parts=[]
-        if key == self.key || param_key?
-          if other_parts.any?
+        if key && (key == self.key || param_key?)
+          if Array(other_parts).any?
             [self, nested_routes[other_parts]]
           else
             self
