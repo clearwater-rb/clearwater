@@ -26,6 +26,12 @@ module Clearwater
 
       router.application = self
       component.router = router
+
+      $document.on 'visibilitychange' do
+        if @render_on_visibility_change
+          render
+        end
+      end
     end
 
     def call
@@ -47,6 +53,12 @@ module Clearwater
     end
 
     def render
+      # If the app isn't being shown, wait to render until it is.
+      if `document.hidden`
+        @render_on_visibility_change = true
+        return
+      end
+
       # Throttle rendering
       if Time.now - last_render < time_between_renders
         delay_render
