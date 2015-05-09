@@ -29,6 +29,7 @@ module Clearwater
 
       $document.on 'visibilitychange' do
         if @render_on_visibility_change
+          @render_on_visibility_change = false
           render
         end
       end
