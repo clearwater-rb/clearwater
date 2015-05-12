@@ -33,12 +33,15 @@ module Clearwater
       end
 
       def [] route_names
-        route_names = route_names[1..-1] if route_names.first == @namespace
+        if route_names.any? && route_names.first == @namespace
+          route_names = route_names[1..-1]
+        end
         routes = @routes.map { |r|
           r.match route_names.first, route_names[1..-1]
-        }.compact ||
-          raise(ArgumentError, "No route matches #{route_names.join("/")}")
-        routes.flatten
+        }
+        routes.compact!
+        routes.flatten!
+        routes
       end
 
       private
