@@ -60,20 +60,7 @@ module Clearwater
         return
       end
 
-      # Throttle rendering
-      if Time.now - last_render < time_between_renders
-        delay_render
-      else
-        if element.nil?
-          raise TypeError, "Cannot render to a non-existent element. Make sure the document ready event has been triggered before invoking the application."
-        end
-
-        @_virtual_dom ||= VirtualDOM::Document.new(element)
-
-        rendered = benchmark('Generated virtual DOM') { component.render }
-        benchmark('Rendered to actual DOM') { @_virtual_dom.render rendered }
-        @last_render = Time.now
-      end
+      delay_render
 
       nil
     end
@@ -105,14 +92,27 @@ module Clearwater
     end
 
     def delay_render
+      # Throttle rendering
       unless @next_render
         @next_render = last_render + time_between_renders
         now = Time.now
         after [@next_render - now, time_between_renders].max do
-          render
+          perform_render
           @next_render = nil
         end
       end
+    end
+
+    def perform_render
+      if element.nil?
+        raise TypeError, "Cannot render to a non-existent element. Make sure the document ready event has been triggered before invoking the application."
+      end
+
+      @_virtual_dom ||= VirtualDOM::Document.new(element)
+
+      rendered = benchmark('Generated virtual DOM') { component.render }
+      benchmark('Rendered to actual DOM') { @_virtual_dom.render rendered }
+      @last_render = Time.now
     end
 
     def last_render
