@@ -1,4 +1,4 @@
-require 'clearwater/virtual_dom_component'
+require 'clearwater/component'
 require 'browser/history'
 
 class Link

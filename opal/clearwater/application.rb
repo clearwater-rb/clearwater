@@ -1,7 +1,7 @@
 require 'opal'
 require 'clearwater/router'
 require 'clearwater/application_registry'
-require 'clearwater/virtual_dom_component'
+require 'clearwater/component'
 require 'browser'
 require 'browser/delay'
 require 'clearwater/link'
