@@ -116,6 +116,7 @@ end
 
 MyApp = Clearwater::Application.new(
   component: Layout.new,
+  router: router,
   element: $document.body # This is the default target element
 )
 
