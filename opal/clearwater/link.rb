@@ -1,6 +1,22 @@
 require 'clearwater/component'
 require 'browser/history'
 
+# TODO: Remove this once opal-browser supports coordinates natively
+# for touch events.
+module Browser
+  class Event
+    class Touch
+      def x
+        `#@native.pageX`
+      end
+
+      def y
+        `#@native.pageY`
+      end
+    end
+  end
+end
+
 class Link
   include Clearwater::Component
 
@@ -42,9 +58,17 @@ class Link
     # All links will treat this as touch because this is a touch device
     @@touch = true
     moved = false
+    x_start = event.x
+    y_start = event.y
 
-    touch_move_handler = proc do
-      moved = true
+    touch_move_handler = proc do |event|
+      x_now = event.x
+      y_now = event.y
+
+      # Count this gesture as a non-click if user moves over 30px
+      if ((x_now - x_start) ** 2 + (y_now - y_start) ** 2) ** 0.5 > 30
+        moved = true
+      end
     end
 
     touch_end_handler = proc do
