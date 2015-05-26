@@ -11,7 +11,7 @@ module Clearwater
     RENDER_FPS = 60
     AppRegistry = ApplicationRegistry.new
 
-    attr_reader :store, :router, :component, :api_client
+    attr_reader :store, :router, :component, :api_client, :on_render
 
     def self.render
       AppRegistry.render_all
@@ -23,6 +23,7 @@ module Clearwater
       @component  = options.fetch(:component)  { nil }
       @api_client = options.fetch(:api_client) { nil }
       @element    = options.fetch(:element)    { nil }
+      @on_render  = []
 
       router.application = self
       component.router = router
@@ -48,12 +49,14 @@ module Clearwater
       end
     end
 
-    def render_current_url
+    def render_current_url &block
       router.set_outlets
-      render
+      render &block
     end
 
-    def render
+    def render &block
+      on_render << block if block
+
       # If the app isn't being shown, wait to render until it is.
       if `document.hidden`
         @render_on_visibility_change = true
@@ -113,6 +116,8 @@ module Clearwater
       rendered = benchmark('Generated virtual DOM') { component.render }
       benchmark('Rendered to actual DOM') { @_virtual_dom.render rendered }
       @last_render = Time.now
+      on_render.each(&:call)
+      on_render.clear
     end
 
     def last_render

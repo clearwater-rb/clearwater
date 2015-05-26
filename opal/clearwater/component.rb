@@ -198,8 +198,8 @@ module Clearwater
       end
     end
 
-    def call
-      Clearwater::Application::AppRegistry.render_all
+    def call &block
+      Clearwater::Application::AppRegistry.render_all(&block)
     end
   end
 end

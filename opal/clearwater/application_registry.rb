@@ -10,8 +10,10 @@ module Clearwater
       @apps << app
     end
 
-    def render_all
-      @apps.each(&:render_current_url)
+    def render_all &block
+      @apps.each do |app|
+        app.render_current_url &block
+      end
     end
 
     def delete app
