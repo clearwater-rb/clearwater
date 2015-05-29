@@ -1,10 +1,8 @@
 #!/usr/bin/env rake
 
-require "bundler/gem_tasks"
-require "rspec/core/rake_task"
+$:.unshift 'lib'
+require 'clearwater'
+require 'opal/browser'
 
-desc "Run all the tests in spec"
-RSpec::Core::RakeTask.new(:spec)
-
-desc "Default: run tests"
-task default: :spec
+require "opal/rspec/rake_task"
+Opal::RSpec::RakeTask.new(:default)

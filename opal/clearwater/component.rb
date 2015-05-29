@@ -1,4 +1,5 @@
 require 'clearwater/virtual_dom'
+require 'browser'
 require 'set'
 
 module Clearwater
@@ -156,10 +157,6 @@ module Clearwater
 
     def params
       router.params_for_path(router.current_path)
-    end
-
-    def param(key)
-      params[key]
     end
 
     def sanitize_attributes attributes

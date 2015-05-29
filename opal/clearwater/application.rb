@@ -1,7 +1,9 @@
 require 'clearwater/router'
 require 'clearwater/application_registry'
+require 'browser'
 require 'browser/delay'
-require 'browser/event/pop_state'
+require 'native'
+require 'browser/event'
 require 'browser/animation_frame'
 
 module Clearwater
