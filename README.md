@@ -26,8 +26,7 @@ Clearwater targets the Rails asset pipeline, so it will work best in a Rails app
 
 ```ruby
 # Load Clearwater
-require 'clearwater/application'
-require 'clearwater/component'
+require 'clearwater'
 
 class Layout
   include Clearwater::Component

@@ -1,10 +1,6 @@
-require 'opal'
 require 'clearwater/router'
 require 'clearwater/application_registry'
-require 'clearwater/component'
-require 'browser'
 require 'browser/delay'
-require 'clearwater/link'
 
 module Clearwater
   class Application
