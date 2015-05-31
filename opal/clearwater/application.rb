@@ -1,6 +1,7 @@
 require 'clearwater/router'
 require 'clearwater/application_registry'
 require 'browser/delay'
+require 'browser/event/pop_state'
 
 module Clearwater
   class Application
