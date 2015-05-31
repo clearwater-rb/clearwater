@@ -26,6 +26,7 @@ Clearwater targets the Rails asset pipeline, so it will work best in a Rails app
 
 ```ruby
 # Load Clearwater
+require 'opal' # Not necessary if you load Opal from CDN
 require 'clearwater'
 
 class Layout

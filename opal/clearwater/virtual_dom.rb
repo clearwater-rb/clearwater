@@ -1,4 +1,3 @@
-require 'opal'
 require 'browser'
 require 'clearwater/virtual_dom/js/virtual_dom.js'
 
