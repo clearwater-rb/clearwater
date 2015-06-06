@@ -134,7 +134,7 @@ module Clearwater
       wbr
     )
 
-    HTML_TAGS.each do |tag|
+    HTML_TAGS.each do |tag_name|
       define_method(tag_name) do |attributes, content|
         tag(tag_name, attributes, content)
       end
