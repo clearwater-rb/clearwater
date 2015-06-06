@@ -135,8 +135,8 @@ module Clearwater
     )
 
     HTML_TAGS.each do |tag|
-      define_method(tag) do |*args|
-        tag(tag, *args)
+      define_method(tag_name) do |attributes, content|
+        tag(tag_name, attributes, content)
       end
     end
 
