@@ -88,7 +88,7 @@ class Link
   def navigate event
     # Don't handle middle-button clicks and clicks with modifier keys. Let them
     # pass through to the browser's default handling or the user's modified handling.
-    unless event.meta? || event.shift? || event.ctrl? || event.alt? || event.button == 1
+    unless event.meta? || event.shift? || event.ctrl? || event.alt? || (event.respond_to?(:button) && event.button == 1)
       event.prevent
       if href != $window.location.path
         $window.history.push href
