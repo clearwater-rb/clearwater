@@ -34,10 +34,6 @@ module VirtualDOM
     Node.new(`virtualDom.h(tag_name, attributes, content)`)
   end
 
-  def self.create_element node
-    `virtualDom.create(node)`
-  end
-
   def self.sanitize_content content
     %x{
       if(content === Opal.nil) return Opal.nil;
@@ -60,10 +56,14 @@ module VirtualDOM
         @node = node
       else
         @node = node
-        @tree = node.to_element
+        @tree = Element.new(create_element(node))
         @root.inner_dom = @tree.to_n
         @rendered = true
       end
+    end
+
+    def create_element node
+      `virtualDom.create(node.node)`
     end
 
     def rendered?
@@ -76,10 +76,6 @@ module VirtualDOM
 
     def initialize(node)
       @node = node
-    end
-
-    def to_element
-      Element.new(VirtualDOM.create_element(node))
     end
 
     def diff other
