@@ -75,20 +75,12 @@ module VirtualDOM
       @node = node
     end
 
-    def method_missing *args, &block
-      node.send *args, &block
-    end
-
     def to_element
       Element.new(VirtualDOM.create_element(node))
     end
 
     def diff other
       `virtualDom.diff(self.node, other.node)`
-    end
-
-    def patch diff
-      `virtualDom.patch(#{to_element.to_n}, diff)`
     end
   end
 
