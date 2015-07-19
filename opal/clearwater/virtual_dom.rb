@@ -29,20 +29,26 @@ end
 
 module VirtualDOM
   def self.node(tag_name, attributes, content)
-    content = Array(content).map { |node|
-      case node
-      when Node
-        node.node
-      else
-        node
-      end
-    }
+    content = sanitize_content(content)
     attributes = HashUtils.camelize_keys(attributes).to_n
     Node.new(`virtualDom.h(tag_name, attributes, content)`)
   end
 
   def self.create_element node
     `virtualDom.create(node)`
+  end
+
+  def self.sanitize_content content
+    case content
+    when nil
+      `null`
+    when Array
+      content.map { |c| sanitize_content(c) }
+    when Node
+      content.node
+    else
+      content
+    end
   end
 
   class Document
