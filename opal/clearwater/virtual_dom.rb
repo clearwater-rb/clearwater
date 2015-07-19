@@ -45,13 +45,12 @@ module VirtualDOM
   class Document
     def initialize(root=$document.create_element('div'))
       @root = root
-      @rendered_nodes = {}
     end
 
     def render node
       if rendered?
         diff = @node.diff(node)
-        @tree = Element.new(@tree.patch(diff))
+        @tree.patch diff
         @node = node
       else
         @node = node
@@ -91,14 +90,12 @@ module VirtualDOM
   end
 
   class Element
-    attr_reader :element
-
     def initialize(element)
       @element = element
     end
 
     def patch(diff)
-      `virtualDom.patch(#{element}, diff)`
+      `virtualDom.patch(#{to_n}, diff)`
     end
 
     def to_n
