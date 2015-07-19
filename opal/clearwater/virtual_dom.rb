@@ -11,16 +11,19 @@ module HashUtils
   def self.camelize_keys(hash)
     return nil if hash.nil?
 
-    Hash[hash.map { |k,v|
+    camelized = {}
+    hash.each do |k, v|
       key = StringUtils.camelize(k)
-      value = if Hash === v
+      value = if v.class == Hash
                 camelize_keys(v)
               else
                 v
               end
 
-      [key, value]
-    }]
+      camelized[key] = value
+    end
+
+    camelized
   end
 end
 
