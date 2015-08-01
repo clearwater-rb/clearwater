@@ -188,10 +188,14 @@ module Clearwater
       when Array
         content.map { |c| sanitize_content(c) }.compact
       else
-        if content.respond_to? :cached_render
-          content.cached_render
-        elsif content.respond_to? :render
-          sanitize_content content.render
+        if `content.$$class !== undefined`
+          if content.respond_to?(:cached_render)
+            content.cached_render
+          elsif content.respond_to?(:render)
+            sanitize_content content.render
+          else
+            content
+          end
         else
           content
         end
