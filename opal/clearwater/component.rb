@@ -182,13 +182,13 @@ module Clearwater
     end
 
     def sanitize_content content
-      case content
-      when Numeric, String
-        content.to_s
-      when Array
-        content.map { |c| sanitize_content(c) }.compact
-      else
-        if `content.$$class !== undefined`
+      if `content.$$class !== undefined`
+        case content
+        when Array
+          content.map { |c| sanitize_content(c) }
+        when nil
+          content.to_s
+        else
           if content.respond_to?(:cached_render)
             content.cached_render
           elsif content.respond_to?(:render)
@@ -196,9 +196,9 @@ module Clearwater
           else
             content
           end
-        else
-          content
         end
+      else
+        content
       end
     end
 
