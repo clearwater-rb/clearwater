@@ -182,24 +182,28 @@ module Clearwater
     end
 
     def sanitize_content content
-      if `content.$$class !== undefined`
-        case content
-        when Array
-          content.map { |c| sanitize_content(c) }
-        when nil
-          content.to_s
-        else
-          if content.respond_to?(:cached_render)
-            content.cached_render
-          elsif content.respond_to?(:render)
-            sanitize_content content.render
-          else
-            content
-          end
-        end
-      else
-        content
-      end
+      %x{
+        if(content.$$class) {
+          if(content.$$class === Opal.Array) {
+            return #{content.map { |c| `self.$sanitize_content(c)` }};
+          } else if(content === Opal.nil) {
+            return '';
+          } else {
+            var cached_render = content.$cached_render;
+            var render = content.$render;
+
+            if(cached_render && !cached_render.$$stub) {
+              return content.$cached_render();
+            } else if(render && !render.$$stub) {
+              return self.$sanitize_content(content.$render());
+            } else {
+              return content;
+            }
+          }
+        } else {
+          return content;
+        }
+      }
     end
 
     def call &block

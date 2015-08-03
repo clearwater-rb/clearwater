@@ -39,16 +39,13 @@ module VirtualDOM
   end
 
   def self.sanitize_content content
-    case content
-    when nil
-      `null`
-    when Array
-      content.map { |c| sanitize_content(c) }
-    when Node
-      content.node
-    else
-      content
-    end
+    %x{
+      if(content === Opal.nil) return Opal.nil;
+      if(content.$$class === Opal.Array)
+        return #{content.map!{ |c| sanitize_content c }};
+      if(content.$$class === Opal.VirtualDOM.Node) return content.node;
+      return content;
+    }
   end
 
   class Document
