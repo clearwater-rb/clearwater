@@ -12,10 +12,7 @@ clearwater
   - [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](http://opensource.org/licenses/MIT)
   - [![Version](http://img.shields.io/gem/v/clearwater.svg?style=flat-square)](https://rubygems.org/gems/clearwater)
 
-Clearwater is a rich front-end framework for building fast, reasonable, and easily composible browser applications in Ruby. It renders to a virtual DOM and applies the virtual DOM to the browser's actual DOM to update only what has changed on the page.
-
-**Many of the details in this readme are based on FUTURE WORKS IN PROGRESS and shouldn't be relied on for now.**
-
+Clearwater is a rich front-end framework for building fast, reasonable, and easily composable browser applications in Ruby. It renders to a virtual DOM and applies the virtual DOM to the browser's actual DOM to update only what has changed on the page.
 
 Installing
 ==========
@@ -27,54 +24,50 @@ If you're using this as a standalone application then just install via:
 If you're using rails then add these lines to your application's Gemfile:
 
 ``` ruby
-gem 'clearwater', github: 'clearwater-rb/clearwater'
+gem 'clearwater'
 gem 'opal-browser', github: 'opal/opal-browser'
-gem 'opal-rails', github: 'opal-rails'
+gem 'opal-rails'
 ```
 
 
 Using
 =====
 
-There are two ways to use clearwater, either as a standalone application or as part of the Rails framework. We'll show you the stand-alone application steps first:
-
-  1. Install the clearwater gem:
-    ```
-    $ gem install clearwater
-    ```
-  2. Use the CLI in order to create a new application:
-    ```
-    $ clearwater new [application name] [options]
-    ```
-  3. Now go into the newly created project:
-    ```
-    $ cd [application name]
-    ```
-  4. Finally start a local server
-    ```
-    $ clearwater [application name] server start
-    ```
-
 The Clearwater has three clear distinct parts:
 
   1. The router, the dispatcher and control
-  2. The model, the domain object and state holder
-  3. The component, the presenter and template engine
+  2. The component, the presenter and template engine
 
 **The Router**
 
 ``` ruby
-# SHOW A ROUTER HERE
-```
-
-**The Model**
-``` ruby
-# SHOW A MODEL HERE
+router = Clearwater::Router.new do
+  route 'blog' => Blog.new do
+    route 'new_article' => NewArticle.new
+    route ':article_id' => ArticleReader.new
+  end
+end
 ```
 
 **The Component**
 ``` ruby
-# SHOW A COMPONENT HERE
+class Blog
+  include Clearwater::Component
+
+  # The render method defines what gets rendered. It needs to return a
+  # virtual-DOM element using the element DSL.
+  def render
+    # Element DSL is tag_name(attributes, content)
+    div(nil, [
+      # Content types:
+      h1(nil, 'Heading'), # Another element
+      'Hello, world!',    # String
+      123,                # Numeric
+      nil,                # Absolutely nothing
+      ArticleIndex.new    # Another component
+    ])
+  end
+end
 ```
 
 You can also use Clearwater as part of the Rails asset pipeline. First create your application:
@@ -88,8 +81,8 @@ class Layout
   include Clearwater::Component
 
   def render
-    div({id: 'app'}, [
-      header({class_name: 'main-header'}, [
+    div({ id: 'app' }, [
+      header({ class_name: 'main-header' }, [
         h1(nil, 'Hello, world!'),
       ]),
       outlet, # This is what renders subordinate routes
@@ -101,9 +94,9 @@ class Articles
   include Clearwater::Component
 
   def render
-    div({id: 'articles-container'}, [
-      input({class_name: 'search-articles', onkeyup: method(:search)}),
-      ul({id: 'articles-index'}, articles.map { |article|
+    div({ id: 'articles-container '}, [
+      input({ class_name: 'search-articles', onkeyup: method(:search) }),
+      ul({ id: 'articles-index' }, articles.map { |article|
         ArticlesListItem.new(article)
       }),
     ])
@@ -135,10 +128,10 @@ class ArticlesListItem
   end
 
   def render
-    li({class_name: 'article'}, [
+    li({ class_name: 'article' }, [
       # The Link component will rerender the app for the new URL on click
-      Link.new({href: "/articles/#{article.id}"}, article.title),
-      time({class_name: 'timestamp'}, article.timestamp.strftime('%m/%d/%Y')),
+      Link.new({ href: "/articles/#{article.id}" }, article.title),
+      time({ class_name: 'timestamp' }, article.timestamp.strftime('%m/%d/%Y')),
     ])
   end
 end
@@ -150,9 +143,9 @@ class Article
     # In addition to using HTML5 tag names as methods, you can use the `tag`
     # method with a query selector to generate a tag with those attributes.
     tag('article.selected-article', nil, [
-      h1({class_name: 'article-title'}, article.title),
-      time({class_name: 'article-timestamp'}, article.timestamp.strftime('%m-%d-%Y')),
-      section({class_name: 'article-body'}, article.body),
+      h1({ class_name: 'article-title' }, article.title),
+      time({ class_name: 'article-timestamp' }, article.timestamp.strftime('%m-%d-%Y')),
+      section({ class_name: 'article-body' }, article.body),
     ])
   end
 
