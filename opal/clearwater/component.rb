@@ -171,7 +171,7 @@ module Clearwater
       end
 
       attributes.each do |key, handler|
-        if key.start_with? 'on'
+        if key[0, 2] == 'on'
           attributes[key] = proc do |event|
             handler.call(Browser::Event.new(event))
           end
