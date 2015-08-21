@@ -72,8 +72,6 @@ module VirtualDOM
   end
 
   class Node
-    attr_reader :node
-
     def initialize(node)
       @node = node
     end
