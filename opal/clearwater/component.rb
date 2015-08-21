@@ -143,7 +143,8 @@ module Clearwater
     def tag tag_name, attributes=nil, content=nil
       case attributes
       when Array, Component, Numeric, String
-        return tag(tag_name, nil, attributes)
+        content = attributes
+        attributes = nil
       end
 
       VirtualDOM.node(
