@@ -1,7 +1,7 @@
 module Clearwater
   module CachedRender
     def cached_render
-      if !@cached_render || should_render?
+      if !defined?(@cached_render) || should_render?
         @cached_render = sanitize_content(render)
       else
         @cached_render
