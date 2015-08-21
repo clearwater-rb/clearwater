@@ -9,7 +9,7 @@ end
 
 module HashUtils
   def self.camelize_keys(hash)
-    return nil if hash.nil?
+    return hash unless hash.is_a? Hash
 
     camelized = {}
     hash.each do |k, v|

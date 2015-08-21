@@ -141,6 +141,11 @@ module Clearwater
     end
 
     def tag tag_name, attributes=nil, content=nil
+      case attributes
+      when Array, Component, Numeric, String
+        return tag(tag_name, nil, attributes)
+      end
+
       VirtualDOM.node(
         tag_name,
         sanitize_attributes(attributes),
@@ -157,7 +162,7 @@ module Clearwater
     end
 
     def sanitize_attributes attributes
-      return nil if attributes.nil?
+      return attributes unless attributes.is_a? Hash
 
       # Allow specifying `class` instead of `class_name`.
       # Note: `class_name` is still allowed
