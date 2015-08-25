@@ -4,12 +4,8 @@ module Clearwater
   describe DOMReference do
     let(:ref) { DOMReference.new }
 
-    it 'delegates to the DOM node passed in on mount' do
-      r = ref
-
-      `r.hook({ value: 'hi' })`
-
-      expect(r.value).to eq 'hi'
+    it 'sanitizes to an empty string' do
+      expect(ref.to_s).to eq ''
     end
   end
 end
