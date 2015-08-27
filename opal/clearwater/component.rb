@@ -142,8 +142,7 @@ module Clearwater
     end
 
     def tag tag_name, attributes=nil, content=nil
-      case attributes
-      when Array, Component, Numeric, String
+      if !(`attributes === undefined || attributes.$$class === #{Hash} || attributes === #{nil}`)
         content = attributes
         attributes = nil
       end
