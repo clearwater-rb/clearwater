@@ -25,18 +25,40 @@ If you're using rails then add these lines to your application's Gemfile:
 
 ``` ruby
 gem 'clearwater'
-gem 'opal-browser', github: 'opal/opal-browser'
-gem 'opal-rails'
+gem 'opal-rails' # Only needed for Rails apps
 ```
 
 
 Using
 =====
 
-The Clearwater has three clear distinct parts:
+Clearwater has three distinct parts:
 
-  1. The router, the dispatcher and control
-  2. The component, the presenter and template engine
+1. The component: the presenter and template engine
+1. The router: the dispatcher and control
+1. The application: the "Go" button
+
+**The Component**
+``` ruby
+class Blog
+  include Clearwater::Component
+
+  # The render method defines what gets rendered. It needs to return a
+  # virtual-DOM element using the element DSL.
+  def render
+    # Element DSL is tag_name(attributes, content)
+    # The attributes can be omitted if you don't need to customize the element.
+    div({ id: 'foo' }, [
+      # Content types:
+      h1('Heading'), # Another element
+      'Hello, world!',    # String
+      123,                # Numeric
+      nil,                # Absolutely nothing
+      ArticleIndex.new    # Another component
+    ])
+  end
+end
+```
 
 **The Router**
 
@@ -49,33 +71,12 @@ router = Clearwater::Router.new do
 end
 ```
 
-**The Component**
-``` ruby
-class Blog
-  include Clearwater::Component
-
-  # The render method defines what gets rendered. It needs to return a
-  # virtual-DOM element using the element DSL.
-  def render
-    # Element DSL is tag_name(attributes, content)
-    div(nil, [
-      # Content types:
-      h1(nil, 'Heading'), # Another element
-      'Hello, world!',    # String
-      123,                # Numeric
-      nil,                # Absolutely nothing
-      ArticleIndex.new    # Another component
-    ])
-  end
-end
-```
-
 You can also use Clearwater as part of the Rails asset pipeline. First create your application:
 
 ``` ruby
 # file: app/assets/javascripts/application.rb
-require 'opal' # Not necessary if you load Opal from CDN
-require 'clearwater' # Load Clearwater
+require 'opal' # Not necessary if you load Opal from a CDN
+require 'clearwater'
 
 class Layout
   include Clearwater::Component
@@ -83,7 +84,7 @@ class Layout
   def render
     div({ id: 'app' }, [
       header({ class_name: 'main-header' }, [
-        h1(nil, 'Hello, world!'),
+        h1('Hello, world!'),
       ]),
       outlet, # This is what renders subordinate routes
     ])
@@ -106,7 +107,7 @@ class Articles
     @articles ||= MyStore.fetch_articles # TODO: implement MyStore.fetch_articles
 
     if @query
-      @articles.select { |article| article.search(@query) }
+      @articles.select { |article| article.match?(@query) }
     else
       @articles
     end
@@ -128,7 +129,9 @@ class ArticlesListItem
   end
 
   def render
-    li({ class_name: 'article' }, [
+    # Note the "key" key in this hash. This is a hint to the virtual DOM that
+    # if this node is moved around, it can still reuse the same element.
+    li({ key: article.id, class_name: 'article' }, [
       # The Link component will rerender the app for the new URL on click
       Link.new({ href: "/articles/#{article.id}" }, article.title),
       time({ class_name: 'timestamp' }, article.timestamp.strftime('%m/%d/%Y')),
@@ -154,6 +157,12 @@ class Article
     # the `:article_id` parameter in the router below.
     MyStore.article(params[:id])
   end
+
+  def match? query
+    query.split.all? { |token|
+      title.include?(token) || body.include?(token)
+    }
+  end
 end
 
 router = Clearwater::Router.new do
@@ -168,7 +177,7 @@ MyApp = Clearwater::Application.new(
   element: $document.body # This is the default target element
 )
 
-MyApp.call # Render the app
+MyApp.call # Render the app.
 ```
 
 
@@ -176,10 +185,12 @@ Contributing
 ============
 
   1. Fork it
-  2. Create your feature branch (`git checkout -b my-new-feature`)
-  3. Commit your changes (`git commit -am 'Add some feature'`)
-  4. Push to the branch (`git push origin my-new-feature`)
-  5. Create new Pull Request
+  1. Branch it
+  1. Hack it
+  1. Save it
+  1. Commit it
+  1. Push it
+  5. Pull-request it
 
 
 Conduct
@@ -201,7 +212,7 @@ This Code of Conduct is adapted from the [Contributor Covenant](http:contributor
 License
 =======
 
-Copyright (c) 2014, 2015  Jamie Gaskins
+Copyright (c) 2014-2015  Jamie Gaskins
 
 MIT License
 
