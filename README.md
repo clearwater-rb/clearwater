@@ -100,11 +100,12 @@ class Articles
       ul({ id: 'articles-index' }, articles.map { |article|
         ArticlesListItem.new(article)
       }),
+      outlet, # This is what renders subordinate routes (e.g. Article)
     ])
   end
 
   def articles
-    @articles ||= MyStore.fetch_articles # TODO: implement MyStore.fetch_articles
+    @articles ||= MyStore.fetch_articles
 
     if @query
       @articles.select { |article| article.match?(@query) }
@@ -155,13 +156,29 @@ class Article
   def article
     # params[:article_id] is the section of the URL that contains what would be
     # the `:article_id` parameter in the router below.
-    MyStore.article(params[:id])
+    MyStore.article(params[:article_id])
   end
 
   def match? query
     query.split.all? { |token|
       title.include?(token) || body.include?(token)
     }
+  end
+end
+
+module MyStore
+  extend self
+  DB = 5.times.map do |n|
+    OpenStruct.new(id: n, timestamp: Time.new, title: "Random thoughts n.#{n}", body: 'Some deep stuff')
+  end
+
+  def fetch_articles
+    DB
+  end
+
+  def article(id)
+    id = id.to_i
+    DB.find {|a| a.id == id}
   end
 end
 
