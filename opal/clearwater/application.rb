@@ -2,6 +2,7 @@ require 'clearwater/router'
 require 'clearwater/application_registry'
 require 'browser/delay'
 require 'browser/event/pop_state'
+require 'browser/animation_frame'
 
 module Clearwater
   class Application
@@ -53,6 +54,8 @@ module Clearwater
 
     def render &block
       on_render << block if block
+      return if @will_render
+      @will_render = true
 
       # If the app isn't being shown, wait to render until it is.
       if `document.hidden`
@@ -60,7 +63,7 @@ module Clearwater
         return
       end
 
-      delay_render
+      animation_frame { perform_render }
 
       nil
     end
@@ -91,18 +94,6 @@ module Clearwater
       false
     end
 
-    def delay_render
-      # Throttle rendering
-      unless @next_render
-        @next_render = last_render + time_between_renders
-        now = Time.now
-        after [@next_render - now, time_between_renders].max do
-          perform_render
-          @next_render = nil
-        end
-      end
-    end
-
     def perform_render
       if element.nil?
         raise TypeError, "Cannot render to a non-existent element. Make sure the document ready event has been triggered before invoking the application."
@@ -115,14 +106,8 @@ module Clearwater
       @last_render = Time.now
       on_render.each(&:call)
       on_render.clear
-    end
-
-    def last_render
-      @last_render ||= Time.now - 10
-    end
-
-    def time_between_renders
-      1 / RENDER_FPS
+      @will_render = false
+      nil
     end
   end
 end
