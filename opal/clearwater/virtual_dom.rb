@@ -54,7 +54,11 @@ module VirtualDOM
 
   module StringUtils
     def self.camelize string
-      string.gsub(/_(\w)/) { |match| match.gsub(/_/, '').upcase }
+      %x{
+        return string.replace(/_(\w)/g, function(full_match, character_match) {
+          return character_match.toUpperCase();
+        })
+      }
     end
   end
 
