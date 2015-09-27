@@ -8,7 +8,6 @@ require 'browser/animation_frame'
 
 module Clearwater
   class Application
-    RENDER_FPS = 60
     AppRegistry = ApplicationRegistry.new
 
     attr_reader :store, :router, :component, :api_client, :on_render
@@ -18,10 +17,8 @@ module Clearwater
     end
 
     def initialize options={}
-      @store      = options.fetch(:store)      { nil }
       @router     = options.fetch(:router)     { Router.new }
       @component  = options.fetch(:component)  { nil }
-      @api_client = options.fetch(:api_client) { nil }
       @element    = options.fetch(:element)    { nil }
       @on_render  = []
 
