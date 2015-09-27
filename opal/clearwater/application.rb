@@ -90,7 +90,11 @@ module Clearwater
     end
 
     def debug?
-      false
+      !!@debug
+    end
+
+    def debug!
+      @debug = true
     end
 
     def perform_render
