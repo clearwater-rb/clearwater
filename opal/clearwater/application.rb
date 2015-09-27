@@ -104,15 +104,21 @@ module Clearwater
         raise TypeError, "Cannot render to a non-existent element. Make sure the document ready event has been triggered before invoking the application."
       end
 
-      @virtual_dom ||= VirtualDOM::Document.new(element)
-
       rendered = benchmark('Generated virtual DOM') { component.render }
-      benchmark('Rendered to actual DOM') { @virtual_dom.render rendered }
+      benchmark('Rendered to actual DOM') { virtual_dom.render rendered }
       @last_render = Time.now
+      @will_render = false
+      run_callbacks
+      nil
+    end
+
+    def virtual_dom
+      @virtual_dom ||= VirtualDOM::Document.new(element)
+    end
+
+    def run_callbacks
       on_render.each(&:call)
       on_render.clear
-      @will_render = false
-      nil
     end
   end
 end
