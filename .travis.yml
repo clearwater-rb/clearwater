@@ -1,0 +1,14 @@
+language: ruby
+
+sudo: false
+
+cache:
+  bundler: true
+
+rvm:
+  - 2.2.3
+
+before_install:
+  # Keep track of which version of node and phantomjs we're running the specs against
+  - node -v
+  - phantomjs -v
