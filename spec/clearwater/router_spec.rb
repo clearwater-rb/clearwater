@@ -24,5 +24,28 @@ module Clearwater
     it 'gets the params for a given path' do
       expect(router.params_for_path('/articles/foo')).to eq article_id: 'foo'
     end
+
+    it 'gets the components for a given path' do
+      expect(router.targets_for_path('/articles/1')).to eq [
+        routed_component, routed_component
+      ]
+
+      expect(router.targets_for_path('/articles')).to eq [routed_component]
+    end
+
+    it 'gets the current path' do
+      location = { pathname: '/foo' }
+      router = Router.new(location: location)
+
+      expect(router.current_path).to eq '/foo'
+
+      location[:pathname] = '/bar'
+
+      expect(router.current_path).to eq '/bar'
+    end
+
+    it 'gets the params from the path' do
+      expect(router.params_for_path('/articles/123')).to eq({ article_id: '123' })
+    end
   end
 end
