@@ -35,9 +35,9 @@ module Clearwater
       end
     end
 
-    def call
+    def call &block
       AppRegistry << self
-      render_current_url
+      render_current_url &block
       watch_url
     end
 
