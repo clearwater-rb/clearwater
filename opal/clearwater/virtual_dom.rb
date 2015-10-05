@@ -8,6 +8,10 @@ module VirtualDOM
     `virtualDom.h(tag_name, attributes, content)`
   end
 
+  def self.create_element(node)
+    `virtualDom.create(node)`
+  end
+
   def self.diff first, second
     `virtualDom.diff(first, second)`
   end
