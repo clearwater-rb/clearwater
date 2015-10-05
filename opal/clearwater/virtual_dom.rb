@@ -2,7 +2,7 @@ require 'browser'
 require 'clearwater/virtual_dom/js/virtual_dom.js'
 
 module VirtualDOM
-  def self.node(tag_name, attributes, content)
+  def self.node(tag_name, attributes=nil, content=nil)
     content = sanitize_content(content)
     attributes = HashUtils.camelize_keys(attributes).to_n
     `virtualDom.h(tag_name, attributes, content)`
@@ -22,8 +22,8 @@ module VirtualDOM
 
   def self.sanitize_content content
     %x{
-      if(content === Opal.nil) return Opal.nil;
-      if(content.$$class === Opal.Array)
+      if(content === Opal.nil || content === undefined) return null;
+      if(content.$$is_array)
         return #{content.map!{ |c| sanitize_content c }};
       return content;
     }
