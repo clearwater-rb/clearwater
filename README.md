@@ -48,8 +48,6 @@ class Blog
   def render
     main({ id: 'content' }, [Articles.new, Biography.new])
   end
-  
-
 end
 ```
 
