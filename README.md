@@ -41,22 +41,39 @@ Clearwater has three distinct parts:
 **The Component**
 ``` ruby
 class Blog
+  # All components need a set of behavior, but don't worry it's not a massive list.
   include Clearwater::Component
 
-  # The render method defines what gets rendered. It needs to return a
-  # virtual-DOM element using the element DSL.
+  # This method needs to return a virtual-DOM element using the element DSL.
   def render
-    # Element DSL is tag_name(attributes, content)
-    # The attributes can be omitted if you don't need to customize the element.
-    div({ id: 'foo' }, [
-      # Content types:
-      h1('Heading'), # Another element
-      'Hello, world!',    # String
-      123,                # Numeric
-      nil,                # Absolutely nothing
-      ArticleIndex.new    # Another component
-    ])
+    main({ id: 'content' }, [Articles.new, Biography.new])
   end
+  
+
+end
+```
+
+While we use two components in this example, you can use all of these as well:
+
+``` ruby
+# Render <main><h1>Heading</h1><article>hello!</article></main>
+def render
+  main(properties, [h1('Heading'), article('hello!')])
+end
+
+# Render <main>Hello, world!</main>
+def render
+  main(properties, 'Hello, world!')
+end
+
+# Render <main>123</main>
+def render
+  main(properties, 123)
+end
+
+# Render <main></main>
+def render
+  main(properties, nil)
 end
 ```
 
