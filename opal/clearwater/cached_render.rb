@@ -1,14 +1,23 @@
 module Clearwater
   module CachedRender
-    def cached_render
-      if !defined?(@cached_render) || should_render?
-        @cached_render = sanitize_content(render)
-      else
-        @cached_render
-      end
+
+    def self.included base
+      %x{
+        Opal.defn(base, 'type', 'Thunk');
+        Opal.defn(base, 'render', function(prev) {
+          var self = this;
+          var should_render;
+
+          if(prev && prev.vnode && #{!should_render?(`prev`)}) {
+            return prev.vnode;
+          } else {
+            return #{sanitize_content(render)};
+          }
+        });
+      }
     end
 
-    def should_render?
+    def should_render? _
       false
     end
   end

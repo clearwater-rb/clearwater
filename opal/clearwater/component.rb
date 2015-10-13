@@ -186,7 +186,7 @@ module Clearwater
 
     def sanitize_content content
       %x{
-        if(content.$$class) {
+        if(content && content.$$class) {
           if(content.$$class === Opal.Array) {
             return #{content.map { |c| `self.$sanitize_content(c)` }};
           } else if(content === Opal.nil) {
@@ -195,8 +195,8 @@ module Clearwater
             var cached_render = content.$cached_render;
             var render = content.$render;
 
-            if(cached_render && !cached_render.$$stub) {
-              return content.$cached_render();
+            if(content.type === 'Thunk' && typeof(content.render) === 'function') {
+              return content;
             } else if(render && !render.$$stub) {
               return self.$sanitize_content(content.$render());
             } else {
