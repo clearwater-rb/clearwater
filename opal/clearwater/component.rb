@@ -129,7 +129,7 @@ module Clearwater
     end
 
     def tag tag_name, attributes=nil, content=nil
-      if !(`attributes === undefined || attributes.$$class === #{Hash} || attributes === #{nil}`)
+      if !(`attributes.$$is_hash || attributes === #{nil}`)
         content = attributes
         attributes = nil
       end
