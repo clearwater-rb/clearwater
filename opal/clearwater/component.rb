@@ -178,7 +178,6 @@ module Clearwater
           } else if(content === Opal.nil) {
             return '';
           } else {
-            var cached_render = content.$cached_render;
             var render = content.$render;
 
             if(content.type === 'Thunk' && typeof(content.render) === 'function') {
