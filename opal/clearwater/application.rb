@@ -1,16 +1,16 @@
-require 'clearwater/router'
-require 'clearwater/application_registry'
 require 'browser'
 require 'browser/delay'
-require 'native'
 require 'browser/event'
 require 'browser/animation_frame'
+require 'clearwater/router'
+require 'clearwater/application_registry'
+require 'native'
 
 module Clearwater
   class Application
     AppRegistry = ApplicationRegistry.new
 
-    attr_reader :store, :router, :component, :api_client, :on_render
+    attr_reader :router, :component, :api_client, :on_render
 
     def self.render
       AppRegistry.render_all
