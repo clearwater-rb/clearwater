@@ -100,7 +100,6 @@ module Clearwater
 
       rendered = benchmark('Generated virtual DOM') { component.render }
       benchmark('Rendered to actual DOM') { virtual_dom.render rendered }
-      @last_render = Time.now
       @will_render = false
       run_callbacks
       nil
