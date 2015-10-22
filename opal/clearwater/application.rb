@@ -70,13 +70,7 @@ module Clearwater
     end
 
     def element
-      @element ||= begin
-                     if @document.body
-                       @document.body
-                     else
-                       nil
-                     end
-                   end
+      @element ||= @document.body ? @document.body : nil
     end
 
     def benchmark message
