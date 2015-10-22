@@ -1,5 +1,6 @@
 #!/usr/bin/env rake
 
+require 'bundler/gem_tasks'
 $:.unshift 'lib'
 require 'clearwater'
 require 'opal/browser'
