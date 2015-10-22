@@ -1,4 +1,5 @@
 require 'clearwater/component'
+require 'browser'
 require 'browser/history'
 
 # TODO: Remove this once opal-browser supports coordinates natively
