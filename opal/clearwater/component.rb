@@ -5,19 +5,6 @@ module Clearwater
   module Component
     attr_accessor :router, :outlet
 
-    def self.included(klass)
-      def klass.attributes(*attrs)
-        attrs.each do |attr|
-          ivar = "@#{attr}"
-          define_method(attr) { instance_variable_get(ivar) }
-          define_method("#{attr}=") do |value|
-            instance_variable_set ivar, value
-            call
-          end
-        end
-      end
-    end
-
     def render
     end
 
