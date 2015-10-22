@@ -43,8 +43,8 @@ module Clearwater
 
     def watch_url
       unless @watching_url
-        @watching_url = true
         @window.on('popstate') { render_current_url }
+        @watching_url = true
       end
     end
 
