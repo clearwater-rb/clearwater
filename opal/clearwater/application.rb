@@ -59,7 +59,7 @@ module Clearwater
       @will_render = true
 
       # If the app isn't being shown, wait to render until it is.
-      if `#@document.hidden`
+      if `!!#@document.hidden`
         @render_on_visibility_change = true
         return
       end
