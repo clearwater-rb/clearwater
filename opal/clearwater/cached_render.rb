@@ -1,6 +1,5 @@
 module Clearwater
   module CachedRender
-
     def self.included base
       %x{
         Opal.defn(base, 'type', 'Thunk');
