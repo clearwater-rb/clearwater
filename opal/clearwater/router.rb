@@ -35,15 +35,15 @@ module Clearwater
     def params_for_path path
       path_parts = path.split("/").reject(&:empty?)
       canonical_parts = canonical_path_for_path(path).split("/").reject(&:empty?)
-      params = {}
-      canonical_parts.each_with_object(params)
-                     .each_with_index { |(part, params), index|
+
+      canonical_parts.each_with_index.reduce({}) { |params, (part, index)|
         if part.start_with? ":"
-          param = part[1..-1].to_sym
-          params[param] = path_parts[index]
+          param = part[1..-1]
+          params.merge! param => path_parts[index]
+        else
+          params
         end
       }
-      params
     end
 
     def canonical_path
