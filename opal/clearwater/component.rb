@@ -120,6 +120,7 @@ module Clearwater
       var
       video
       wbr
+      webview
     )
 
     HTML_TAGS.each do |tag_name|
