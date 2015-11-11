@@ -3,23 +3,24 @@ var createElement = require("./vdom/create-element.js")
 
 module.exports = createElement
 
-},{"./vdom/create-element.js":13}],2:[function(require,module,exports){
+},{"./vdom/create-element.js":14}],2:[function(require,module,exports){
 var diff = require("./vtree/diff.js")
 
 module.exports = diff
 
-},{"./vtree/diff.js":33}],3:[function(require,module,exports){
+},{"./vtree/diff.js":37}],3:[function(require,module,exports){
 var h = require("./virtual-hyperscript/index.js")
 
 module.exports = h
 
-},{"./virtual-hyperscript/index.js":20}],4:[function(require,module,exports){
+},{"./virtual-hyperscript/index.js":22}],4:[function(require,module,exports){
 var diff = require("./diff.js")
 var patch = require("./patch.js")
 var h = require("./h.js")
 var create = require("./create-element.js")
 var VNode = require('./vnode/vnode.js')
 var VText = require('./vnode/vtext.js')
+var svg = require("./virtual-hyperscript/svg.js")
 
 module.exports = {
     diff: diff,
@@ -27,10 +28,119 @@ module.exports = {
     h: h,
     create: create,
     VNode: VNode,
-    VText: VText
+    VText: VText,
+    svg: svg,
 }
 
-},{"./create-element.js":1,"./diff.js":2,"./h.js":3,"./patch.js":11,"./vnode/vnode.js":29,"./vnode/vtext.js":31}],5:[function(require,module,exports){
+},{"./create-element.js":1,"./diff.js":2,"./h.js":3,"./patch.js":12,"./virtual-hyperscript/svg.js":25,"./vnode/vnode.js":33,"./vnode/vtext.js":35}],5:[function(require,module,exports){
+/*!
+ * Cross-Browser Split 1.1.1
+ * Copyright 2007-2012 Steven Levithan <stevenlevithan.com>
+ * Available under the MIT License
+ * ECMAScript compliant, uniform cross-browser split method
+ */
+
+/**
+ * Splits a string into an array of strings using a regex or string separator. Matches of the
+ * separator are not included in the result array. However, if `separator` is a regex that contains
+ * capturing groups, backreferences are spliced into the result each time `separator` is matched.
+ * Fixes browser bugs compared to the native `String.prototype.split` and can be used reliably
+ * cross-browser.
+ * @param {String} str String to split.
+ * @param {RegExp|String} separator Regex or string to use for separating the string.
+ * @param {Number} [limit] Maximum number of items to include in the result array.
+ * @returns {Array} Array of substrings.
+ * @example
+ *
+ * // Basic use
+ * split('a b c d', ' ');
+ * // -> ['a', 'b', 'c', 'd']
+ *
+ * // With limit
+ * split('a b c d', ' ', 2);
+ * // -> ['a', 'b']
+ *
+ * // Backreferences in result array
+ * split('..word1 word2..', /([a-z]+)(\d+)/i);
+ * // -> ['..', 'word', '1', ' ', 'word', '2', '..']
+ */
+module.exports = (function split(undef) {
+
+  var nativeSplit = String.prototype.split,
+    compliantExecNpcg = /()??/.exec("")[1] === undef,
+    // NPCG: nonparticipating capturing group
+    self;
+
+  self = function(str, separator, limit) {
+    // If `separator` is not a regex, use `nativeSplit`
+    if (Object.prototype.toString.call(separator) !== "[object RegExp]") {
+      return nativeSplit.call(str, separator, limit);
+    }
+    var output = [],
+      flags = (separator.ignoreCase ? "i" : "") + (separator.multiline ? "m" : "") + (separator.extended ? "x" : "") + // Proposed for ES6
+      (separator.sticky ? "y" : ""),
+      // Firefox 3+
+      lastLastIndex = 0,
+      // Make `global` and avoid `lastIndex` issues by working with a copy
+      separator = new RegExp(separator.source, flags + "g"),
+      separator2, match, lastIndex, lastLength;
+    str += ""; // Type-convert
+    if (!compliantExecNpcg) {
+      // Doesn't need flags gy, but they don't hurt
+      separator2 = new RegExp("^" + separator.source + "$(?!\\s)", flags);
+    }
+    /* Values for `limit`, per the spec:
+     * If undefined: 4294967295 // Math.pow(2, 32) - 1
+     * If 0, Infinity, or NaN: 0
+     * If positive number: limit = Math.floor(limit); if (limit > 4294967295) limit -= 4294967296;
+     * If negative number: 4294967296 - Math.floor(Math.abs(limit))
+     * If other: Type-convert, then use the above rules
+     */
+    limit = limit === undef ? -1 >>> 0 : // Math.pow(2, 32) - 1
+    limit >>> 0; // ToUint32(limit)
+    while (match = separator.exec(str)) {
+      // `separator.lastIndex` is not reliable cross-browser
+      lastIndex = match.index + match[0].length;
+      if (lastIndex > lastLastIndex) {
+        output.push(str.slice(lastLastIndex, match.index));
+        // Fix browsers whose `exec` methods don't consistently return `undefined` for
+        // nonparticipating capturing groups
+        if (!compliantExecNpcg && match.length > 1) {
+          match[0].replace(separator2, function() {
+            for (var i = 1; i < arguments.length - 2; i++) {
+              if (arguments[i] === undef) {
+                match[i] = undef;
+              }
+            }
+          });
+        }
+        if (match.length > 1 && match.index < str.length) {
+          Array.prototype.push.apply(output, match.slice(1));
+        }
+        lastLength = match[0].length;
+        lastLastIndex = lastIndex;
+        if (output.length >= limit) {
+          break;
+        }
+      }
+      if (separator.lastIndex === match.index) {
+        separator.lastIndex++; // Avoid an infinite loop
+      }
+    }
+    if (lastLastIndex === str.length) {
+      if (lastLength || !separator.test("")) {
+        output.push("");
+      }
+    } else {
+      output.push(str.slice(lastLastIndex));
+    }
+    return output.length > limit ? output.slice(0, limit) : output;
+  };
+
+  return self;
+})();
+
+},{}],6:[function(require,module,exports){
 'use strict';
 
 var OneVersionConstraint = require('individual/one-version');
@@ -52,7 +162,7 @@ function EvStore(elem) {
     return hash;
 }
 
-},{"individual/one-version":7}],6:[function(require,module,exports){
+},{"individual/one-version":8}],7:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -75,7 +185,7 @@ function Individual(key, value) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 var Individual = require('./index.js');
@@ -99,7 +209,7 @@ function OneVersion(moduleName, version, defaultValue) {
     return Individual(key, defaultValue);
 }
 
-},{"./index.js":6}],8:[function(require,module,exports){
+},{"./index.js":7}],9:[function(require,module,exports){
 (function (global){
 var topLevel = typeof global !== 'undefined' ? global :
     typeof window !== 'undefined' ? window : {}
@@ -118,14 +228,14 @@ if (typeof document !== 'undefined') {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"min-document":34}],9:[function(require,module,exports){
+},{"min-document":38}],10:[function(require,module,exports){
 "use strict";
 
 module.exports = function isObject(x) {
 	return typeof x === "object" && x !== null;
 };
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var nativeIsArray = Array.isArray
 var toString = Object.prototype.toString
 
@@ -135,12 +245,12 @@ function isArray(obj) {
     return toString.call(obj) === "[object Array]"
 }
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var patch = require("./vdom/patch.js")
 
 module.exports = patch
 
-},{"./vdom/patch.js":16}],12:[function(require,module,exports){
+},{"./vdom/patch.js":17}],13:[function(require,module,exports){
 var isObject = require("is-object")
 var isHook = require("../vnode/is-vhook.js")
 
@@ -239,7 +349,7 @@ function getPrototype(value) {
     }
 }
 
-},{"../vnode/is-vhook.js":24,"is-object":9}],13:[function(require,module,exports){
+},{"../vnode/is-vhook.js":28,"is-object":10}],14:[function(require,module,exports){
 var document = require("global/document")
 
 var applyProperties = require("./apply-properties")
@@ -287,7 +397,7 @@ function createElement(vnode, opts) {
     return node
 }
 
-},{"../vnode/handle-thunk.js":22,"../vnode/is-vnode.js":25,"../vnode/is-vtext.js":26,"../vnode/is-widget.js":27,"./apply-properties":12,"global/document":8}],14:[function(require,module,exports){
+},{"../vnode/handle-thunk.js":26,"../vnode/is-vnode.js":29,"../vnode/is-vtext.js":30,"../vnode/is-widget.js":31,"./apply-properties":13,"global/document":9}],15:[function(require,module,exports){
 // Maps a virtual DOM tree onto a real DOM tree in an efficient manner.
 // We don't want to read all of the DOM nodes in the tree so we use
 // the in-order tree indexing to eliminate recursion down certain branches.
@@ -374,7 +484,7 @@ function ascending(a, b) {
     return a > b ? 1 : -1
 }
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var applyProperties = require("./apply-properties")
 
 var isWidget = require("../vnode/is-widget.js")
@@ -527,7 +637,7 @@ function replaceRoot(oldRoot, newRoot) {
     return newRoot;
 }
 
-},{"../vnode/is-widget.js":27,"../vnode/vpatch.js":30,"./apply-properties":12,"./update-widget":17}],16:[function(require,module,exports){
+},{"../vnode/is-widget.js":31,"../vnode/vpatch.js":34,"./apply-properties":13,"./update-widget":18}],17:[function(require,module,exports){
 var document = require("global/document")
 var isArray = require("x-is-array")
 
@@ -538,7 +648,9 @@ module.exports = patch
 
 function patch(rootNode, patches, renderOptions) {
     renderOptions = renderOptions || {}
-    renderOptions.patch = renderOptions.patch || patchRecursive
+    renderOptions.patch = renderOptions.patch && renderOptions.patch !== patch
+        ? renderOptions.patch
+        : patchRecursive
     renderOptions.render = renderOptions.render || render
 
     return renderOptions.patch(rootNode, patches, renderOptions)
@@ -607,7 +719,7 @@ function patchIndices(patches) {
     return indices
 }
 
-},{"./create-element":13,"./dom-index":14,"./patch-op":15,"global/document":8,"x-is-array":10}],17:[function(require,module,exports){
+},{"./create-element":14,"./dom-index":15,"./patch-op":16,"global/document":9,"x-is-array":11}],18:[function(require,module,exports){
 var isWidget = require("../vnode/is-widget.js")
 
 module.exports = updateWidget
@@ -624,7 +736,44 @@ function updateWidget(a, b) {
     return false
 }
 
-},{"../vnode/is-widget.js":27}],18:[function(require,module,exports){
+},{"../vnode/is-widget.js":31}],19:[function(require,module,exports){
+'use strict';
+
+module.exports = AttributeHook;
+
+function AttributeHook(namespace, value) {
+    if (!(this instanceof AttributeHook)) {
+        return new AttributeHook(namespace, value);
+    }
+
+    this.namespace = namespace;
+    this.value = value;
+}
+
+AttributeHook.prototype.hook = function (node, prop, prev) {
+    if (prev && prev.type === 'AttributeHook' &&
+        prev.value === this.value &&
+        prev.namespace === this.namespace) {
+        return;
+    }
+
+    node.setAttributeNS(this.namespace, prop, this.value);
+};
+
+AttributeHook.prototype.unhook = function (node, prop, next) {
+    if (next && next.type === 'AttributeHook' &&
+        next.namespace === this.namespace) {
+        return;
+    }
+
+    var colonPosition = prop.indexOf(':');
+    var localName = colonPosition > -1 ? prop.substr(colonPosition + 1) : prop;
+    node.removeAttributeNS(this.namespace, localName);
+};
+
+AttributeHook.prototype.type = 'AttributeHook';
+
+},{}],20:[function(require,module,exports){
 'use strict';
 
 var EvStore = require('ev-store');
@@ -653,7 +802,7 @@ EvHook.prototype.unhook = function(node, propertyName) {
     es[propName] = undefined;
 };
 
-},{"ev-store":5}],19:[function(require,module,exports){
+},{"ev-store":6}],21:[function(require,module,exports){
 'use strict';
 
 module.exports = SoftSetHook;
@@ -672,7 +821,7 @@ SoftSetHook.prototype.hook = function (node, propertyName) {
     }
 };
 
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
 
 var isArray = require('x-is-array');
@@ -811,8 +960,13 @@ function errorString(obj) {
     }
 }
 
-},{"../vnode/is-thunk":23,"../vnode/is-vhook":24,"../vnode/is-vnode":25,"../vnode/is-vtext":26,"../vnode/is-widget":27,"../vnode/vnode.js":29,"../vnode/vtext.js":31,"./hooks/ev-hook.js":18,"./hooks/soft-set-hook.js":19,"./parse-tag.js":21,"x-is-array":10}],21:[function(require,module,exports){
+},{"../vnode/is-thunk":27,"../vnode/is-vhook":28,"../vnode/is-vnode":29,"../vnode/is-vtext":30,"../vnode/is-widget":31,"../vnode/vnode.js":33,"../vnode/vtext.js":35,"./hooks/ev-hook.js":20,"./hooks/soft-set-hook.js":21,"./parse-tag.js":23,"x-is-array":11}],23:[function(require,module,exports){
 'use strict';
+
+var split = require('browser-split');
+
+var classIdSplit = /([\.#]?[a-zA-Z0-9\u007F-\uFFFF_:-]+)/;
+var notClassId = /^\.|#/;
 
 module.exports = parseTag;
 
@@ -885,7 +1039,386 @@ function splitTag(tag) {
     return parts;
 }
 
-},{}],22:[function(require,module,exports){
+},{"browser-split":5}],24:[function(require,module,exports){
+'use strict';
+
+var DEFAULT_NAMESPACE = null;
+var EV_NAMESPACE = 'http://www.w3.org/2001/xml-events';
+var XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';
+var XML_NAMESPACE = 'http://www.w3.org/XML/1998/namespace';
+
+// http://www.w3.org/TR/SVGTiny12/attributeTable.html
+// http://www.w3.org/TR/SVG/attindex.html
+var SVG_PROPERTIES = {
+    'about': DEFAULT_NAMESPACE,
+    'accent-height': DEFAULT_NAMESPACE,
+    'accumulate': DEFAULT_NAMESPACE,
+    'additive': DEFAULT_NAMESPACE,
+    'alignment-baseline': DEFAULT_NAMESPACE,
+    'alphabetic': DEFAULT_NAMESPACE,
+    'amplitude': DEFAULT_NAMESPACE,
+    'arabic-form': DEFAULT_NAMESPACE,
+    'ascent': DEFAULT_NAMESPACE,
+    'attributeName': DEFAULT_NAMESPACE,
+    'attributeType': DEFAULT_NAMESPACE,
+    'azimuth': DEFAULT_NAMESPACE,
+    'bandwidth': DEFAULT_NAMESPACE,
+    'baseFrequency': DEFAULT_NAMESPACE,
+    'baseProfile': DEFAULT_NAMESPACE,
+    'baseline-shift': DEFAULT_NAMESPACE,
+    'bbox': DEFAULT_NAMESPACE,
+    'begin': DEFAULT_NAMESPACE,
+    'bias': DEFAULT_NAMESPACE,
+    'by': DEFAULT_NAMESPACE,
+    'calcMode': DEFAULT_NAMESPACE,
+    'cap-height': DEFAULT_NAMESPACE,
+    'class': DEFAULT_NAMESPACE,
+    'clip': DEFAULT_NAMESPACE,
+    'clip-path': DEFAULT_NAMESPACE,
+    'clip-rule': DEFAULT_NAMESPACE,
+    'clipPathUnits': DEFAULT_NAMESPACE,
+    'color': DEFAULT_NAMESPACE,
+    'color-interpolation': DEFAULT_NAMESPACE,
+    'color-interpolation-filters': DEFAULT_NAMESPACE,
+    'color-profile': DEFAULT_NAMESPACE,
+    'color-rendering': DEFAULT_NAMESPACE,
+    'content': DEFAULT_NAMESPACE,
+    'contentScriptType': DEFAULT_NAMESPACE,
+    'contentStyleType': DEFAULT_NAMESPACE,
+    'cursor': DEFAULT_NAMESPACE,
+    'cx': DEFAULT_NAMESPACE,
+    'cy': DEFAULT_NAMESPACE,
+    'd': DEFAULT_NAMESPACE,
+    'datatype': DEFAULT_NAMESPACE,
+    'defaultAction': DEFAULT_NAMESPACE,
+    'descent': DEFAULT_NAMESPACE,
+    'diffuseConstant': DEFAULT_NAMESPACE,
+    'direction': DEFAULT_NAMESPACE,
+    'display': DEFAULT_NAMESPACE,
+    'divisor': DEFAULT_NAMESPACE,
+    'dominant-baseline': DEFAULT_NAMESPACE,
+    'dur': DEFAULT_NAMESPACE,
+    'dx': DEFAULT_NAMESPACE,
+    'dy': DEFAULT_NAMESPACE,
+    'edgeMode': DEFAULT_NAMESPACE,
+    'editable': DEFAULT_NAMESPACE,
+    'elevation': DEFAULT_NAMESPACE,
+    'enable-background': DEFAULT_NAMESPACE,
+    'end': DEFAULT_NAMESPACE,
+    'ev:event': EV_NAMESPACE,
+    'event': DEFAULT_NAMESPACE,
+    'exponent': DEFAULT_NAMESPACE,
+    'externalResourcesRequired': DEFAULT_NAMESPACE,
+    'fill': DEFAULT_NAMESPACE,
+    'fill-opacity': DEFAULT_NAMESPACE,
+    'fill-rule': DEFAULT_NAMESPACE,
+    'filter': DEFAULT_NAMESPACE,
+    'filterRes': DEFAULT_NAMESPACE,
+    'filterUnits': DEFAULT_NAMESPACE,
+    'flood-color': DEFAULT_NAMESPACE,
+    'flood-opacity': DEFAULT_NAMESPACE,
+    'focusHighlight': DEFAULT_NAMESPACE,
+    'focusable': DEFAULT_NAMESPACE,
+    'font-family': DEFAULT_NAMESPACE,
+    'font-size': DEFAULT_NAMESPACE,
+    'font-size-adjust': DEFAULT_NAMESPACE,
+    'font-stretch': DEFAULT_NAMESPACE,
+    'font-style': DEFAULT_NAMESPACE,
+    'font-variant': DEFAULT_NAMESPACE,
+    'font-weight': DEFAULT_NAMESPACE,
+    'format': DEFAULT_NAMESPACE,
+    'from': DEFAULT_NAMESPACE,
+    'fx': DEFAULT_NAMESPACE,
+    'fy': DEFAULT_NAMESPACE,
+    'g1': DEFAULT_NAMESPACE,
+    'g2': DEFAULT_NAMESPACE,
+    'glyph-name': DEFAULT_NAMESPACE,
+    'glyph-orientation-horizontal': DEFAULT_NAMESPACE,
+    'glyph-orientation-vertical': DEFAULT_NAMESPACE,
+    'glyphRef': DEFAULT_NAMESPACE,
+    'gradientTransform': DEFAULT_NAMESPACE,
+    'gradientUnits': DEFAULT_NAMESPACE,
+    'handler': DEFAULT_NAMESPACE,
+    'hanging': DEFAULT_NAMESPACE,
+    'height': DEFAULT_NAMESPACE,
+    'horiz-adv-x': DEFAULT_NAMESPACE,
+    'horiz-origin-x': DEFAULT_NAMESPACE,
+    'horiz-origin-y': DEFAULT_NAMESPACE,
+    'id': DEFAULT_NAMESPACE,
+    'ideographic': DEFAULT_NAMESPACE,
+    'image-rendering': DEFAULT_NAMESPACE,
+    'in': DEFAULT_NAMESPACE,
+    'in2': DEFAULT_NAMESPACE,
+    'initialVisibility': DEFAULT_NAMESPACE,
+    'intercept': DEFAULT_NAMESPACE,
+    'k': DEFAULT_NAMESPACE,
+    'k1': DEFAULT_NAMESPACE,
+    'k2': DEFAULT_NAMESPACE,
+    'k3': DEFAULT_NAMESPACE,
+    'k4': DEFAULT_NAMESPACE,
+    'kernelMatrix': DEFAULT_NAMESPACE,
+    'kernelUnitLength': DEFAULT_NAMESPACE,
+    'kerning': DEFAULT_NAMESPACE,
+    'keyPoints': DEFAULT_NAMESPACE,
+    'keySplines': DEFAULT_NAMESPACE,
+    'keyTimes': DEFAULT_NAMESPACE,
+    'lang': DEFAULT_NAMESPACE,
+    'lengthAdjust': DEFAULT_NAMESPACE,
+    'letter-spacing': DEFAULT_NAMESPACE,
+    'lighting-color': DEFAULT_NAMESPACE,
+    'limitingConeAngle': DEFAULT_NAMESPACE,
+    'local': DEFAULT_NAMESPACE,
+    'marker-end': DEFAULT_NAMESPACE,
+    'marker-mid': DEFAULT_NAMESPACE,
+    'marker-start': DEFAULT_NAMESPACE,
+    'markerHeight': DEFAULT_NAMESPACE,
+    'markerUnits': DEFAULT_NAMESPACE,
+    'markerWidth': DEFAULT_NAMESPACE,
+    'mask': DEFAULT_NAMESPACE,
+    'maskContentUnits': DEFAULT_NAMESPACE,
+    'maskUnits': DEFAULT_NAMESPACE,
+    'mathematical': DEFAULT_NAMESPACE,
+    'max': DEFAULT_NAMESPACE,
+    'media': DEFAULT_NAMESPACE,
+    'mediaCharacterEncoding': DEFAULT_NAMESPACE,
+    'mediaContentEncodings': DEFAULT_NAMESPACE,
+    'mediaSize': DEFAULT_NAMESPACE,
+    'mediaTime': DEFAULT_NAMESPACE,
+    'method': DEFAULT_NAMESPACE,
+    'min': DEFAULT_NAMESPACE,
+    'mode': DEFAULT_NAMESPACE,
+    'name': DEFAULT_NAMESPACE,
+    'nav-down': DEFAULT_NAMESPACE,
+    'nav-down-left': DEFAULT_NAMESPACE,
+    'nav-down-right': DEFAULT_NAMESPACE,
+    'nav-left': DEFAULT_NAMESPACE,
+    'nav-next': DEFAULT_NAMESPACE,
+    'nav-prev': DEFAULT_NAMESPACE,
+    'nav-right': DEFAULT_NAMESPACE,
+    'nav-up': DEFAULT_NAMESPACE,
+    'nav-up-left': DEFAULT_NAMESPACE,
+    'nav-up-right': DEFAULT_NAMESPACE,
+    'numOctaves': DEFAULT_NAMESPACE,
+    'observer': DEFAULT_NAMESPACE,
+    'offset': DEFAULT_NAMESPACE,
+    'opacity': DEFAULT_NAMESPACE,
+    'operator': DEFAULT_NAMESPACE,
+    'order': DEFAULT_NAMESPACE,
+    'orient': DEFAULT_NAMESPACE,
+    'orientation': DEFAULT_NAMESPACE,
+    'origin': DEFAULT_NAMESPACE,
+    'overflow': DEFAULT_NAMESPACE,
+    'overlay': DEFAULT_NAMESPACE,
+    'overline-position': DEFAULT_NAMESPACE,
+    'overline-thickness': DEFAULT_NAMESPACE,
+    'panose-1': DEFAULT_NAMESPACE,
+    'path': DEFAULT_NAMESPACE,
+    'pathLength': DEFAULT_NAMESPACE,
+    'patternContentUnits': DEFAULT_NAMESPACE,
+    'patternTransform': DEFAULT_NAMESPACE,
+    'patternUnits': DEFAULT_NAMESPACE,
+    'phase': DEFAULT_NAMESPACE,
+    'playbackOrder': DEFAULT_NAMESPACE,
+    'pointer-events': DEFAULT_NAMESPACE,
+    'points': DEFAULT_NAMESPACE,
+    'pointsAtX': DEFAULT_NAMESPACE,
+    'pointsAtY': DEFAULT_NAMESPACE,
+    'pointsAtZ': DEFAULT_NAMESPACE,
+    'preserveAlpha': DEFAULT_NAMESPACE,
+    'preserveAspectRatio': DEFAULT_NAMESPACE,
+    'primitiveUnits': DEFAULT_NAMESPACE,
+    'propagate': DEFAULT_NAMESPACE,
+    'property': DEFAULT_NAMESPACE,
+    'r': DEFAULT_NAMESPACE,
+    'radius': DEFAULT_NAMESPACE,
+    'refX': DEFAULT_NAMESPACE,
+    'refY': DEFAULT_NAMESPACE,
+    'rel': DEFAULT_NAMESPACE,
+    'rendering-intent': DEFAULT_NAMESPACE,
+    'repeatCount': DEFAULT_NAMESPACE,
+    'repeatDur': DEFAULT_NAMESPACE,
+    'requiredExtensions': DEFAULT_NAMESPACE,
+    'requiredFeatures': DEFAULT_NAMESPACE,
+    'requiredFonts': DEFAULT_NAMESPACE,
+    'requiredFormats': DEFAULT_NAMESPACE,
+    'resource': DEFAULT_NAMESPACE,
+    'restart': DEFAULT_NAMESPACE,
+    'result': DEFAULT_NAMESPACE,
+    'rev': DEFAULT_NAMESPACE,
+    'role': DEFAULT_NAMESPACE,
+    'rotate': DEFAULT_NAMESPACE,
+    'rx': DEFAULT_NAMESPACE,
+    'ry': DEFAULT_NAMESPACE,
+    'scale': DEFAULT_NAMESPACE,
+    'seed': DEFAULT_NAMESPACE,
+    'shape-rendering': DEFAULT_NAMESPACE,
+    'slope': DEFAULT_NAMESPACE,
+    'snapshotTime': DEFAULT_NAMESPACE,
+    'spacing': DEFAULT_NAMESPACE,
+    'specularConstant': DEFAULT_NAMESPACE,
+    'specularExponent': DEFAULT_NAMESPACE,
+    'spreadMethod': DEFAULT_NAMESPACE,
+    'startOffset': DEFAULT_NAMESPACE,
+    'stdDeviation': DEFAULT_NAMESPACE,
+    'stemh': DEFAULT_NAMESPACE,
+    'stemv': DEFAULT_NAMESPACE,
+    'stitchTiles': DEFAULT_NAMESPACE,
+    'stop-color': DEFAULT_NAMESPACE,
+    'stop-opacity': DEFAULT_NAMESPACE,
+    'strikethrough-position': DEFAULT_NAMESPACE,
+    'strikethrough-thickness': DEFAULT_NAMESPACE,
+    'string': DEFAULT_NAMESPACE,
+    'stroke': DEFAULT_NAMESPACE,
+    'stroke-dasharray': DEFAULT_NAMESPACE,
+    'stroke-dashoffset': DEFAULT_NAMESPACE,
+    'stroke-linecap': DEFAULT_NAMESPACE,
+    'stroke-linejoin': DEFAULT_NAMESPACE,
+    'stroke-miterlimit': DEFAULT_NAMESPACE,
+    'stroke-opacity': DEFAULT_NAMESPACE,
+    'stroke-width': DEFAULT_NAMESPACE,
+    'surfaceScale': DEFAULT_NAMESPACE,
+    'syncBehavior': DEFAULT_NAMESPACE,
+    'syncBehaviorDefault': DEFAULT_NAMESPACE,
+    'syncMaster': DEFAULT_NAMESPACE,
+    'syncTolerance': DEFAULT_NAMESPACE,
+    'syncToleranceDefault': DEFAULT_NAMESPACE,
+    'systemLanguage': DEFAULT_NAMESPACE,
+    'tableValues': DEFAULT_NAMESPACE,
+    'target': DEFAULT_NAMESPACE,
+    'targetX': DEFAULT_NAMESPACE,
+    'targetY': DEFAULT_NAMESPACE,
+    'text-anchor': DEFAULT_NAMESPACE,
+    'text-decoration': DEFAULT_NAMESPACE,
+    'text-rendering': DEFAULT_NAMESPACE,
+    'textLength': DEFAULT_NAMESPACE,
+    'timelineBegin': DEFAULT_NAMESPACE,
+    'title': DEFAULT_NAMESPACE,
+    'to': DEFAULT_NAMESPACE,
+    'transform': DEFAULT_NAMESPACE,
+    'transformBehavior': DEFAULT_NAMESPACE,
+    'type': DEFAULT_NAMESPACE,
+    'typeof': DEFAULT_NAMESPACE,
+    'u1': DEFAULT_NAMESPACE,
+    'u2': DEFAULT_NAMESPACE,
+    'underline-position': DEFAULT_NAMESPACE,
+    'underline-thickness': DEFAULT_NAMESPACE,
+    'unicode': DEFAULT_NAMESPACE,
+    'unicode-bidi': DEFAULT_NAMESPACE,
+    'unicode-range': DEFAULT_NAMESPACE,
+    'units-per-em': DEFAULT_NAMESPACE,
+    'v-alphabetic': DEFAULT_NAMESPACE,
+    'v-hanging': DEFAULT_NAMESPACE,
+    'v-ideographic': DEFAULT_NAMESPACE,
+    'v-mathematical': DEFAULT_NAMESPACE,
+    'values': DEFAULT_NAMESPACE,
+    'version': DEFAULT_NAMESPACE,
+    'vert-adv-y': DEFAULT_NAMESPACE,
+    'vert-origin-x': DEFAULT_NAMESPACE,
+    'vert-origin-y': DEFAULT_NAMESPACE,
+    'viewBox': DEFAULT_NAMESPACE,
+    'viewTarget': DEFAULT_NAMESPACE,
+    'visibility': DEFAULT_NAMESPACE,
+    'width': DEFAULT_NAMESPACE,
+    'widths': DEFAULT_NAMESPACE,
+    'word-spacing': DEFAULT_NAMESPACE,
+    'writing-mode': DEFAULT_NAMESPACE,
+    'x': DEFAULT_NAMESPACE,
+    'x-height': DEFAULT_NAMESPACE,
+    'x1': DEFAULT_NAMESPACE,
+    'x2': DEFAULT_NAMESPACE,
+    'xChannelSelector': DEFAULT_NAMESPACE,
+    'xlink:actuate': XLINK_NAMESPACE,
+    'xlink:arcrole': XLINK_NAMESPACE,
+    'xlink:href': XLINK_NAMESPACE,
+    'xlink:role': XLINK_NAMESPACE,
+    'xlink:show': XLINK_NAMESPACE,
+    'xlink:title': XLINK_NAMESPACE,
+    'xlink:type': XLINK_NAMESPACE,
+    'xml:base': XML_NAMESPACE,
+    'xml:id': XML_NAMESPACE,
+    'xml:lang': XML_NAMESPACE,
+    'xml:space': XML_NAMESPACE,
+    'y': DEFAULT_NAMESPACE,
+    'y1': DEFAULT_NAMESPACE,
+    'y2': DEFAULT_NAMESPACE,
+    'yChannelSelector': DEFAULT_NAMESPACE,
+    'z': DEFAULT_NAMESPACE,
+    'zoomAndPan': DEFAULT_NAMESPACE
+};
+
+module.exports = SVGAttributeNamespace;
+
+function SVGAttributeNamespace(value) {
+  if (SVG_PROPERTIES.hasOwnProperty(value)) {
+    return SVG_PROPERTIES[value];
+  }
+}
+
+},{}],25:[function(require,module,exports){
+'use strict';
+
+var isArray = require('x-is-array');
+
+var h = require('./index.js');
+
+
+var SVGAttributeNamespace = require('./svg-attribute-namespace');
+var attributeHook = require('./hooks/attribute-hook');
+
+var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+
+module.exports = svg;
+
+function svg(tagName, properties, children) {
+    if (!children && isChildren(properties)) {
+        children = properties;
+        properties = {};
+    }
+
+    properties = properties || {};
+
+    // set namespace for svg
+    properties.namespace = SVG_NAMESPACE;
+
+    var attributes = properties.attributes || (properties.attributes = {});
+
+    for (var key in properties) {
+        if (!properties.hasOwnProperty(key)) {
+            continue;
+        }
+
+        var namespace = SVGAttributeNamespace(key);
+
+        if (namespace === undefined) { // not a svg attribute
+            continue;
+        }
+
+        var value = properties[key];
+
+        if (typeof value !== 'string' &&
+            typeof value !== 'number' &&
+            typeof value !== 'boolean'
+        ) {
+            continue;
+        }
+
+        if (namespace !== null) { // namespaced attribute
+            properties[key] = attributeHook(namespace, value);
+            continue;
+        }
+
+        attributes[key] = value
+        properties[key] = undefined
+    }
+
+    return h(tagName, properties, children);
+}
+
+function isChildren(x) {
+    return typeof x === 'string' || isArray(x);
+}
+
+},{"./hooks/attribute-hook":19,"./index.js":22,"./svg-attribute-namespace":24,"x-is-array":11}],26:[function(require,module,exports){
 var isVNode = require("./is-vnode")
 var isVText = require("./is-vtext")
 var isWidget = require("./is-widget")
@@ -927,14 +1460,14 @@ function renderThunk(thunk, previous) {
     return renderedThunk
 }
 
-},{"./is-thunk":23,"./is-vnode":25,"./is-vtext":26,"./is-widget":27}],23:[function(require,module,exports){
+},{"./is-thunk":27,"./is-vnode":29,"./is-vtext":30,"./is-widget":31}],27:[function(require,module,exports){
 module.exports = isThunk
 
 function isThunk(t) {
     return t && t.type === "Thunk"
 }
 
-},{}],24:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 module.exports = isHook
 
 function isHook(hook) {
@@ -943,7 +1476,7 @@ function isHook(hook) {
        typeof hook.unhook === "function" && !hook.hasOwnProperty("unhook"))
 }
 
-},{}],25:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 var version = require("./version")
 
 module.exports = isVirtualNode
@@ -952,7 +1485,7 @@ function isVirtualNode(x) {
     return x && x.type === "VirtualNode" && x.version === version
 }
 
-},{"./version":28}],26:[function(require,module,exports){
+},{"./version":32}],30:[function(require,module,exports){
 var version = require("./version")
 
 module.exports = isVirtualText
@@ -961,17 +1494,17 @@ function isVirtualText(x) {
     return x && x.type === "VirtualText" && x.version === version
 }
 
-},{"./version":28}],27:[function(require,module,exports){
+},{"./version":32}],31:[function(require,module,exports){
 module.exports = isWidget
 
 function isWidget(w) {
     return w && w.type === "Widget"
 }
 
-},{}],28:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 module.exports = "2"
 
-},{}],29:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 var version = require("./version")
 var isVNode = require("./is-vnode")
 var isWidget = require("./is-widget")
@@ -1045,7 +1578,7 @@ function VirtualNode(tagName, properties, children, key, namespace) {
 VirtualNode.prototype.version = version
 VirtualNode.prototype.type = "VirtualNode"
 
-},{"./is-thunk":23,"./is-vhook":24,"./is-vnode":25,"./is-widget":27,"./version":28}],30:[function(require,module,exports){
+},{"./is-thunk":27,"./is-vhook":28,"./is-vnode":29,"./is-widget":31,"./version":32}],34:[function(require,module,exports){
 var version = require("./version")
 
 VirtualPatch.NONE = 0
@@ -1069,7 +1602,7 @@ function VirtualPatch(type, vNode, patch) {
 VirtualPatch.prototype.version = version
 VirtualPatch.prototype.type = "VirtualPatch"
 
-},{"./version":28}],31:[function(require,module,exports){
+},{"./version":32}],35:[function(require,module,exports){
 var version = require("./version")
 
 module.exports = VirtualText
@@ -1081,7 +1614,7 @@ function VirtualText(text) {
 VirtualText.prototype.version = version
 VirtualText.prototype.type = "VirtualText"
 
-},{"./version":28}],32:[function(require,module,exports){
+},{"./version":32}],36:[function(require,module,exports){
 var isObject = require("is-object")
 var isHook = require("../vnode/is-vhook")
 
@@ -1141,7 +1674,7 @@ function getPrototype(value) {
   }
 }
 
-},{"../vnode/is-vhook":24,"is-object":9}],33:[function(require,module,exports){
+},{"../vnode/is-vhook":28,"is-object":10}],37:[function(require,module,exports){
 var isArray = require("x-is-array")
 
 var VPatch = require("../vnode/vpatch")
@@ -1570,7 +2103,7 @@ function appendPatch(apply, patch) {
     }
 }
 
-},{"../vnode/handle-thunk":22,"../vnode/is-thunk":23,"../vnode/is-vnode":25,"../vnode/is-vtext":26,"../vnode/is-widget":27,"../vnode/vpatch":30,"./diff-props":32,"x-is-array":10}],34:[function(require,module,exports){
+},{"../vnode/handle-thunk":26,"../vnode/is-thunk":27,"../vnode/is-vnode":29,"../vnode/is-vtext":30,"../vnode/is-widget":31,"../vnode/vpatch":34,"./diff-props":36,"x-is-array":11}],38:[function(require,module,exports){
 
 },{}]},{},[4])(4)
 });

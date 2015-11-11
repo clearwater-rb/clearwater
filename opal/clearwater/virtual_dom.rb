@@ -8,6 +8,16 @@ module VirtualDOM
     `virtualDom.h(tag_name, attributes, content)`
   end
 
+  def self.svg(tag_name, attributes=nil, content=nil)
+    %x{
+      return virtualDom.svg(
+        tag_name,
+        #{HashUtils.camelize_keys(attributes).to_n},
+        #{sanitize_content(content)}
+      );
+    }
+  end
+
   def self.create_element(node)
     `virtualDom.create(node)`
   end
