@@ -2,8 +2,8 @@ module Clearwater
   module CachedRender
     def self.included base
       %x{
-        Opal.defn(base, 'type', 'Thunk');
-        Opal.defn(base, 'render', function(prev) {
+        Opal.defn(self, 'type', 'Thunk');
+        Opal.defn(self, 'render', function(prev) {
           var self = this;
           var should_render;
 
