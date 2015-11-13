@@ -5,7 +5,6 @@ module Clearwater
         Opal.defn(self, 'type', 'Thunk');
         Opal.defn(self, 'render', function(prev) {
           var self = this;
-          var should_render;
 
           if(prev && prev.vnode && #{!should_render?(`prev`)}) {
             return prev.vnode;
