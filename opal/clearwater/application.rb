@@ -98,7 +98,7 @@ module Clearwater
         raise TypeError, "Cannot render to a non-existent element. Make sure the document ready event has been triggered before invoking the application."
       end
 
-      rendered = benchmark('Generated virtual DOM') { component.render }
+      rendered = benchmark('Generated virtual DOM') { Component.sanitize_content(component.render) }
       benchmark('Rendered to actual DOM') { virtual_dom.render rendered }
       @will_render = false
       run_callbacks
