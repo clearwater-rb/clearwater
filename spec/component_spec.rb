@@ -30,7 +30,7 @@ module Clearwater
     end
 
     it 'sanitizes element attributes' do
-      attributes = component.sanitize_attributes({
+      attributes = Component.sanitize_attributes({
         class: 'foo',
         onclick: proc { |event| expect(event).to be_a Browser::Event },
       })
@@ -45,12 +45,12 @@ module Clearwater
     describe 'sanitizing content' do
       it 'sanitizes components by calling `render`' do
         allow(component).to receive(:render) { 'foo' }
-        expect(component.sanitize_content(component)).to eq 'foo'
+        expect(Component.sanitize_content(component)).to eq 'foo'
       end
 
       it 'sanitizes arrays by sanitizing each element' do
         allow(component).to receive(:render) { 'foo' }
-        expect(component.sanitize_content([component, nil, 1])).to eq ['foo', '', 1]
+        expect(Component.sanitize_content([component, nil, 1])).to eq ['foo', '', 1]
       end
     end
 

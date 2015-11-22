@@ -1,3 +1,5 @@
+require 'clearwater/component'
+
 module Clearwater
   module CachedRender
     def self.included base
@@ -9,7 +11,7 @@ module Clearwater
           if(prev && prev.vnode && #{!should_render?(`prev`)}) {
             return prev.vnode;
           } else {
-            return #{sanitize_content(render)};
+            return #{Component.sanitize_content(render)};
           }
         });
       }

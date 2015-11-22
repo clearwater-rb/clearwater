@@ -136,8 +136,8 @@ module Clearwater
 
       VirtualDOM.node(
         tag_name,
-        sanitize_attributes(attributes),
-        sanitize_content(content)
+        Component.sanitize_attributes(attributes),
+        Component.sanitize_content(content)
       )
     end
 
@@ -145,7 +145,7 @@ module Clearwater
       router.params_for_path(router.current_path)
     end
 
-    def sanitize_attributes attributes
+    def self.sanitize_attributes attributes
       return attributes unless attributes.is_a? Hash
 
       # Allow specifying `class` instead of `class_name`.
@@ -170,7 +170,7 @@ module Clearwater
       attributes
     end
 
-    def sanitize_content content
+    def self.sanitize_content content
       %x{
         if(content && content.$$class) {
           if(content.$$class === Opal.Array) {
