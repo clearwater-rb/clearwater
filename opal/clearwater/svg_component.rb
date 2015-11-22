@@ -1,5 +1,4 @@
 require 'clearwater/virtual_dom'
-require 'console'
 
 module Clearwater
   module SVGComponent
