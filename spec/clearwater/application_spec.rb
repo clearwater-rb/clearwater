@@ -1,4 +1,5 @@
 require 'clearwater'
+require 'clearwater/svg_component'
 
 module Clearwater
   RSpec.describe Application do
@@ -9,11 +10,26 @@ module Clearwater
       )
     }
     let(:component) {
+      $svg_component = self.svg_component
       Class.new do
         include Clearwater::Component
 
         def render
-          h1('Hello world')
+          div([
+            p({ class_name: 'foo' }, 'Hello world'),
+            $svg_component,
+          ])
+        end
+      end.new
+    }
+    let(:svg_component) {
+      Class.new do
+        include Clearwater::SVGComponent
+
+        def render
+          svg({ view_box: '0 0 120 120' }, [
+            circle(cx: 50, cy: 50, r: 30),
+          ])
         end
       end.new
     }
@@ -22,7 +38,7 @@ module Clearwater
     it 'renders to the specified element' do
       app.perform_render
 
-      expect(element.inner_html).to eq '<h1>Hello world</h1>'
+      expect(element.inner_html).to eq '<div><p class="foo">Hello world</p><svg viewBox="0 0 120 120"><circle cx="50" cy="50" r="30"></circle></svg></div>'
     end
 
     it 'calls queued blocks after rendering' do
