@@ -50,7 +50,7 @@ module Clearwater
 
       it 'sanitizes arrays by sanitizing each element' do
         allow(component).to receive(:render) { 'foo' }
-        expect(Component.sanitize_content([component, nil, 1])).to eq ['foo', '', 1]
+        expect(Component.sanitize_content([component, nil, 1])).to eq ['foo', nil, 1]
       end
     end
 

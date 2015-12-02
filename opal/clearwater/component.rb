@@ -175,8 +175,6 @@ module Clearwater
         if(content && content.$$class) {
           if(content.$$class === Opal.Array) {
             return #{content.map { |c| `self.$sanitize_content(c)` }};
-          } else if(content === Opal.nil) {
-            return '';
           } else {
             var render = content.$render;
 
