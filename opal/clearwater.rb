@@ -1,4 +1,5 @@
 require 'browser'
 require 'clearwater/component'
+require 'clearwater/svg_component'
 require 'clearwater/link'
 require 'clearwater/application'
