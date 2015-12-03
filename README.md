@@ -2,12 +2,8 @@ clearwater
 ----------
 
   - [![Quality](http://img.shields.io/codeclimate/github/clearwater-rb/clearwater.svg?style=flat-square)](https://codeclimate.com/github/clearwater-rb/clearwater)
-  - [![Coverage](http://img.shields.io/codeclimate/coverage/github/clearwater-rb/clearwater.svg?style=flat-square)](https://codeclimate.com/github/clearwater-rb/clearwater)
   - [![Build](http://img.shields.io/travis-ci/clearwater-rb/clearwater.svg?style=flat-square)](https://travis-ci.org/clearwater-rb/clearwater)
-  - [![Dependencies](http://img.shields.io/gemnasium/clearwater-rb/clearwater.svg?style=flat-square)](https://gemnasium.com/clearwater-rb/clearwater)
   - [![Downloads](http://img.shields.io/gem/dtv/clearwater.svg?style=flat-square)](https://rubygems.org/gems/clearwater)
-  - [![Tags](http://img.shields.io/github/tag/clearwater-rb/clearwater.svg?style=flat-square)](http://github.com/clearwater-rb/clearwater/tags)
-  - [![Releases](http://img.shields.io/github/release/clearwater-rb/clearwater.svg?style=flat-square)](http://github.com/clearwater-rb/clearwater/releases)
   - [![Issues](http://img.shields.io/github/issues/clearwater-rb/clearwater.svg?style=flat-square)](http://github.com/clearwater-rb/clearwater/issues)
   - [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](http://opensource.org/licenses/MIT)
   - [![Version](http://img.shields.io/gem/v/clearwater.svg?style=flat-square)](https://rubygems.org/gems/clearwater)
