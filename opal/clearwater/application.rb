@@ -1,7 +1,4 @@
-require 'browser'
-require 'browser/delay'
-require 'browser/event'
-require 'browser/animation_frame'
+require 'clearwater/browser'
 require 'clearwater/router'
 require 'clearwater/application_registry'
 require 'native'
@@ -20,8 +17,8 @@ module Clearwater
       @router     = options.fetch(:router)     { Router.new }
       @component  = options.fetch(:component)  { nil }
       @element    = options.fetch(:element)    { nil }
-      @document   = options.fetch(:document)   { $document }
-      @window     = options.fetch(:window)     { $window }
+      @document   = options.fetch(:document)   { Browser::Document }
+      @window     = options.fetch(:window)     { Browser::Window }
       @on_render  = []
 
       router.application = self
@@ -64,7 +61,7 @@ module Clearwater
         return
       end
 
-      animation_frame { perform_render }
+      @window.animation_frame { perform_render }
 
       nil
     end

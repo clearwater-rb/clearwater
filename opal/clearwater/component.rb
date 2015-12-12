@@ -1,5 +1,4 @@
 require 'clearwater/virtual_dom'
-require 'browser'
 
 module Clearwater
   module Component
