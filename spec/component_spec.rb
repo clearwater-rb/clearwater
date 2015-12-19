@@ -57,7 +57,7 @@ module Clearwater
     it 'retrieves params from the router' do
       router = double('Router')
       params = { article_id: 123 }
-      allow(router).to receive(:params_for_path) { params }
+      allow(router).to receive(:params) { params }
       allow(router).to receive(:current_path) { '/articles/123' }
       component.router = router
 

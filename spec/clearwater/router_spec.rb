@@ -22,7 +22,7 @@ module Clearwater
     end
 
     it 'gets the params for a given path' do
-      expect(router.params_for_path('/articles/foo')).to eq article_id: 'foo'
+      expect(router.params('/articles/foo')).to eq article_id: 'foo'
     end
 
     it 'gets the components for a given path' do
@@ -45,7 +45,7 @@ module Clearwater
     end
 
     it 'gets the params from the path' do
-      expect(router.params_for_path('/articles/123')).to eq({ article_id: '123' })
+      expect(router.params('/articles/123')).to eq({ article_id: '123' })
     end
   end
 end

@@ -142,7 +142,7 @@ module Clearwater
     end
 
     def params
-      router.params_for_path(router.current_path)
+      router.params
     end
 
     def self.sanitize_attributes attributes

@@ -32,17 +32,17 @@ module Clearwater
       routes_for_path(path).map(&:target)
     end
 
-    def params_for_path path
+    def params path=current_path
       path_parts = path.split("/").reject(&:empty?)
       canonical_parts = canonical_path_for_path(path).split("/").reject(&:empty?)
 
       canonical_parts.each_with_index.reduce({}) { |params, (part, index)|
         if part.start_with? ":"
           param = part[1..-1]
-          params.merge! param => path_parts[index]
-        else
-          params
+          params[param] = path_parts[index]
         end
+
+        params
       }
     end
 
