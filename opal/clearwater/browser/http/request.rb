@@ -24,7 +24,6 @@ module Clearwater
             #@native.onreadystatechange = #{
               proc do |event|
                 @ready_state_callbacks.each do |callback|
-                  `console.log(callback)`
                   callback.call event
                 end
               end
