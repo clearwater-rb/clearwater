@@ -1,4 +1,5 @@
 require "opal"
+require "bowser"
 
 module Clearwater
   require_relative "clearwater/version"

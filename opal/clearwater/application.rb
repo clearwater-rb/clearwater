@@ -1,4 +1,4 @@
-require 'clearwater/browser'
+require 'bowser'
 require 'clearwater/router'
 require 'clearwater/application_registry'
 require 'native'
@@ -17,8 +17,8 @@ module Clearwater
       @router     = options.fetch(:router)     { Router.new }
       @component  = options.fetch(:component)  { nil }
       @element    = options.fetch(:element)    { nil }
-      @document   = options.fetch(:document)   { Browser::Document }
-      @window     = options.fetch(:window)     { Browser::Window }
+      @document   = options.fetch(:document)   { Bowser.document }
+      @window     = options.fetch(:window)     { Bowser.window }
       @on_render  = []
 
       router.application = self

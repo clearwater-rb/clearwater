@@ -1,6 +1,6 @@
 require 'clearwater'
 require 'clearwater/svg_component'
-require 'clearwater/browser'
+require 'bowser'
 
 module Clearwater
   RSpec.describe Application do
@@ -34,7 +34,7 @@ module Clearwater
         end
       end.new
     }
-    let(:element) { Clearwater::Browser::Document.create_element('div') }
+    let(:element) { Bowser.document.create_element('div') }
 
     it 'renders to the specified element' do
       app.perform_render

@@ -1,5 +1,5 @@
 require 'clearwater/component'
-require 'clearwater/browser'
+require 'bowser'
 
 class Link
   include Clearwater::Component
@@ -39,7 +39,7 @@ class Link
   end
 
   def handle_touch event
-    document = Clearwater::Browser::Document
+    document = Bowser.document
 
     # All links will treat this as touch because this is a touch device
     @@touch = true
@@ -76,7 +76,7 @@ class Link
     # pass through to the browser's default handling or the user's modified handling.
     unless event.meta? || event.shift? || event.ctrl? || event.alt? || (event.respond_to?(:button) && event.button == 1)
       event.prevent
-      window = Clearwater::Browser::Window
+      window = Bowser.window
       if href != window.location.path
         window.history.push href
         call
@@ -98,7 +98,7 @@ class Link
   end
 
   def check_active href
-    if Clearwater::Browser::Window.location.path == href
+    if Bowser.window.location.path == href
       class_name = (
         @attributes.delete(:class_name) ||
         @attributes.delete(:class) ||
