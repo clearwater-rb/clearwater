@@ -1,22 +1,5 @@
 require 'clearwater/component'
-require 'browser'
-require 'browser/history'
-
-# TODO: Remove this once opal-browser supports coordinates natively
-# for touch events.
-module Browser
-  class Event
-    class Touch
-      def x
-        `#@native.pageX`
-      end
-
-      def y
-        `#@native.pageY`
-      end
-    end
-  end
-end
+require 'bowser'
 
 class Link
   include Clearwater::Component
@@ -56,6 +39,8 @@ class Link
   end
 
   def handle_touch event
+    document = Bowser.document
+
     # All links will treat this as touch because this is a touch device
     @@touch = true
     moved = false
@@ -78,12 +63,12 @@ class Link
         navigate event
       end
 
-      $document.off 'touchmove', &touch_move_handler
-      $document.off 'touchend', &touch_end_handler
+      document.off 'touchmove', &touch_move_handler
+      document.off 'touchend', &touch_end_handler
     end
 
-    $document.on 'touchmove', &touch_move_handler
-    $document.on 'touchend', &touch_end_handler
+    document.on 'touchmove', &touch_move_handler
+    document.on 'touchend', &touch_end_handler
   end
 
   def navigate event
@@ -91,10 +76,11 @@ class Link
     # pass through to the browser's default handling or the user's modified handling.
     unless event.meta? || event.shift? || event.ctrl? || event.alt? || (event.respond_to?(:button) && event.button == 1)
       event.prevent
-      if href != $window.location.path
-        $window.history.push href
+      window = Bowser.window
+      if href != window.location.path
+        window.history.push href
         call
-        $window.scroll.to x: 0, y: 0
+        window.scroll.to x: 0, y: 0
       end
     end
   end
@@ -112,7 +98,7 @@ class Link
   end
 
   def check_active href
-    if $window.location.path == href
+    if Bowser.window.location.path == href
       class_name = (
         @attributes.delete(:class_name) ||
         @attributes.delete(:class) ||

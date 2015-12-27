@@ -1,15 +1,5 @@
 require 'clearwater/component'
 
-# When running specs from the CLI, it doesn't define this class
-unless defined? Browser::Event
-  module Browser
-    class Event
-      def initialize event
-      end
-    end
-  end
-end
-
 module Clearwater
   RSpec.describe Component do
     let(:component_class) {
@@ -32,13 +22,13 @@ module Clearwater
     it 'sanitizes element attributes' do
       attributes = Component.sanitize_attributes({
         class: 'foo',
-        onclick: proc { |event| expect(event).to be_a Browser::Event },
+        onclick: proc { |event| expect(event).to be_a Bowser::Event },
       })
 
       # Renames :class to :class_name
       expect(attributes[:class_name]).to eq 'foo'
 
-      # Wraps yielded events in a Browser::Event
+      # Wraps yielded events in a Bowser::Event
       attributes[:onclick].call(`document.createEvent('MouseEvent')`)
     end
 

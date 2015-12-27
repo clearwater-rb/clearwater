@@ -1,4 +1,3 @@
-require 'browser'
 require 'clearwater/virtual_dom/js/virtual_dom.js'
 
 module VirtualDOM
@@ -40,7 +39,7 @@ module VirtualDOM
   end
 
   class Document
-    def initialize(root=$document.create_element('div'))
+    def initialize(root=Bowser.document.create_element('div'))
       @root = root
     end
 
