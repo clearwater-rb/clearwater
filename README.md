@@ -50,24 +50,24 @@ end
 While we use two components in this example, you can use all of these as well:
 
 ``` ruby
-# Render <main><h1>Heading</h1><article>hello!</article></main>
+# Render <main id="foo"><h1>Heading</h1><article>hello!</article></main>
 def render
-  main(properties, [h1('Heading'), article('hello!')])
+  main({ id: 'foo' }, [h1('Heading'), article('hello!')])
 end
 
 # Render <main>Hello, world!</main>
 def render
-  main(properties, 'Hello, world!')
+  main('Hello, world!')
 end
 
 # Render <main>123</main>
 def render
-  main(properties, 123)
+  main(123)
 end
 
 # Render <main></main>
 def render
-  main(properties, nil)
+  main
 end
 ```
 
@@ -75,12 +75,19 @@ end
 
 ``` ruby
 router = Clearwater::Router.new do
-  route 'blog' => Blog.new do
-    route 'new_article' => NewArticle.new
-    route ':article_id' => ArticleReader.new
+  # A route with a block contains subordinate routes
+  route 'blog' => Blog.new do # /blog
+    route 'new_article' => NewArticle.new # /blog/new_article
+
+    # This path contains a dynamic segment. Inside this component, you can use
+    # router.params[:article_id] to return the value for this segment of the
+    # URL. So for "/articles/123", router.params[:article_id] would be "123".
+    route ':article_id' => ArticleReader.new # /blog/123
   end
 end
 ```
+
+## Using with Rails
 
 You can also use Clearwater as part of the Rails asset pipeline. First create your application:
 
@@ -89,6 +96,41 @@ You can also use Clearwater as part of the Rails asset pipeline. First create yo
 require 'opal' # Not necessary if you load Opal from a CDN
 require 'clearwater'
 
+class Layout
+  include Clearwater::Component
+
+  def render
+    h1('Hello, world!')
+  end
+end
+
+app = Clearwater::Application.new(component: Layout.new)
+app.call
+```
+
+Then, in `app/views/layouts/application.html.erb`:
+
+```erb
+<!DOCTYPE html>
+<html>
+  <!-- snip -->
+
+  <body>
+    <!--
+      We load the JS in the body tag to ensure the element exists so we can
+      render to it. Otherwise, we need to use events on the document before we
+      instantiate and call the Clearwater app. And that's no fun.
+    -->
+    <%= javascript_include_tag 'application' %>
+  </body>
+</html>
+```
+
+Then just create a root route that renders a blank template and refresh the page. You should see "Hello, world!" in big, bold letters. Congrats! You've built your first Clearwater app on Rails!
+
+### Example app
+
+```ruby
 class Layout
   include Clearwater::Component
 
@@ -202,7 +244,7 @@ end
 MyApp = Clearwater::Application.new(
   component: Layout.new,
   router: router,
-  element: $document.body # This is the default target element
+  element: Bowser.document.body # This is the default target element
 )
 
 MyApp.call # Render the app.
