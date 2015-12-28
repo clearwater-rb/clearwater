@@ -80,7 +80,7 @@ class Link
       if href != window.location.path
         window.history.push href
         call
-        window.scroll.to x: 0, y: 0
+        window.scroll 0, 0
       end
     end
   end
