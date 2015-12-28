@@ -74,14 +74,22 @@ class Link
   def navigate event
     # Don't handle middle-button clicks and clicks with modifier keys. Let them
     # pass through to the browser's default handling or the user's modified handling.
-    unless event.meta? || event.shift? || event.ctrl? || event.alt? || (event.respond_to?(:button) && event.button == 1)
-      event.prevent
-      window = Bowser.window
-      if href != window.location.path
-        window.history.push href
-        call
-        window.scroll 0, 0
-      end
+    modified = (
+      event.meta? ||
+      event.shift? ||
+      event.ctrl? ||
+      event.alt? ||
+      event.button == 1
+    )
+
+    return if modified
+
+    event.prevent
+    window = Bowser.window
+    if href != window.location.path
+      window.history.push href
+      call
+      window.scroll 0, 0
     end
   end
 
