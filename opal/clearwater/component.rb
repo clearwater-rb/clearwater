@@ -4,9 +4,6 @@ module Clearwater
   module Component
     attr_accessor :router, :outlet
 
-    def render
-    end
-
     HTML_TAGS = %w(
       a
       abbr
@@ -121,25 +118,6 @@ module Clearwater
       wbr
     )
 
-    HTML_TAGS.each do |tag_name|
-      define_method(tag_name) do |attributes, content|
-        tag(tag_name, attributes, content)
-      end
-    end
-
-    def tag tag_name, attributes=nil, content=nil
-      if !(`attributes.$$is_hash || attributes === #{nil}`)
-        content = attributes
-        attributes = nil
-      end
-
-      VirtualDOM.node(
-        tag_name,
-        Component.sanitize_attributes(attributes),
-        Component.sanitize_content(content)
-      )
-    end
-
     def params
       router.params
     end
@@ -189,6 +167,31 @@ module Clearwater
           return content;
         }
       }
+    end
+
+    # Default render method for stubbing
+    def render
+    end
+
+    module_function
+
+    HTML_TAGS.each do |tag_name|
+      define_method(tag_name) do |attributes, content|
+        tag(tag_name, attributes, content)
+      end
+    end
+
+    def tag tag_name, attributes=nil, content=nil
+      if !(`attributes.$$is_hash || attributes === #{nil}`)
+        content = attributes
+        attributes = nil
+      end
+
+      VirtualDOM.node(
+        tag_name,
+        Component.sanitize_attributes(attributes),
+        Component.sanitize_content(content)
+      )
     end
 
     def call &block
