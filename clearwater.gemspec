@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency "opal", "~> 0.7"
-  spec.add_runtime_dependency "bowser", "~> 0.1.1"
+  spec.add_runtime_dependency "bowser", "~> 0.1.2"
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "opal-rspec", "~> 0.5.0.beta2"

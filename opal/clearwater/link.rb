@@ -87,8 +87,7 @@ class Link
     event.prevent
     window = Bowser.window
     if href != window.location.path
-      window.history.push href
-      call
+      Clearwater::Router.navigate_to href
       window.scroll 0, 0
     end
   end

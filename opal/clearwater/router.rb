@@ -6,9 +6,9 @@ module Clearwater
     attr_accessor :application
 
     def initialize options={}, &block
-      @window   = options.fetch(:window)   { Native(`window`)  }
-      @location = options.fetch(:location) { window[:location] }
-      @history  = options.fetch(:history)  { window[:history]  }
+      @window   = options.fetch(:window)   { Bowser.window  }
+      @location = options.fetch(:location) { window.location }
+      @history  = options.fetch(:history)  { window.history }
       @routes   = RouteCollection.new(self)
       @application = options[:application]
 
@@ -50,21 +50,38 @@ module Clearwater
     end
 
     def current_path
-      location[:pathname]
+      location.path
+    end
+
+    def self.current_path
+      location.path
+    end
+
+    def current_url
+      location.href
+    end
+
+    def self.current_url
+      location.href
+    end
+
+    def self.location
+      Bowser.window.location
     end
 
     def navigate_to path
-      push_state path
+      history.push path
       set_outlets
       render_application
     end
 
-    def navigate_to_remote path
-      location[:href] = path
+    def self.navigate_to path
+      Bowser.window.history.push path
+      render_all_apps
     end
 
-    def current_url
-      location[:href]
+    def navigate_to_remote path
+      location.href = path
     end
 
     def back
@@ -85,14 +102,14 @@ module Clearwater
 
     private
 
-    def push_state path
-      history.pushState({}, nil, path)
-    end
-
     def render_application
       if application && application.component
         application.component.call
       end
+    end
+
+    def self.render_all_apps
+      Clearwater::Application.render
     end
   end
 end
