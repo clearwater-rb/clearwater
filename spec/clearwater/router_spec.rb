@@ -1,4 +1,5 @@
 require 'clearwater/router'
+require 'ostruct'
 
 module Clearwater
   RSpec.describe Router do
@@ -34,12 +35,12 @@ module Clearwater
     end
 
     it 'gets the current path' do
-      location = { pathname: '/foo' }
+      location = OpenStruct.new(path: '/foo')
       router = Router.new(location: location)
 
       expect(router.current_path).to eq '/foo'
 
-      location[:pathname] = '/bar'
+      location.path = '/bar'
 
       expect(router.current_path).to eq '/bar'
     end
