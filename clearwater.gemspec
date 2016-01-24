@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.version = Clearwater::VERSION
   spec.authors = ["Jamie Gaskins"]
   spec.email = ["jgaskins@gmail.com"]
-  spec.summary = %q{Front-end web framework built on Opal}
+  spec.summary = %q{Front-end Ruby web framework for fast, reasonable, and composable applications}
   spec.description = spec.summary
   spec.homepage = "https://clearwater-rb.github.io/"
   spec.license = "MIT"
