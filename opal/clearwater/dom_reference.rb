@@ -15,6 +15,13 @@ module Clearwater
       Bowser::Element.new(node)
     end
 
+    # This can be treated as a native JS object. This method is required for
+    # some versions of Opal that cast Ruby objects as `nil` if they don't
+    # respond to to_n.
+    def to_n
+      self
+    end
+
     %x{
       Opal.defn(self, 'hook', function(node, name, previous) {
         var self = this;
