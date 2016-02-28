@@ -25,7 +25,10 @@ module Clearwater
     end
 
     def canonical_path_for_path path
-      routes_for_path(path).map { |r| "/#{r.key}" }.join
+      routes_for_path(path).map { |r|
+        namespace = r.namespace
+        "#{"/#{namespace}" if namespace}/#{r.key}"
+      }.join
     end
 
     def targets_for_path path
@@ -47,6 +50,10 @@ module Clearwater
     end
 
     def canonical_path
+    end
+
+    def nested_routes
+      @routes
     end
 
     def current_path

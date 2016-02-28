@@ -28,8 +28,13 @@ module Clearwater
         @routes << route
       end
 
-      def namespace path
-        @namespace = path
+      def namespace *args
+        path = args.first
+        if path
+          @namespace = path
+        end
+
+        @namespace
       end
 
       def [] route_names

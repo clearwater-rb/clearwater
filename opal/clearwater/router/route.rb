@@ -29,6 +29,10 @@ module Clearwater
         end
       end
 
+      def namespace
+        parent.nested_routes.namespace
+      end
+
       private
 
       def param_key?

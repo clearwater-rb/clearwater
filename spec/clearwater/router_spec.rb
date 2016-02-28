@@ -48,5 +48,18 @@ module Clearwater
     it 'gets the params from the path' do
       expect(router.params('/articles/123')).to eq({ article_id: '123' })
     end
+
+    it 'gets params with a namespace' do
+      component = routed_component
+      router = Router.new do
+        namespace 'clearwater'
+
+        route 'articles' => component do
+          route ':article_id' => component
+        end
+      end
+
+      expect(router.params('/clearwater/articles/123')).to eq({ article_id: '123' })
+    end
   end
 end
