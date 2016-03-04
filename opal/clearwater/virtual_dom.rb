@@ -11,7 +11,7 @@ module VirtualDOM
     %x{
       return virtualDom.svg(
         tag_name,
-        #{HashUtils.camelize_keys(attributes).to_n},
+        #{HashUtils.underlinize_keys(attributes).to_n},
         #{sanitize_content(content)}
       );
     }
@@ -93,5 +93,23 @@ module VirtualDOM
 
       camelized
     end
+  end
+
+  def self.underlinize_keys(hash)
+    return hash unless hash.is_a? Hash
+
+    underlinized = {}
+    hash.each do |k, v|
+      key = `k.replace(/_/g, '-')`
+      value = if v.class == Hash
+                underlinize_keys(v)
+              else
+                v
+              end
+
+      underlinized[key] = value
+    end
+
+    underlinized
   end
 end
