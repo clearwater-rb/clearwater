@@ -103,7 +103,7 @@ module Clearwater
 
       VirtualDOM.svg(
         tag_name,
-        Component.sanitize_attributes(attributes),
+        Component.sanitize_attributes(attributes, false),
         Component.sanitize_content(content)
       )
     end
