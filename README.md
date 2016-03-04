@@ -131,6 +131,10 @@ Then just create a root route that renders a blank template and refresh the page
 ### Example app
 
 ```ruby
+require 'opal'
+require 'clearwater'
+require 'ostruct'
+
 class Layout
   include Clearwater::Component
 
