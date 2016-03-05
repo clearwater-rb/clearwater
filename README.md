@@ -39,7 +39,10 @@ class Blog
 
   # This method needs to return a virtual-DOM element using the element DSL.
   def render
-    main({ id: 'content' }, [Articles.new, Biography.new])
+    main([
+      Articles.new,
+      Biography.new,
+    ])
   end
 end
 ```
@@ -47,22 +50,28 @@ end
 While we use two components in this example, you can use all of these as well:
 
 ``` ruby
-# Render <main id="foo"><h1>Heading</h1><article>hello!</article></main>
+# <main id="foo">
+#   <h1>Heading</h1>
+#   <article>hello!</article>
+# </main>
 def render
-  main({ id: 'foo' }, [h1('Heading'), article('hello!')])
+  main({ id: 'foo' }, [
+    h1('Heading'),
+    article('hello!'),
+  ])
 end
 
-# Render <main>Hello, world!</main>
+# <main>Hello, world!</main>
 def render
   main('Hello, world!')
 end
 
-# Render <main>123</main>
+# <main>123</main>
 def render
   main(123)
 end
 
-# Render <main></main>
+# <main></main>
 def render
   main
 end
@@ -86,7 +95,7 @@ end
 
 ## Using with Rails
 
-You can also use Clearwater as part of the Rails asset pipeline. First create your application:
+You can also use Clearwater as part of the Rails asset pipeline. First create your Clearwater application (replace `app/assets/application.js` with this file):
 
 ``` ruby
 # file: app/assets/javascripts/application.rb
