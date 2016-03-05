@@ -13,17 +13,14 @@ Clearwater is a rich front-end framework for building fast, reasonable, and easi
 Installing
 ==========
 
-If you're using this as a standalone application then just install via:
-
-    $ gem install clearwater
-
-If you're using rails then add these lines to your application's Gemfile:
+Add these lines to your application's Gemfile:
 
 ``` ruby
-gem 'clearwater'
-gem 'opal-rails' # Only needed for Rails apps
+gem 'clearwater', '~> 1.0.0.beta3'
+gem 'opal-rails', github: 'opal/opal-rails' # Only needed for Rails apps
 ```
 
+The `github` dependency is so that it will install Opal 0.9, which has much better performance than Opal 0.8.
 
 Using
 =====
