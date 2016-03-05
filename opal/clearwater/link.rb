@@ -11,7 +11,6 @@ class Link
     @onclick = attributes.dup.delete(:onclick)
     @attributes = attributes.merge(
       onclick: method(:handle_click),
-      ontouchstart: method(:handle_touch),
       key: attributes[:href]
     )
 
@@ -25,50 +24,12 @@ class Link
       @onclick.call event
     end
 
-    if touch?
-      event.prevent
-      return
-    end
-
     if event.prevented?
       warn "You are preventing the default behavior of a `Link` component. " +
            "In this case, you could just use an `a` element."
     else
       navigate event
     end
-  end
-
-  def handle_touch event
-    document = Bowser.document
-
-    # All links will treat this as touch because this is a touch device
-    @@touch = true
-    moved = false
-    x_start = event.x
-    y_start = event.y
-
-    touch_move_handler = proc do |event|
-      x_now = event.x
-      y_now = event.y
-
-      # Count this gesture as a non-click if user moves over 30px
-      if ((x_now - x_start) ** 2 + (y_now - y_start) ** 2) ** 0.5 > 30
-        moved = true
-      end
-    end
-
-    touch_end_handler = proc do
-      unless moved
-        @onclick.call event if @onclick
-        navigate event
-      end
-
-      document.off 'touchmove', &touch_move_handler
-      document.off 'touchend', &touch_end_handler
-    end
-
-    document.on 'touchmove', &touch_move_handler
-    document.on 'touchend', &touch_end_handler
   end
 
   def navigate event
@@ -98,10 +59,6 @@ class Link
 
   def render
     a(attributes, content)
-  end
-
-  def touch?
-    !!@@touch
   end
 
   def check_active href
