@@ -122,12 +122,12 @@ module Clearwater
       router.params
     end
 
-    def self.sanitize_attributes attributes
+    def self.sanitize_attributes attributes, convert_class_key = true
       return attributes unless attributes.is_a? Hash
 
       # Allow specifying `class` instead of `class_name`.
       # Note: `class_name` is still allowed
-      if attributes.key? :class
+      if convert_class_key && attributes.key?(:class)
         if attributes.key? :class_name
           warn "You have both `class` and `class_name` attributes for this " +
             "element. `class` takes precedence: #{attributes}"
