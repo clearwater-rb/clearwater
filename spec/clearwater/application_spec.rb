@@ -28,7 +28,7 @@ module Clearwater
         include Clearwater::SVGComponent
 
         def render
-          svg({ view_box: '0 0 120 120' }, [
+          svg({ class: 'mysvg', marker_height: 10, marker_end: "url(#arrow)" }, [
             circle(cx: 50, cy: 50, r: 30),
           ])
         end
@@ -39,7 +39,7 @@ module Clearwater
     it 'renders to the specified element' do
       app.perform_render
 
-      expect(element.inner_html).to eq '<div><p class="foo">Hello world</p><svg viewBox="0 0 120 120"><circle cx="50" cy="50" r="30"></circle></svg></div>'
+      expect(element.inner_html).to eq '<div><p class="foo">Hello world</p><svg class="mysvg" markerHeight="10" marker-end="url(#arrow)"><circle cx="50" cy="50" r="30"></circle></svg></div>'
     end
 
     it 'calls queued blocks after rendering' do
