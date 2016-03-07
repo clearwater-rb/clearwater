@@ -137,7 +137,7 @@ module Clearwater
       end
 
       if attributes.key? :attributes
-        new_attrs = []
+        new_attrs = {}
         attributes[:attributes].each do |key, value|
           new_attrs[key.gsub('_', '-')] = value
         end
