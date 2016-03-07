@@ -22,11 +22,15 @@ module Clearwater
     it 'sanitizes element attributes' do
       attributes = Component.sanitize_attributes({
         class: 'foo',
+        data_toggle: 'dropdown',
         onclick: proc { |event| expect(event).to be_a Bowser::Event },
       })
 
       # Renames :class to :class_name
       expect(attributes[:class_name]).to eq 'foo'
+
+      # move none standard html attributes to attributes[:attributes] and 'data_*' to 'data-*'
+      expect(attributes[:attributes]['data-toggle']).to eq 'dropdown'
 
       # Wraps yielded events in a Bowser::Event
       attributes[:onclick].call(`document.createEvent('MouseEvent')`)
