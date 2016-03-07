@@ -2,16 +2,20 @@ require 'clearwater/virtual_dom/js/virtual_dom.js'
 
 module VirtualDOM
   def self.node(tag_name, attributes=nil, content=nil)
-    content = sanitize_content(content)
-    attributes = HashUtils.camelize_keys(attributes).to_n
-    `virtualDom.h(tag_name, attributes, content)`
+    %x{
+      return virtualDom.h(
+        tag_name,
+        #{HashUtils.camelized_native(attributes)},
+        #{sanitize_content(content)}
+      );
+    }
   end
 
   def self.svg(tag_name, attributes=nil, content=nil)
     %x{
       return virtualDom.svg(
         tag_name,
-        #{HashUtils.camelize_keys(attributes).to_n},
+        #{HashUtils.camelized_native(attributes)},
         #{sanitize_content(content)}
       );
     }
@@ -67,31 +71,21 @@ module VirtualDOM
 
   module StringUtils
     def self.camelize string
-      %x{
-        return string.replace(/_(\w)/g, function(full_match, character_match) {
-          return character_match.toUpperCase();
-        })
-      }
+      `string.replace(/_(\w)/g, self.$_camelize_handler)`
+    end
+
+    def self._camelize_handler _, character_match
+      `character_match.toUpperCase()`
     end
   end
 
   module HashUtils
-    def self.camelize_keys(hash)
-      return hash unless hash.is_a? Hash
+    def self.camelized_native hash
+      return hash.to_n unless `!!hash.$$is_hash`
 
-      camelized = {}
-      hash.each do |k, v|
-        key = StringUtils.camelize(k)
-        value = if v.class == Hash
-                  camelize_keys(v)
-                else
-                  v
-                end
-
-        camelized[key] = value
+      hash.each_with_object(`{}`) do |(k, v), js_obj|
+        `js_obj[#{StringUtils.camelize(k)}] = v.$$is_hash ? self.$camelized_native(v) : v`
       end
-
-      camelized
     end
   end
 end
