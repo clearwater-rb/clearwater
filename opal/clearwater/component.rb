@@ -143,7 +143,7 @@ module Clearwater
           end
         end
         if key[0, 5] == 'data_' || key[0, 5] == 'aria_'
-          attributes[key.gsub('_', '-')] = attributes.delete(:key)
+          attributes[key.gsub('_', '-')] = attributes.delete(key)
         end
       end
 
