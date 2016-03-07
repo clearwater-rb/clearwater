@@ -142,6 +142,9 @@ module Clearwater
             handler.call(Bowser::Event.new(event))
           end
         end
+        if key[0, 5] == 'data_' || key[0, 5] == 'aria_'
+          attributes[key.gsub('_', '-')] = attributes.delete(:key)
+        end
       end
 
       attributes
