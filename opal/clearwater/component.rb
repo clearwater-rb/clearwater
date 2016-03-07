@@ -261,8 +261,8 @@ module Clearwater
 
       memo = {attributes: attributes[:attributes] || {} }
       sanitized = attributes.each_with_object(memo) do |(key, value), hash|
-        if svg_attr = HTML_ATTRIBUTES[key]
-          hash[svg_attr] = value
+        if (key == :ref) || (html_attr = HTML_ATTRIBUTES[key])
+          hash[html_attr || key] = value
         elsif key[0, 2] == 'on'
           hash[key] = proc do |event|
             value.call(Bowser::Event.new(event))
