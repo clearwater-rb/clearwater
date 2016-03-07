@@ -26,8 +26,8 @@ module Clearwater
         onclick: proc { |event| expect(event).to be_a Bowser::Event },
       })
 
-      # Renames :class to :class_name
-      expect(attributes[:class_name]).to eq 'foo'
+      # Renames :class to className
+      expect(attributes['className']).to eq 'foo'
 
       # move none standard html attributes to attributes[:attributes] and 'data_*' to 'data-*'
       expect(attributes[:attributes]['data-toggle']).to eq 'dropdown'
