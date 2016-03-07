@@ -260,21 +260,20 @@ module Clearwater
         attributes[:class_name] = attributes.delete(:class)
       end
 
-      attributes[:attributes] ||= {}
-      attributes.each do |key, handler|
-        if key[0, 2] == 'on'
-          attributes[key] = proc do |event|
-            handler.call(Bowser::Event.new(event))
+      memo = {attributes: attributes[:attributes] || {} }
+      sanitized = attributes.each_with_object(memo) do |(key, value), hash|
+        if svg_attr = HTML_ATTRIBUTES[key]
+          hash[svg_attr] = value
+        elsif key[0, 2] == 'on'
+          hash[key] = proc do |event|
+            value.call(Bowser::Event.new(event))
           end
-        end
-        if HTML_ATTRIBUTES[key]
-          attributes[HTML_ATTRIBUTES[key]] = attributes.delete(key)
         else
-          attributes[:attributes][key.gsub('_', '-')] = attributes.delete(key)
+          hash[:attributes][key.gsub('_', '-')] = value
         end
       end
 
-      attributes
+      sanitized
     end
 
     def self.sanitize_content content
