@@ -138,7 +138,6 @@ module Clearwater
       checked: 'checked',
       class_id: 'classID',
       class_name: 'className',
-      class: 'className',
       col_span: 'colSpan',
       cols: 'cols',
       content: 'content',
