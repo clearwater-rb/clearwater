@@ -136,14 +136,19 @@ module Clearwater
         attributes[:class_name] = attributes.delete(:class)
       end
 
+      if attributes.key? :attributes
+        new_attrs = []
+        attributes[:attributes].each do |key, value|
+          new_attrs[key.gsub('_', '-')] = value
+        end
+        attributes[:attributes] = new_attrs
+      end
+
       attributes.each do |key, handler|
         if key[0, 2] == 'on'
           attributes[key] = proc do |event|
             handler.call(Bowser::Event.new(event))
           end
-        end
-        if key[0, 5] == 'data_' || key[0, 5] == 'aria_'
-          attributes[key.gsub('_', '-')] = attributes.delete(key)
         end
       end
 
