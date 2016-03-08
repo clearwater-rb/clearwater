@@ -13,7 +13,7 @@ module Clearwater
         end
 
         def render
-          @value.to_s
+          div(@value.to_s)
         end
       end
     }
