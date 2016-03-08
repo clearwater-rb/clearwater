@@ -118,6 +118,129 @@ module Clearwater
       wbr
     )
 
+    HTML_ATTRIBUTES = {
+      accept: 'accept',
+      accept_charset: 'acceptCharset',
+      access_key: 'accessKey',
+      action: 'action',
+      allow_full_screen: 'allowFullScreen',
+      allow_transparency: 'allowTransparency',
+      alt: 'alt',
+      async: 'async',
+      auto_complete: 'autoComplete',
+      auto_focus: 'autoFocus',
+      auto_play: 'autoPlay',
+      capture: 'capture',
+      cell_padding: 'cellPadding',
+      cell_spacing: 'cellSpacing',
+      challenge: 'challenge',
+      char_set: 'charSet',
+      checked: 'checked',
+      class_id: 'classID',
+      class_name: 'className',
+      col_span: 'colSpan',
+      cols: 'cols',
+      content: 'content',
+      content_editable: 'contentEditable',
+      context_menu: 'contextMenu',
+      controls: 'controls',
+      coords: 'coords',
+      cross_origin: 'crossOrigin',
+      data: 'data',
+      date_time: 'dateTime',
+      default: 'default',
+      defer: 'defer',
+      dir: 'dir',
+      disabled: 'disabled',
+      download: 'download',
+      draggable: 'draggable',
+      enc_type: 'encType',
+      form: 'form',
+      form_action: 'formAction',
+      form_enc_type: 'formEncType',
+      form_method: 'formMethod',
+      form_no_validate: 'formNoValidate',
+      form_target: 'formTarget',
+      frame_border: 'frameBorder',
+      headers: 'headers',
+      height: 'height',
+      hidden: 'hidden',
+      high: 'high',
+      href: 'href',
+      href_lang: 'hrefLang',
+      html_for: 'htmlFor',
+      http_equiv: 'httpEquiv',
+      icon: 'icon',
+      id: 'id',
+      input_mode: 'inputMode',
+      integrity: 'integrity',
+      is: 'is',
+      key_params: 'keyParams',
+      key_type: 'keyType',
+      kind: 'kind',
+      label: 'label',
+      lang: 'lang',
+      list: 'list',
+      loop: 'loop',
+      low: 'low',
+      manifest: 'manifest',
+      margin_height: 'marginHeight',
+      margin_width: 'marginWidth',
+      max: 'max',
+      max_length: 'maxLength',
+      media: 'media',
+      media_group: 'mediaGroup',
+      method: 'method',
+      min: 'min',
+      min_length: 'minLength',
+      multiple: 'multiple',
+      muted: 'muted',
+      name: 'name',
+      no_validate: 'noValidate',
+      nonce: 'nonce',
+      open: 'open',
+      optimum: 'optimum',
+      pattern: 'pattern',
+      placeholder: 'placeholder',
+      poster: 'poster',
+      preload: 'preload',
+      radio_group: 'radioGroup',
+      read_only: 'readOnly',
+      rel: 'rel',
+      required: 'required',
+      reversed: 'reversed',
+      row_span: 'rowSpan',
+      rows: 'rows',
+      sandbox: 'sandbox',
+      scope: 'scope',
+      scoped: 'scoped',
+      scrolling: 'scrolling',
+      seamless: 'seamless',
+      selected: 'selected',
+      shape: 'shape',
+      size: 'size',
+      sizes: 'sizes',
+      span: 'span',
+      spell_check: 'spellCheck',
+      src: 'src',
+      src_doc: 'srcDoc',
+      src_lang: 'srcLang',
+      src_set: 'srcSet',
+      start: 'start',
+      step: 'step',
+      style: 'style',
+      summary: 'summary',
+      tab_index: 'tabIndex',
+      target: 'target',
+      title: 'title',
+      type: 'type',
+      use_map: 'useMap',
+      value: 'value',
+      width: 'width',
+      wmode: 'wmode',
+      wrap: 'wrap',
+    }
+
     def params
       router.params
     end
@@ -136,15 +259,20 @@ module Clearwater
         attributes[:class_name] = attributes.delete(:class)
       end
 
-      attributes.each do |key, handler|
-        if key[0, 2] == 'on'
-          attributes[key] = proc do |event|
-            handler.call(Bowser::Event.new(event))
+      memo = {attributes: attributes[:attributes] || {} }
+      sanitized = attributes.each_with_object(memo) do |(key, value), hash|
+        if (key == :ref) || (html_attr = HTML_ATTRIBUTES[key])
+          hash[html_attr || key] = value
+        elsif key[0, 2] == 'on'
+          hash[key] = proc do |event|
+            value.call(Bowser::Event.new(event))
           end
+        else
+          hash[:attributes][key.gsub('_', '-')] = value
         end
       end
 
-      attributes
+      sanitized
     end
 
     def self.sanitize_content content
