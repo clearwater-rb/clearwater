@@ -20,7 +20,7 @@ module Clearwater
     end
 
     def routes_for_path path
-      parts = path.split("/").reject(&:empty?)
+      parts = get_path_parts(path)
       @routes[parts]
     end
 
@@ -36,8 +36,8 @@ module Clearwater
     end
 
     def params path=current_path
-      path_parts = path.split("/").reject(&:empty?)
-      canonical_parts = canonical_path_for_path(path).split("/").reject(&:empty?)
+      path_parts = get_path_parts(path)
+      canonical_parts = get_path_parts(canonical_path_for_path(path))
 
       canonical_parts.each_with_index.reduce({}) { |params, (part, index)|
         if part.start_with? ":"
@@ -108,6 +108,10 @@ module Clearwater
     end
 
     private
+
+    def get_path_parts path
+      path.split("/").reject(&:empty?)
+    end
 
     def render_application
       if application && application.component
