@@ -3,7 +3,7 @@ require 'clearwater/virtual_dom/js/virtual_dom.js'
 module VirtualDOM
   def self.node(tag_name, attributes=nil, content=nil)
     content = sanitize_content(content)
-    attributes = HashUtils.camelize_keys(attributes).to_n
+    attributes = attributes.to_n
     `virtualDom.h(tag_name, attributes, content)`
   end
 
@@ -11,7 +11,7 @@ module VirtualDOM
     %x{
       return virtualDom.svg(
         tag_name,
-        #{HashUtils.camelize_keys(attributes).to_n},
+        #{attributes.to_n},
         #{sanitize_content(content)}
       );
     }
