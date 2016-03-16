@@ -11,7 +11,9 @@ module Clearwater
           if(prev && prev.vnode && #{!should_render?(`prev`)}) {
             return prev.vnode;
           } else {
-            return #{Component.sanitize_content(render)};
+            self.node = #{Component.sanitize_content(render)};
+            self.node.properties['ref'] = #{@dom_node};
+            return self.node;
           }
         });
       }
@@ -19,6 +21,14 @@ module Clearwater
 
     def should_render? _
       false
+    end
+
+    def update!
+      node = Component.sanitize_content(render)
+      diff = VirtualDOM.diff @node, node
+      tree = @dom_node.JS[:node].JS[:native]
+      VirtualDOM.patch tree, diff
+      @node = node
     end
   end
 end
