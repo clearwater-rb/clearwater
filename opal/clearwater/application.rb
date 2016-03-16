@@ -24,6 +24,12 @@ module Clearwater
       router.application = self
       component.router = router if component
 
+      if `#@component.type === 'Thunk' && typeof #@component.render === 'function'`
+        warn "Application root component (#{@component}) points to a cached " +
+             "component. Cached components must not be persistent components, " +
+             "such as application roots or routing targets."
+      end
+
       @document.on 'visibilitychange' do
         if @render_on_visibility_change
           @render_on_visibility_change = false

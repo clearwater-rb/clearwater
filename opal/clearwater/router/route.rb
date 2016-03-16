@@ -9,6 +9,12 @@ module Clearwater
         @key = options.fetch(:key)
         @target = options.fetch(:target)
         @parent = options.fetch(:parent)
+
+        if `#@target.type === 'Thunk' && typeof #@target.render === 'function'`
+          warn "Route '#{key}' points to a cached component. Cached " +
+               "components must not be persistent components, such as " +
+               "application roots or routing targets."
+        end
       end
 
       def route *args, &block
