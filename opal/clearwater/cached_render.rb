@@ -11,7 +11,13 @@ module Clearwater
           if(prev && prev.vnode && #{!should_render?(`prev`)}) {
             return prev.vnode;
           } else {
-            return #{Component.sanitize_content(render)};
+            var content = #{Component.sanitize_content(render)};
+
+            while(content && content.type == 'Thunk' && content.render) {
+              content = #{Component.sanitize_content(`content.render(prev)`)};
+            }
+
+            return content;
           }
         });
       }
