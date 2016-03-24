@@ -83,9 +83,15 @@ module VirtualDOM
     def self.camelized_native hash
       return hash.to_n unless `!!hash.$$is_hash`
 
-      hash.each_with_object(`{}`) do |(k, v), js_obj|
-        `js_obj[#{StringUtils.camelize(k)}] = v.$$is_hash ? self.$camelized_native(v) : v`
-      end
+      %x{
+        var v, keys = hash.$$keys, key, js_obj = {};
+        for(var index = 0; index < keys.length; index++) {
+          key = keys[index];
+          v = #{hash[`key`]};
+          js_obj[#{StringUtils.camelize(`key`)}] = v.$$is_hash ? self.$camelized_native(v) : v
+        }
+        return js_obj;
+      }
     end
   end
 end
