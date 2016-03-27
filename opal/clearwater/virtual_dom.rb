@@ -1,13 +1,15 @@
 require 'clearwater/virtual_dom/js/virtual_dom.js'
 
 module VirtualDOM
-  def self.node(tag_name, attributes=nil, content=nil)
+  %x{ var camelized_native; }
+
+  def self.node(tag_name, attributes, content)
     %x{
       return virtualDom.h(
         tag_name,
-        #{HashUtils.camelized_native(attributes)},
+        camelized_native.$call(attributes),
         #{sanitize_content(content)}
-      );
+      )
     }
   end
 
@@ -37,7 +39,7 @@ module VirtualDOM
     %x{
       if(content === Opal.nil || content === undefined) return null;
       if(content.$$is_array)
-        return #{content.map!{ |c| sanitize_content c }};
+        return #{content.map! { |c| sanitize_content c }};
       return content;
     }
   end
@@ -70,28 +72,33 @@ module VirtualDOM
   end
 
   module StringUtils
-    def self.camelize string
-      `string.replace(/_(\w)/g, self.$_camelize_handler)`
-    end
+    %x{
+      function camelize_handler(ignored, character_match) {
+        return character_match.toUpperCase();
+      }
+    }
 
-    def self._camelize_handler _, character_match
-      `character_match.toUpperCase()`
+    def self.camelize string
+      `string.replace(/_(\w)/g, camelize_handler)`
     end
   end
 
   module HashUtils
-    def self.camelized_native hash
-      return hash.to_n unless `!!hash.$$is_hash`
+    %x{ var camelize = #{StringUtils.method(:camelize)}.method; }
 
+    def self.camelized_native hash
       %x{
+        if(!(hash && hash.$$is_hash)) return #{hash.to_n};
+
         var v, keys = #{hash.keys}, key, js_obj = {};
         for(var index = 0; index < keys.length; index++) {
           key = keys[index];
           v = #{hash[`key`]};
-          js_obj[#{StringUtils.camelize(`key`)}] = v.$$is_hash ? self.$camelized_native(v) : v
+          js_obj[camelize(key)] = v.$$is_hash ? #{camelized_native(`v`)} : v
         }
         return js_obj;
       }
     end
   end
+  %x{ camelized_native = #{HashUtils.method(:camelized_native)}; }
 end
