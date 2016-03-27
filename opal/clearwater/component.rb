@@ -9,42 +9,49 @@ module Clearwater
     end
 
     def self.sanitize_attributes attributes
-      return attributes unless attributes.is_a? Hash
+      %x{
+        if(!(attributes && attributes.$$is_hash))
+          return attributes;
+      }
 
       attributes.each do |key, value|
-        if `key.slice(0, 2)` == 'on'
+        if `key.slice(0, 2) === 'on'`
           attributes[key] = proc do |event|
             value.call(Bowser::Event.new(event))
           end
         end
       end
 
-      # Allow specifying `class` instead of `class_name`.
-      # Note: `class_name` is still allowed
-      if attributes.key?(:class)
-        if attributes.key?(:class_name)
-          warn "You have both `class` and `class_name` attributes for this " +
-            "element. `class` takes precedence: #{attributes}"
-        end
+      if Clearwater::Component.debug?
+        # Allow specifying `class` instead of `class_name`.
+        # Note: `class_name` is still allowed
+        if attributes.key?(:class)
+          if attributes.key?(:class_name)
+            warn "You have both `class` and `class_name` attributes for this " +
+              "element. `class` takes precedence: #{attributes}"
+          end
 
-        attributes[:class_name] = attributes.delete :class
+          attributes[:class_name] = attributes.delete :class
+        end
       end
 
       attributes
     end
 
+    %x{ var thunk = #{VirtualDOM}.$thunk; }
+    %x{ var $$sanitize_content; }
     def self.sanitize_content content
       %x{
         if(content && content.$$class) {
           if(content.$$is_array) {
-            return #{content.map { |c| sanitize_content(c) }};
+            return content.map($$sanitize_content);
           } else {
             var render = content.$render;
 
-            if(content.type === 'Thunk' && typeof(content.render) === 'function') {
-              return content;
+            if(content.$$thunk) {
+              return thunk(content);
             } else if(render && !render.$$stub) {
-              return self.$sanitize_content(content.$render());
+              return $$sanitize_content(content.$render());
             } else {
               return content;
             }
@@ -53,6 +60,16 @@ module Clearwater
           return content;
         }
       }
+    end
+    %x{ $$sanitize_content = self.$sanitize_content; }
+
+    @debug = true
+    def self.debug?
+      @debug
+    end
+
+    def self.no_debug!
+      @debug = false
     end
 
     # Default render method for stubbing
@@ -176,16 +193,16 @@ module Clearwater
     )
 
     HTML_TAGS.each do |tag_name|
-      define_method(tag_name) do |attributes, content|
-        %x{
-          if(!(attributes === nil || attributes.$$is_hash)) {
+      %x{
+        Opal.defn(self, #{"$#{tag_name}"}, function(attributes, content) {
+          if(!(attributes == null || attributes.$$is_hash)) {
             content = attributes;
             attributes = nil;
           }
-        }
 
-        tag(tag_name, attributes, content)
-      end
+          return #{tag(tag_name, `attributes`, `content`)};
+        });
+      }
     end
 
     def tag tag_name, attributes=nil, content=nil
