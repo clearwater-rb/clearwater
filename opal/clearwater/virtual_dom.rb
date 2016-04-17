@@ -1,11 +1,13 @@
-require 'clearwater/virtual_dom/js/virtual_dom.js'
+require 'clearwater/virtual_dom/js/snabbdom.js'
 
 module VirtualDOM
   def self.node(tag_name, attributes=nil, content=nil)
     %x{
-      return virtualDom.h(
+      return snabbdom.h(
         tag_name,
-        #{HashUtils.camelized_native(attributes)},
+        {
+          props: #{HashUtils.camelized_native(attributes)},
+        },
         #{sanitize_content(content)}
       );
     }
@@ -13,7 +15,7 @@ module VirtualDOM
 
   def self.svg(tag_name, attributes=nil, content=nil)
     %x{
-      return virtualDom.svg(
+      return snabbdom.h(
         tag_name,
         #{HashUtils.camelized_native(attributes)},
         #{sanitize_content(content)}
@@ -21,16 +23,8 @@ module VirtualDOM
     }
   end
 
-  def self.create_element(node)
-    `virtualDom.create(node)`
-  end
-
-  def self.diff first, second
-    `virtualDom.diff(first, second)`
-  end
-
-  def self.patch node, diff
-    `virtualDom.patch(node, diff)`
+  def self.patch old, new
+    `snabbdom.patch(old, #{new})`
   end
 
   def self.sanitize_content content
@@ -49,13 +43,11 @@ module VirtualDOM
 
     def render node
       if rendered?
-        diff = VirtualDOM.diff @node, node
-        VirtualDOM.patch @tree, diff
+        VirtualDOM.patch @node, node
         @node = node
       else
+        VirtualDOM.patch `#@root.native`, node
         @node = node
-        @tree = create_element(node)
-        @root.inner_dom = @tree
         @rendered = true
       end
     end
@@ -81,6 +73,7 @@ module VirtualDOM
 
   module HashUtils
     def self.camelized_native hash
+      return `{}` if `hash === nil`
       return hash.to_n unless `!!hash.$$is_hash`
 
       %x{
