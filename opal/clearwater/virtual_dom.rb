@@ -84,7 +84,7 @@ module VirtualDOM
       return hash.to_n unless `!!hash.$$is_hash`
 
       %x{
-        var v, keys = hash.$$keys, key, js_obj = {};
+        var v, keys = #{hash.keys}, key, js_obj = {};
         for(var index = 0; index < keys.length; index++) {
           key = keys[index];
           v = #{hash[`key`]};
