@@ -33,6 +33,7 @@ module Clearwater
       attributes
     end
 
+    %x{ var thunk = #{VirtualDOM}.$thunk; }
     def self.sanitize_content content
       %x{
         if(content && content.$$class) {
@@ -41,8 +42,8 @@ module Clearwater
           } else {
             var render = content.$render;
 
-            if(content.type === 'Thunk' && typeof(content.render) === 'function') {
-              return content;
+            if(content.$$thunk) {
+              return thunk(content);
             } else if(render && !render.$$stub) {
               return self.$sanitize_content(content.$render());
             } else {

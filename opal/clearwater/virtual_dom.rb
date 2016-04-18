@@ -27,6 +27,10 @@ module VirtualDOM
     `snabbdom.patch(old, #{new})`
   end
 
+  def self.thunk component
+    Thunk.create component
+  end
+
   def self.sanitize_content content
     %x{
       if(content === Opal.nil || content === undefined) return null;
@@ -84,6 +88,45 @@ module VirtualDOM
           js_obj[#{StringUtils.camelize(`key`)}] = v.$$is_hash ? self.$camelized_native(v) : v
         }
         return js_obj;
+      }
+    end
+  end
+
+  module Thunk
+    module_function
+
+    def create component
+      `snabbdom.h(#{"thunk-#{component.class}"}, {
+        hook: {
+          init: self.$init,
+          prepatch: self.$prepatch,
+        },
+        component: component,
+      })`
+    end
+
+    def init thunk
+      component = `thunk.data.component`
+      %x{
+        component.$$vnode = component.$render();
+        thunk.data.vnode = component.$$vnode;
+      }
+    end
+
+    def prepatch old, current
+      component = `current.data.component`
+      previous = `old.data.component`
+
+      %x{
+        if(component === previous) {
+          current.data.vnode = old.data.vnode;
+          return;
+        }
+
+        var should_render = #{component.should_render?(previous)};
+        if(!should_render) {
+          current.data.vnode = old.data.vnode;
+        }
       }
     end
   end
