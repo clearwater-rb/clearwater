@@ -6,9 +6,13 @@ module Clearwater
     attr_accessor :application
 
     def initialize options={}, &block
-      @window   = options.fetch(:window)   { Bowser.window  }
-      @location = options.fetch(:location) { window.location }
-      @history  = options.fetch(:history)  { window.history }
+      if RUBY_ENGINE == 'opal'
+        @window   = options.fetch(:window)   { Bowser.window  }
+        @location = options.fetch(:location) { window.location }
+        @history  = options.fetch(:history)  { window.history }
+      else
+        @location = options.fetch(:location)
+      end
       @routes   = RouteCollection.new(self)
       @application = options[:application]
 
