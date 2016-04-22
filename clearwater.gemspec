@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir[File.join("lib", "**", "*"), File.join("opal", "**", "*"), File.join("shared", "**", "*")]
   spec.executables = Dir[File.join("bin", "**", "*")].map! { |f| f.gsub(/bin\//, "") }
   spec.test_files = Dir[File.join("test", "**", "*"), File.join("spec", "**", "*")]
-  spec.require_paths = ["lib"]
+  spec.require_paths = ["lib", "shared"]
 
   spec.add_runtime_dependency "opal", "~> 0.7"
   spec.add_runtime_dependency "bowser", "~> 0.1.5"
