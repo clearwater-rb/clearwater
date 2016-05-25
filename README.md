@@ -16,7 +16,7 @@ Installing
 Add these lines to your application's Gemfile:
 
 ``` ruby
-gem 'clearwater', '~> 1.0.0.beta3'
+gem 'clearwater', '~> 1.0.0.rc1'
 gem 'opal-rails', github: 'opal/opal-rails' # Only needed for Rails apps
 ```
 
