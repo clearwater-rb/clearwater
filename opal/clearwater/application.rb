@@ -43,6 +43,11 @@ module Clearwater
       render_current_url &block
       watch_url
     end
+    alias mount call
+
+    def unmount
+      AppRegistry.delete self
+    end
 
     def watch_url
       unless @watching_url
