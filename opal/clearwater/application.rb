@@ -78,10 +78,19 @@ module Clearwater
 
     def benchmark message
       if debug?
-        start = `performance.now()`
-        result = yield
-        finish = `performance.now()`
-        puts "#{message} in #{(finish - start).round(3)}ms"
+        result = nil
+
+        if `!!(console.time && console.timeEnd)`
+          `console.time(message)`
+          result = yield
+          `console.timeEnd(message)`
+        else
+          start = `performance.now()`
+          result = yield
+          finish = `performance.now()`
+          puts "#{message} in #{(finish - start).round(3)}ms"
+        end
+
         result
       else
         yield
