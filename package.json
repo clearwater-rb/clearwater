@@ -1,0 +1,26 @@
+{
+  "name": "clearwater",
+  "version": "1.0.0",
+  "description": "Ruby front-end framework",
+  "main": "index.js",
+  "scripts": {
+    "compile": "browserify index.js -o opal/clearwater/virtual_dom/js/virtual_dom.js -s virtualDom"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/clearwater-rb/clearwater.git"
+  },
+  "author": "Jamie Gaskins <jgaskins@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/clearwater-rb/clearwater/issues"
+  },
+  "homepage": "https://github.com/clearwater-rb/clearwater#readme",
+  "dependencies": {
+    "vdom-virtualize": "^2.0.0",
+    "virtual-dom": "git@github.com:clearwater-rb/virtual-dom.git#clearwater-import"
+  },
+  "devDependencies": {
+    "browserify": "^13.0.1"
+  }
+}

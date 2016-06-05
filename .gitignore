@@ -25,3 +25,6 @@
 # Ignores that should be in the global gitignore
 /coverage
 /doc
+
+# Ignore npm stuff
+/node_modules

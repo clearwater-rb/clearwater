@@ -14,3 +14,11 @@ require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:spec)
 
 task :default => [:spec, :spec_opal]
+
+namespace :vdom do
+  desc 'Compile the virtual-dom library from npm'
+  task :compile do
+    sh 'npm install'
+    sh 'npm run compile'
+  end
+end
