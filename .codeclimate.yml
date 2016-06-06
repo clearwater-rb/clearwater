@@ -1,0 +1,2 @@
+exclude_paths:
+  - opal/clearwater/virtual_dom/js/virtual_dom.js
