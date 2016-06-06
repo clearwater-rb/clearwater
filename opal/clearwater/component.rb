@@ -10,7 +10,7 @@ module Clearwater
     end
 
     def self.sanitize_attributes attributes
-      return attributes unless `attributes.$$is_hash`
+      return attributes unless `!!attributes.$$is_hash`
 
       attributes.each do |key, value|
         if `key.slice(0, 2)` == 'on'
