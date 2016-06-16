@@ -70,8 +70,18 @@ module VirtualDOM
   end
 
   module StringUtils
+    # Speed up camelization like whoa.
+    %x{ var camelized_cache = {}; }
+
     def self.camelize string
-      `string.replace(/_(\w)/g, self.$_camelize_handler)`
+      %x{
+        if(camelized_cache.hasOwnProperty(string)) {
+          return camelized_cache[string];
+        } else {
+          camelized_cache[string] = string.replace(/_(\w)/g, self.$_camelize_handler);
+          return camelized_cache[string];
+        }
+      }
     end
 
     def self._camelize_handler _, character_match
