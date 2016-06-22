@@ -12,10 +12,8 @@ Add these lines to your application's Gemfile:
 
 ``` ruby
 gem 'clearwater', '~> 1.0.0.rc1'
-gem 'opal-rails', github: 'opal/opal-rails' # Only needed for Rails apps
+gem 'opal-rails' # Only needed for Rails apps
 ```
-
-The `github` dependency is so that it will install Opal 0.9, which has much better performance than Opal 0.8.
 
 Using
 =====
@@ -33,8 +31,9 @@ class Blog
   include Clearwater::Component
 
   # This method needs to return a virtual-DOM element using the element DSL.
+  # The DSL is provided by the Clearwater::Component mixin.
   def render
-    main([
+    div([
       Articles.new,
       Biography.new,
     ])
@@ -45,30 +44,30 @@ end
 While we use two components in this example, you can use all of these as well:
 
 ``` ruby
-# <main id="foo">
+# <div id="foo">
 #   <h1>Heading</h1>
 #   <article>hello!</article>
-# </main>
+# </div>
 def render
-  main({ id: 'foo' }, [
+  div({ id: 'foo' }, [
     h1('Heading'),
     article('hello!'),
   ])
 end
 
-# <main>Hello, world!</main>
+# <div>Hello, world!</div>
 def render
-  main('Hello, world!')
+  div('Hello, world!')
 end
 
-# <main>123</main>
+# <div>123</div>
 def render
-  main(123)
+  div(123)
 end
 
-# <main></main>
+# <div></div>
 def render
-  main
+  div
 end
 ```
 
