@@ -61,5 +61,44 @@ module Clearwater
 
       expect(router.params('/clearwater/articles/123')).to eq({ article_id: '123' })
     end
+
+    it 'calls route transitions on routing targets' do
+      router = Router.new
+      component_class = Class.new do
+        include Clearwater::Component
+
+        attr_reader :transition_to, :transition_away
+
+        def initialize
+          @transition_to = 0
+          @transition_away = 0
+        end
+
+        def route_transition_to
+          @transition_to += 1
+        end
+
+        def route_transition_away
+          @transition_away += 1
+        end
+      end
+
+      targets = [
+        component_class.new,
+        component_class.new,
+        component_class.new,
+      ]
+      router.set_outlets [targets[0], targets[1]]
+      router.set_outlets [targets[0], targets[2]]
+      router.set_outlets [targets[0], targets[1]]
+      router.set_outlets [targets[0]]
+
+      expect(targets[0].transition_to).to eq 1
+      expect(targets[0].transition_away).to eq 0
+      expect(targets[1].transition_to).to eq 2
+      expect(targets[1].transition_away).to eq 2
+      expect(targets[2].transition_to).to eq 1
+      expect(targets[2].transition_away).to eq 1
+    end
   end
 end
