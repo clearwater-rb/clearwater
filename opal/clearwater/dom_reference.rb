@@ -12,6 +12,10 @@ module Clearwater
     end
 
     def method_missing *args, &block
+      if @node.nil?
+        raise TypeError, "#{self} has not been mounted, received #{args}"
+      end
+
       @node.public_send *args, &block
     end
 
