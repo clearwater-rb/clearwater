@@ -7,6 +7,10 @@ module Clearwater
     def unmount node, previous
     end
 
+    def mounted?
+      !!@node
+    end
+
     def method_missing *args, &block
       @node.public_send *args, &block
     end

@@ -11,5 +11,13 @@ module Clearwater
 
       expect(r.value).to eq 'hi'
     end
+
+    it 'knows when it has been mounted' do
+      expect(ref).not_to be_mounted
+
+      ref.mount(Object.new)
+
+      expect(ref).to be_mounted
+    end
   end
 end
