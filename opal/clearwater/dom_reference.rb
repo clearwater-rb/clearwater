@@ -5,6 +5,7 @@ module Clearwater
     end
 
     def unmount node, previous
+      @node = nil
     end
 
     def mounted?

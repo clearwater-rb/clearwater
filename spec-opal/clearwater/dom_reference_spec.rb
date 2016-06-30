@@ -20,6 +20,13 @@ module Clearwater
       expect(ref).to be_mounted
     end
 
+    it 'knows when it is unmounted' do
+      ref.mount Object.new
+      ref.unmount
+
+      expect(ref).not_to be_mounted
+    end
+
     it 'raises an error if proxied methods are called on it before mount' do
       expect { ref.foo_bar }.to raise_error(TypeError)
     end
