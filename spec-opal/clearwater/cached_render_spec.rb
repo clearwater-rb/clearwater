@@ -42,5 +42,27 @@ module Clearwater
 
       2.times { `component.render(component)` }
     end
+
+    it 'allows nested CachedRender renders' do
+      foo = Class.new do
+        include Clearwater::Component
+        include Clearwater::CachedRender
+
+        def render
+          'hi'
+        end
+      end
+
+      bar = Class.new do
+        include Clearwater::Component
+        include Clearwater::CachedRender
+
+        define_method :render do
+          foo.new
+        end
+      end.new
+
+      expect(`bar.render()`).to eq 'hi'
+    end
   end
 end
