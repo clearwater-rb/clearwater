@@ -1,5 +1,6 @@
 require 'clearwater/virtual_dom'
 require 'clearwater/component/html_tags'
+require 'clearwater/cached_render/wrapper'
 
 module Clearwater
   module Component
@@ -34,6 +35,12 @@ module Clearwater
       attributes
     end
 
+    # Runtime constant lookup isn't free, so if we cache a reference to it we
+    # don't have to do it every time we need to sanitize a node's content.
+    # This does need to happen at the JS level, though. If we use a Ruby
+    # variable, we won't have access to it in the method.
+    %x{ var wrapper = #{CachedRender::Wrapper}; }
+
     def self.sanitize_content content
       %x{
         if(content && content.$$class) {
@@ -42,10 +49,10 @@ module Clearwater
           } else {
             var render = content.$render;
 
-            if(content.type === 'Thunk' && typeof(content.render) === 'function') {
-              return content;
+            if(content.$$cached_render) {
+              return #{`wrapper`.new(content)};
             } else if(render && !render.$$stub) {
-              return self.$sanitize_content(content.$render());
+              return #{sanitize_content(content.render)};
             } else {
               return content;
             }

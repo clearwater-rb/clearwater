@@ -1,5 +1,6 @@
 require 'clearwater/component'
 require 'clearwater/cached_render'
+require 'clearwater/cached_render/wrapper'
 
 module Clearwater
   describe CachedRender do
@@ -17,30 +18,41 @@ module Clearwater
         end
       end
     }
-    let(:value) { double }
+    let(:value) { double(to_s: 'value') }
     let(:component) { component_class.new(value) }
+    let(:wrapper) { CachedRender::Wrapper.new(component) }
 
     it 'memoizes the return value of render' do
-      component = component()
+      wrapper = self.wrapper
 
       expect(value).to receive(:to_s)
-      %x{ component.render(component) }
+      %x{ wrapper.render(wrapper) }
 
-      component.instance_exec { @vnode = VirtualDOM.node('div', 'howdy') }
+      wrapper.instance_exec { @vnode = VirtualDOM.node('div', 'howdy') }
+
       expect(value).not_to receive(:to_s)
-
-      2.times { `component.render(component)` }
+      2.times { `wrapper.render(wrapper)` }
     end
 
     it 'uses should_render? to determine whether to call render again' do
-      component = component()
+      wrapper = self.wrapper
+
       def component.should_render?
         true
       end
 
       expect(value).to receive(:to_s).twice
 
-      2.times { `component.render(component)` }
+      2.times { `wrapper.render(wrapper)` }
+    end
+
+    it "uses the component's key method as its own vdom key" do
+      def component.key
+        '123'
+      end
+
+      wrapper = CachedRender::Wrapper.new(component)
+      expect(`wrapper.key`).to eq '123'
     end
 
     it 'allows nested CachedRender renders' do
@@ -62,7 +74,9 @@ module Clearwater
         end
       end.new
 
-      expect(`bar.render()`).to eq 'hi'
+      wrapper = CachedRender::Wrapper.new(bar)
+
+      expect(`wrapper.render()`).to eq 'hi'
     end
   end
 end
