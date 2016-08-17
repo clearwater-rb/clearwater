@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.email = ["jgaskins@gmail.com"]
   spec.summary = %q{Front-end Ruby web framework for fast, reasonable, and composable applications}
   spec.description = spec.summary
-  spec.homepage = "https://clearwater-rb.github.io/"
+  spec.homepage = "https://github.com/clearwater-rb/clearwater"
   spec.license = "MIT"
 
   spec.files = Dir[File.join("lib", "**", "*"), File.join("opal", "**", "*"), File.join("shared", "**", "*")]
