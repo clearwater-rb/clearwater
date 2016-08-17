@@ -1,3 +1,8 @@
+## Version 1.0.0.rc3
+
+- Fix bug with nested CachedRenders
+- Fix bug that caused CachedRender components with a `@type` instance variable not to cache
+
 ## Version 1.0.0.rc2
 
 - Free DOM nodes when a DOMReference's node has been removed from the DOM
