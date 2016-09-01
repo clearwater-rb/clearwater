@@ -100,6 +100,23 @@ module Clearwater
     end
 
     def set_outlets targets=targets_for_path(current_path)
+      @old_targets = @targets || []
+      @targets = targets
+      navigating_from = @old_targets - @targets
+      navigating_to = @targets - @old_targets
+
+      navigating_from.each do |target|
+        if target.respond_to? :on_route_from
+          target.on_route_from
+        end
+      end
+
+      navigating_to.each do |target|
+        if target.respond_to? :on_route_to
+          target.on_route_to
+        end
+      end
+
       if targets.any?
         (targets.count).times do |index|
           targets[index].outlet = targets[index + 1]
