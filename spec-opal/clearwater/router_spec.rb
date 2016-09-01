@@ -74,11 +74,11 @@ module Clearwater
           @transition_away = 0
         end
 
-        def route_transition_to
+        def on_route_to
           @transition_to += 1
         end
 
-        def route_transition_away
+        def on_route_from
           @transition_away += 1
         end
       end

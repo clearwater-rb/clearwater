@@ -106,14 +106,14 @@ module Clearwater
       navigating_to = @targets - @old_targets
 
       navigating_from.each do |target|
-        if target.respond_to? :route_transition_away
-          target.route_transition_away
+        if target.respond_to? :on_route_from
+          target.on_route_from
         end
       end
 
       navigating_to.each do |target|
-        if target.respond_to? :route_transition_to
-          target.route_transition_to
+        if target.respond_to? :on_route_to
+          target.on_route_to
         end
       end
 
