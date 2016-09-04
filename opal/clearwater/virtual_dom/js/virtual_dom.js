@@ -1,146 +1,27 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.virtualDom = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var createElement = require("./vdom/create-element.js")
-
-module.exports = createElement
-
-},{"./vdom/create-element.js":14}],2:[function(require,module,exports){
-var diff = require("./vtree/diff.js")
-
-module.exports = diff
-
-},{"./vtree/diff.js":37}],3:[function(require,module,exports){
-var h = require("./virtual-hyperscript/index.js")
-
-module.exports = h
-
-},{"./virtual-hyperscript/index.js":22}],4:[function(require,module,exports){
-var diff = require("./diff.js")
-var patch = require("./patch.js")
-var h = require("./h.js")
-var create = require("./create-element.js")
-var VNode = require('./vnode/vnode.js')
-var VText = require('./vnode/vtext.js')
-var svg = require("./virtual-hyperscript/svg.js")
+var diff       = require('virtual-dom/diff')
+var patch      = require('virtual-dom/patch')
+var h          = require('virtual-dom/h')
+var create     = require('virtual-dom/create-element')
+var VNode      = require('virtual-dom/vnode/vnode')
+var VText      = require('virtual-dom/vnode/vtext')
+var svg        = require('virtual-dom/virtual-hyperscript/svg')
+var virtualize = require('vdom-virtualize')
 
 module.exports = {
-    diff: diff,
-    patch: patch,
-    h: h,
-    create: create,
-    VNode: VNode,
-    VText: VText,
-    svg: svg,
+  diff,
+  patch,
+  h,
+  create,
+  VNode,
+  VText,
+  svg,
+  virtualize,
 }
 
-},{"./create-element.js":1,"./diff.js":2,"./h.js":3,"./patch.js":12,"./virtual-hyperscript/svg.js":25,"./vnode/vnode.js":33,"./vnode/vtext.js":35}],5:[function(require,module,exports){
-/*!
- * Cross-Browser Split 1.1.1
- * Copyright 2007-2012 Steven Levithan <stevenlevithan.com>
- * Available under the MIT License
- * ECMAScript compliant, uniform cross-browser split method
- */
+},{"vdom-virtualize":8,"virtual-dom/create-element":10,"virtual-dom/diff":11,"virtual-dom/h":12,"virtual-dom/patch":13,"virtual-dom/virtual-hyperscript/svg":26,"virtual-dom/vnode/vnode":34,"virtual-dom/vnode/vtext":36}],2:[function(require,module,exports){
 
-/**
- * Splits a string into an array of strings using a regex or string separator. Matches of the
- * separator are not included in the result array. However, if `separator` is a regex that contains
- * capturing groups, backreferences are spliced into the result each time `separator` is matched.
- * Fixes browser bugs compared to the native `String.prototype.split` and can be used reliably
- * cross-browser.
- * @param {String} str String to split.
- * @param {RegExp|String} separator Regex or string to use for separating the string.
- * @param {Number} [limit] Maximum number of items to include in the result array.
- * @returns {Array} Array of substrings.
- * @example
- *
- * // Basic use
- * split('a b c d', ' ');
- * // -> ['a', 'b', 'c', 'd']
- *
- * // With limit
- * split('a b c d', ' ', 2);
- * // -> ['a', 'b']
- *
- * // Backreferences in result array
- * split('..word1 word2..', /([a-z]+)(\d+)/i);
- * // -> ['..', 'word', '1', ' ', 'word', '2', '..']
- */
-module.exports = (function split(undef) {
-
-  var nativeSplit = String.prototype.split,
-    compliantExecNpcg = /()??/.exec("")[1] === undef,
-    // NPCG: nonparticipating capturing group
-    self;
-
-  self = function(str, separator, limit) {
-    // If `separator` is not a regex, use `nativeSplit`
-    if (Object.prototype.toString.call(separator) !== "[object RegExp]") {
-      return nativeSplit.call(str, separator, limit);
-    }
-    var output = [],
-      flags = (separator.ignoreCase ? "i" : "") + (separator.multiline ? "m" : "") + (separator.extended ? "x" : "") + // Proposed for ES6
-      (separator.sticky ? "y" : ""),
-      // Firefox 3+
-      lastLastIndex = 0,
-      // Make `global` and avoid `lastIndex` issues by working with a copy
-      separator = new RegExp(separator.source, flags + "g"),
-      separator2, match, lastIndex, lastLength;
-    str += ""; // Type-convert
-    if (!compliantExecNpcg) {
-      // Doesn't need flags gy, but they don't hurt
-      separator2 = new RegExp("^" + separator.source + "$(?!\\s)", flags);
-    }
-    /* Values for `limit`, per the spec:
-     * If undefined: 4294967295 // Math.pow(2, 32) - 1
-     * If 0, Infinity, or NaN: 0
-     * If positive number: limit = Math.floor(limit); if (limit > 4294967295) limit -= 4294967296;
-     * If negative number: 4294967296 - Math.floor(Math.abs(limit))
-     * If other: Type-convert, then use the above rules
-     */
-    limit = limit === undef ? -1 >>> 0 : // Math.pow(2, 32) - 1
-    limit >>> 0; // ToUint32(limit)
-    while (match = separator.exec(str)) {
-      // `separator.lastIndex` is not reliable cross-browser
-      lastIndex = match.index + match[0].length;
-      if (lastIndex > lastLastIndex) {
-        output.push(str.slice(lastLastIndex, match.index));
-        // Fix browsers whose `exec` methods don't consistently return `undefined` for
-        // nonparticipating capturing groups
-        if (!compliantExecNpcg && match.length > 1) {
-          match[0].replace(separator2, function() {
-            for (var i = 1; i < arguments.length - 2; i++) {
-              if (arguments[i] === undef) {
-                match[i] = undef;
-              }
-            }
-          });
-        }
-        if (match.length > 1 && match.index < str.length) {
-          Array.prototype.push.apply(output, match.slice(1));
-        }
-        lastLength = match[0].length;
-        lastLastIndex = lastIndex;
-        if (output.length >= limit) {
-          break;
-        }
-      }
-      if (separator.lastIndex === match.index) {
-        separator.lastIndex++; // Avoid an infinite loop
-      }
-    }
-    if (lastLastIndex === str.length) {
-      if (lastLength || !separator.test("")) {
-        output.push("");
-      }
-    } else {
-      output.push(str.slice(lastLastIndex));
-    }
-    return output.length > limit ? output.slice(0, limit) : output;
-  };
-
-  return self;
-})();
-
-},{}],6:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 'use strict';
 
 var OneVersionConstraint = require('individual/one-version');
@@ -162,7 +43,26 @@ function EvStore(elem) {
     return hash;
 }
 
-},{"individual/one-version":8}],7:[function(require,module,exports){
+},{"individual/one-version":6}],4:[function(require,module,exports){
+(function (global){
+var topLevel = typeof global !== 'undefined' ? global :
+    typeof window !== 'undefined' ? window : {}
+var minDoc = require('min-document');
+
+if (typeof document !== 'undefined') {
+    module.exports = document;
+} else {
+    var doccy = topLevel['__GLOBAL_DOCUMENT_CACHE@4'];
+
+    if (!doccy) {
+        doccy = topLevel['__GLOBAL_DOCUMENT_CACHE@4'] = minDoc;
+    }
+
+    module.exports = doccy;
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"min-document":2}],5:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -185,7 +85,7 @@ function Individual(key, value) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],8:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 var Individual = require('./index.js');
@@ -209,48 +109,296 @@ function OneVersion(moduleName, version, defaultValue) {
     return Individual(key, defaultValue);
 }
 
-},{"./index.js":7}],9:[function(require,module,exports){
-(function (global){
-var topLevel = typeof global !== 'undefined' ? global :
-    typeof window !== 'undefined' ? window : {}
-var minDoc = require('min-document');
-
-if (typeof document !== 'undefined') {
-    module.exports = document;
-} else {
-    var doccy = topLevel['__GLOBAL_DOCUMENT_CACHE@4'];
-
-    if (!doccy) {
-        doccy = topLevel['__GLOBAL_DOCUMENT_CACHE@4'] = minDoc;
-    }
-
-    module.exports = doccy;
-}
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"min-document":38}],10:[function(require,module,exports){
+},{"./index.js":5}],7:[function(require,module,exports){
 "use strict";
 
 module.exports = function isObject(x) {
 	return typeof x === "object" && x !== null;
 };
 
-},{}],11:[function(require,module,exports){
-var nativeIsArray = Array.isArray
-var toString = Object.prototype.toString
+},{}],8:[function(require,module,exports){
+/*!
+* vdom-virtualize
+* Copyright 2014 by Marcel Klehr <mklehr@gmx.net>
+*
+* (MIT LICENSE)
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*/
+var VNode = require("virtual-dom/vnode/vnode")
+  , VText = require("virtual-dom/vnode/vtext")
+  , VComment = require("./vcomment")
 
-module.exports = nativeIsArray || isArray
+module.exports = createVNode
 
-function isArray(obj) {
-    return toString.call(obj) === "[object Array]"
+function createVNode(domNode, key) {
+  key = key || null // XXX: Leave out `key` for now... merely used for (re-)ordering
+
+  if(domNode.nodeType == 1) return createFromElement(domNode, key)
+  if(domNode.nodeType == 3) return createFromTextNode(domNode, key)
+  if(domNode.nodeType == 8) return createFromCommentNode(domNode, key)
+  return
 }
 
-},{}],12:[function(require,module,exports){
+function createFromTextNode(tNode) {
+  return new VText(tNode.nodeValue)
+}
+
+
+function createFromCommentNode(cNode) {
+  return new VComment(cNode.nodeValue)
+}
+
+
+function createFromElement(el) {
+  var tagName = el.tagName
+  , namespace = el.namespaceURI == 'http://www.w3.org/1999/xhtml'? null : el.namespaceURI
+  , properties = getElementProperties(el)
+  , children = []
+
+  for (var i = 0; i < el.childNodes.length; i++) {
+    children.push(createVNode(el.childNodes[i]/*, i*/))
+  }
+
+  return new VNode(tagName, properties, children, null, namespace)
+}
+
+
+function getElementProperties(el) {
+  var obj = {}
+
+  for(var i=0; i<props.length; i++) {
+    var propName = props[i]
+    if(!el[propName]) continue
+
+    // Special case: style
+    // .style is a DOMStyleDeclaration, thus we need to iterate over all
+    // rules to create a hash of applied css properties.
+    //
+    // You can directly set a specific .style[prop] = value so patching with vdom
+    // is possible.
+    if("style" == propName) {
+      var css = {}
+        , styleProp
+      if ('undefined' !== typeof el.style.length) {
+        for(var j=0; j<el.style.length; j++) {
+          styleProp = el.style[j]
+          css[styleProp] = el.style.getPropertyValue(styleProp) // XXX: add support for "!important" via getPropertyPriority()!
+        }
+      } else { // IE8
+        for (var styleProp in el.style) {
+          if (el.style[styleProp] && el.style.hasOwnProperty(styleProp)) {
+            css[styleProp] = el.style[styleProp];
+          }
+        }
+      }
+
+      if(Object.keys(css).length) obj[propName] = css
+      continue
+    }
+
+    // https://msdn.microsoft.com/en-us/library/cc848861%28v=vs.85%29.aspx
+    // The img element does not support the HREF content attribute.
+    // In addition, the href property is read-only for the img Document Object Model (DOM) object
+    if (el.tagName.toLowerCase() === 'img' && propName === 'href') {
+      continue;
+    }
+
+    // Special case: dataset
+    // we can iterate over .dataset with a simple for..in loop.
+    // The all-time foo with data-* attribs is the dash-snake to camelCase
+    // conversion.
+    //
+    // *This is compatible with h(), but not with every browser, thus this section was removed in favor
+    // of attributes (specified below)!*
+    //
+    // .dataset properties are directly accessible as transparent getters/setters, so
+    // patching with vdom is possible.
+    /*if("dataset" == propName) {
+      var data = {}
+      for(var p in el.dataset) {
+        data[p] = el.dataset[p]
+      }
+      obj[propName] = data
+      return
+    }*/
+
+    // Special case: attributes
+    // these are a NamedNodeMap, but we can just convert them to a hash for vdom,
+    // because of https://github.com/Matt-Esch/virtual-dom/blob/master/vdom/apply-properties.js#L57
+    if("attributes" == propName){
+      var atts = Array.prototype.slice.call(el[propName]);
+      var hash = {}
+      for(var k=0; k<atts.length; k++){
+        var name = atts[k].name;
+        if(obj[name] || obj[attrBlacklist[name]]) continue;
+        hash[name] = el.getAttribute(name);
+      }
+      obj[propName] = hash;
+      continue
+    }
+    if("tabIndex" == propName && el.tabIndex === -1) continue
+
+    // Special case: contentEditable
+    // browser use 'inherit' by default on all nodes, but does not allow setting it to ''
+    // diffing virtualize dom will trigger error
+    // ref: https://github.com/Matt-Esch/virtual-dom/issues/176
+    if("contentEditable" == propName && el[propName] === 'inherit') continue
+
+    if('object' === typeof el[propName]) continue
+
+    // default: just copy the property
+    obj[propName] = el[propName]
+  }
+
+  return obj
+}
+
+/**
+ * DOMNode property white list
+ * Taken from https://github.com/Raynos/react/blob/dom-property-config/src/browser/ui/dom/DefaultDOMPropertyConfig.js
+ */
+var props =
+
+module.exports.properties = [
+ "accept"
+,"accessKey"
+,"action"
+,"alt"
+,"async"
+,"autoComplete"
+,"autoPlay"
+,"cellPadding"
+,"cellSpacing"
+,"checked"
+,"className"
+,"colSpan"
+,"content"
+,"contentEditable"
+,"controls"
+,"crossOrigin"
+,"data"
+//,"dataset" removed since attributes handles data-attributes
+,"defer"
+,"dir"
+,"download"
+,"draggable"
+,"encType"
+,"formNoValidate"
+,"href"
+,"hrefLang"
+,"htmlFor"
+,"httpEquiv"
+,"icon"
+,"id"
+,"label"
+,"lang"
+,"list"
+,"loop"
+,"max"
+,"mediaGroup"
+,"method"
+,"min"
+,"multiple"
+,"muted"
+,"name"
+,"noValidate"
+,"pattern"
+,"placeholder"
+,"poster"
+,"preload"
+,"radioGroup"
+,"readOnly"
+,"rel"
+,"required"
+,"rowSpan"
+,"sandbox"
+,"scope"
+,"scrollLeft"
+,"scrolling"
+,"scrollTop"
+,"selected"
+,"span"
+,"spellCheck"
+,"src"
+,"srcDoc"
+,"srcSet"
+,"start"
+,"step"
+,"style"
+,"tabIndex"
+,"target"
+,"title"
+,"type"
+,"value"
+
+// Non-standard Properties
+,"autoCapitalize"
+,"autoCorrect"
+,"property"
+
+, "attributes"
+]
+
+var attrBlacklist =
+module.exports.attrBlacklist = {
+  'class': 'className'
+}
+
+},{"./vcomment":9,"virtual-dom/vnode/vnode":34,"virtual-dom/vnode/vtext":36}],9:[function(require,module,exports){
+module.exports = VirtualComment
+
+function VirtualComment(text) {
+  this.text = String(text)
+}
+
+VirtualComment.prototype.type = 'Widget'
+
+VirtualComment.prototype.init = function() {
+  return document.createComment(this.text)
+}
+
+VirtualComment.prototype.update = function(previous, domNode) {
+  if(this.text === previous.text) return
+  domNode.nodeValue = this.text
+}
+
+},{}],10:[function(require,module,exports){
+var createElement = require("./vdom/create-element.js")
+
+module.exports = createElement
+
+},{"./vdom/create-element.js":15}],11:[function(require,module,exports){
+var diff = require("./vtree/diff.js")
+
+module.exports = diff
+
+},{"./vtree/diff.js":38}],12:[function(require,module,exports){
+var h = require("./virtual-hyperscript/index.js")
+
+module.exports = h
+
+},{"./virtual-hyperscript/index.js":23}],13:[function(require,module,exports){
 var patch = require("./vdom/patch.js")
 
 module.exports = patch
 
-},{"./vdom/patch.js":17}],13:[function(require,module,exports){
+},{"./vdom/patch.js":18}],14:[function(require,module,exports){
 var isObject = require("is-object")
 var isHook = require("../vnode/is-vhook.js")
 
@@ -349,7 +497,7 @@ function getPrototype(value) {
     }
 }
 
-},{"../vnode/is-vhook.js":28,"is-object":10}],14:[function(require,module,exports){
+},{"../vnode/is-vhook.js":29,"is-object":7}],15:[function(require,module,exports){
 var document = require("global/document")
 
 var applyProperties = require("./apply-properties")
@@ -397,7 +545,7 @@ function createElement(vnode, opts) {
     return node
 }
 
-},{"../vnode/handle-thunk.js":26,"../vnode/is-vnode.js":29,"../vnode/is-vtext.js":30,"../vnode/is-widget.js":31,"./apply-properties":13,"global/document":9}],15:[function(require,module,exports){
+},{"../vnode/handle-thunk.js":27,"../vnode/is-vnode.js":30,"../vnode/is-vtext.js":31,"../vnode/is-widget.js":32,"./apply-properties":14,"global/document":4}],16:[function(require,module,exports){
 // Maps a virtual DOM tree onto a real DOM tree in an efficient manner.
 // We don't want to read all of the DOM nodes in the tree so we use
 // the in-order tree indexing to eliminate recursion down certain branches.
@@ -484,7 +632,7 @@ function ascending(a, b) {
     return a > b ? 1 : -1
 }
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var applyProperties = require("./apply-properties")
 
 var isWidget = require("../vnode/is-widget.js")
@@ -637,7 +785,7 @@ function replaceRoot(oldRoot, newRoot) {
     return newRoot;
 }
 
-},{"../vnode/is-widget.js":31,"../vnode/vpatch.js":34,"./apply-properties":13,"./update-widget":18}],17:[function(require,module,exports){
+},{"../vnode/is-widget.js":32,"../vnode/vpatch.js":35,"./apply-properties":14,"./update-widget":19}],18:[function(require,module,exports){
 var document = require("global/document")
 var isArray = require("x-is-array")
 
@@ -648,9 +796,7 @@ module.exports = patch
 
 function patch(rootNode, patches, renderOptions) {
     renderOptions = renderOptions || {}
-    renderOptions.patch = renderOptions.patch && renderOptions.patch !== patch
-        ? renderOptions.patch
-        : patchRecursive
+    renderOptions.patch = renderOptions.patch || patchRecursive
     renderOptions.render = renderOptions.render || render
 
     return renderOptions.patch(rootNode, patches, renderOptions)
@@ -719,7 +865,7 @@ function patchIndices(patches) {
     return indices
 }
 
-},{"./create-element":14,"./dom-index":15,"./patch-op":16,"global/document":9,"x-is-array":11}],18:[function(require,module,exports){
+},{"./create-element":15,"./dom-index":16,"./patch-op":17,"global/document":4,"x-is-array":39}],19:[function(require,module,exports){
 var isWidget = require("../vnode/is-widget.js")
 
 module.exports = updateWidget
@@ -736,7 +882,7 @@ function updateWidget(a, b) {
     return false
 }
 
-},{"../vnode/is-widget.js":31}],19:[function(require,module,exports){
+},{"../vnode/is-widget.js":32}],20:[function(require,module,exports){
 'use strict';
 
 module.exports = AttributeHook;
@@ -773,7 +919,7 @@ AttributeHook.prototype.unhook = function (node, prop, next) {
 
 AttributeHook.prototype.type = 'AttributeHook';
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 'use strict';
 
 var EvStore = require('ev-store');
@@ -802,7 +948,7 @@ EvHook.prototype.unhook = function(node, propertyName) {
     es[propName] = undefined;
 };
 
-},{"ev-store":6}],21:[function(require,module,exports){
+},{"ev-store":3}],22:[function(require,module,exports){
 'use strict';
 
 module.exports = SoftSetHook;
@@ -821,7 +967,7 @@ SoftSetHook.prototype.hook = function (node, propertyName) {
     }
 };
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 var isArray = require('x-is-array');
@@ -960,13 +1106,8 @@ function errorString(obj) {
     }
 }
 
-},{"../vnode/is-thunk":27,"../vnode/is-vhook":28,"../vnode/is-vnode":29,"../vnode/is-vtext":30,"../vnode/is-widget":31,"../vnode/vnode.js":33,"../vnode/vtext.js":35,"./hooks/ev-hook.js":20,"./hooks/soft-set-hook.js":21,"./parse-tag.js":23,"x-is-array":11}],23:[function(require,module,exports){
+},{"../vnode/is-thunk":28,"../vnode/is-vhook":29,"../vnode/is-vnode":30,"../vnode/is-vtext":31,"../vnode/is-widget":32,"../vnode/vnode.js":34,"../vnode/vtext.js":36,"./hooks/ev-hook.js":21,"./hooks/soft-set-hook.js":22,"./parse-tag.js":24,"x-is-array":39}],24:[function(require,module,exports){
 'use strict';
-
-var split = require('browser-split');
-
-var classIdSplit = /([\.#]?[a-zA-Z0-9\u007F-\uFFFF_:-]+)/;
-var notClassId = /^\.|#/;
 
 module.exports = parseTag;
 
@@ -1039,7 +1180,7 @@ function splitTag(tag) {
     return parts;
 }
 
-},{"browser-split":5}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 var DEFAULT_NAMESPACE = null;
@@ -1354,7 +1495,7 @@ function SVGAttributeNamespace(value) {
   }
 }
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 var isArray = require('x-is-array');
@@ -1418,7 +1559,7 @@ function isChildren(x) {
     return typeof x === 'string' || isArray(x);
 }
 
-},{"./hooks/attribute-hook":19,"./index.js":22,"./svg-attribute-namespace":24,"x-is-array":11}],26:[function(require,module,exports){
+},{"./hooks/attribute-hook":20,"./index.js":23,"./svg-attribute-namespace":25,"x-is-array":39}],27:[function(require,module,exports){
 var isVNode = require("./is-vnode")
 var isVText = require("./is-vtext")
 var isWidget = require("./is-widget")
@@ -1460,14 +1601,14 @@ function renderThunk(thunk, previous) {
     return renderedThunk
 }
 
-},{"./is-thunk":27,"./is-vnode":29,"./is-vtext":30,"./is-widget":31}],27:[function(require,module,exports){
+},{"./is-thunk":28,"./is-vnode":30,"./is-vtext":31,"./is-widget":32}],28:[function(require,module,exports){
 module.exports = isThunk
 
 function isThunk(t) {
     return t && t.type === "Thunk"
 }
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 module.exports = isHook
 
 function isHook(hook) {
@@ -1476,7 +1617,7 @@ function isHook(hook) {
        typeof hook.unhook === "function" && !hook.hasOwnProperty("unhook"))
 }
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var version = require("./version")
 
 module.exports = isVirtualNode
@@ -1485,7 +1626,7 @@ function isVirtualNode(x) {
     return x && x.type === "VirtualNode" && x.version === version
 }
 
-},{"./version":32}],30:[function(require,module,exports){
+},{"./version":33}],31:[function(require,module,exports){
 var version = require("./version")
 
 module.exports = isVirtualText
@@ -1494,17 +1635,17 @@ function isVirtualText(x) {
     return x && x.type === "VirtualText" && x.version === version
 }
 
-},{"./version":32}],31:[function(require,module,exports){
+},{"./version":33}],32:[function(require,module,exports){
 module.exports = isWidget
 
 function isWidget(w) {
     return w && w.type === "Widget"
 }
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 module.exports = "2"
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 var version = require("./version")
 var isVNode = require("./is-vnode")
 var isWidget = require("./is-widget")
@@ -1578,7 +1719,7 @@ function VirtualNode(tagName, properties, children, key, namespace) {
 VirtualNode.prototype.version = version
 VirtualNode.prototype.type = "VirtualNode"
 
-},{"./is-thunk":27,"./is-vhook":28,"./is-vnode":29,"./is-widget":31,"./version":32}],34:[function(require,module,exports){
+},{"./is-thunk":28,"./is-vhook":29,"./is-vnode":30,"./is-widget":32,"./version":33}],35:[function(require,module,exports){
 var version = require("./version")
 
 VirtualPatch.NONE = 0
@@ -1602,7 +1743,7 @@ function VirtualPatch(type, vNode, patch) {
 VirtualPatch.prototype.version = version
 VirtualPatch.prototype.type = "VirtualPatch"
 
-},{"./version":32}],35:[function(require,module,exports){
+},{"./version":33}],36:[function(require,module,exports){
 var version = require("./version")
 
 module.exports = VirtualText
@@ -1614,7 +1755,7 @@ function VirtualText(text) {
 VirtualText.prototype.version = version
 VirtualText.prototype.type = "VirtualText"
 
-},{"./version":32}],36:[function(require,module,exports){
+},{"./version":33}],37:[function(require,module,exports){
 var isObject = require("is-object")
 var isHook = require("../vnode/is-vhook")
 
@@ -1674,7 +1815,7 @@ function getPrototype(value) {
   }
 }
 
-},{"../vnode/is-vhook":28,"is-object":10}],37:[function(require,module,exports){
+},{"../vnode/is-vhook":29,"is-object":7}],38:[function(require,module,exports){
 var isArray = require("x-is-array")
 
 var VPatch = require("../vnode/vpatch")
@@ -2103,7 +2244,15 @@ function appendPatch(apply, patch) {
     }
 }
 
-},{"../vnode/handle-thunk":26,"../vnode/is-thunk":27,"../vnode/is-vnode":29,"../vnode/is-vtext":30,"../vnode/is-widget":31,"../vnode/vpatch":34,"./diff-props":36,"x-is-array":11}],38:[function(require,module,exports){
+},{"../vnode/handle-thunk":27,"../vnode/is-thunk":28,"../vnode/is-vnode":30,"../vnode/is-vtext":31,"../vnode/is-widget":32,"../vnode/vpatch":35,"./diff-props":37,"x-is-array":39}],39:[function(require,module,exports){
+var nativeIsArray = Array.isArray
+var toString = Object.prototype.toString
 
-},{}]},{},[4])(4)
+module.exports = nativeIsArray || isArray
+
+function isArray(obj) {
+    return toString.call(obj) === "[object Array]"
+}
+
+},{}]},{},[1])(1)
 });

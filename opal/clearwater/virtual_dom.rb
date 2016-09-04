@@ -48,16 +48,26 @@ module VirtualDOM
     end
 
     def render node
-      if rendered?
-        diff = VirtualDOM.diff @node, node
-        VirtualDOM.patch @tree, diff
-        @node = node
-      else
-        @node = node
-        @tree = create_element(node)
-        @root.inner_dom = @tree
+      if !rendered?
         @rendered = true
+
+        # If we rendered the app on the server, we hydrate the rendered app
+        # rather than replacing it. This provides a faster and more memory-
+        # efficient first vdom render.
+        if `#@root.native.children.length > 0`
+          @tree = `#@root.native.children[0]`
+          @node = `virtualDom.virtualize(#@tree)`
+        else # Not server-rendered, generate from scratch.
+          @node = node
+          @tree = VirtualDOM.create_element(node)
+          @root.inner_dom = @tree
+          return
+        end
       end
+
+      diff = VirtualDOM.diff @node, node
+      VirtualDOM.patch @tree, diff
+      @node = node
     end
 
     def create_element node
