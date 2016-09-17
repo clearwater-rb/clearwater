@@ -1,3 +1,8 @@
+## Version 1.0.0.rc4
+
+- Add routing transition hooks ([#52](https://github.com/clearwater-rb/clearwater/pull/52))
+- Fix regression from rc1 where we optimized performance but accidentally sacrificed correctness in converting element attributes from Ruby hashes to JS objects for the virtual-DOM engine to consume.
+
 ## Version 1.0.0.rc3
 
 - Fix bug with nested CachedRenders
