@@ -1,15 +1,16 @@
-require 'clearwater/virtual_dom/js/virtual_dom.js'
+require 'clearwater/virtual_dom/js/polyfill.js'
+require 'clearwater/virtual_dom/js/inferno.js'
 
 module Clearwater
   module VirtualDOM
+    @h = `inferno.createElement`
+
     def self.node(tag_name, attributes=nil, content=nil)
-      %x{
-        return virtualDom.h(
-          tag_name,
-          #{HashUtils.camelized_native(attributes)},
-          #{sanitize_content(content)}
-        );
-      }
+      @h.call(
+        tag_name,
+        HashUtils.camelized_native(attributes),
+        sanitize_content(content),
+      )
     end
 
     def self.svg(tag_name, attributes=nil, content=nil)
@@ -20,18 +21,6 @@ module Clearwater
           #{sanitize_content(content)}
         );
       }
-    end
-
-    def self.create_element(node)
-      `virtualDom.create(node)`
-    end
-
-    def self.diff first, second
-      `virtualDom.diff(first, second)`
-    end
-
-    def self.patch node, diff
-      `virtualDom.patch(node, diff)`
     end
 
     def self.sanitize_content content
@@ -49,16 +38,7 @@ module Clearwater
       end
 
       def render node
-        if rendered?
-          diff = VirtualDOM.diff @node, node
-          VirtualDOM.patch @tree, diff
-          @node = node
-        else
-          @node = node
-          @tree = create_element(node)
-          @root.inner_dom = @tree
-          @rendered = true
-        end
+        `inferno.dom.render(node, #{@root.to_n})`
       end
 
       def create_element node

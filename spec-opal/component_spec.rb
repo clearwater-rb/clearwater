@@ -15,7 +15,7 @@ module Clearwater
 
     Component::HTML_TAGS.each do |tag|
       it "provides helpers for `#{tag}` elements" do
-        expect(`#{component.send(tag)}.tagName`).to eq tag.upcase
+        expect(`#{component.send(tag)}.tag`).to eq tag
       end
     end
 
