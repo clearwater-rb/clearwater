@@ -100,5 +100,43 @@ module Clearwater
       expect(targets[2].transition_to).to eq 1
       expect(targets[2].transition_away).to eq 1
     end
+
+    it 'calls route transitions when path changes but targets do not' do
+      component_class = Class.new do
+        include Clearwater::Component
+
+        attr_reader :transition_to, :transition_away
+
+        def initialize
+          @transition_to = 0
+          @transition_away = 0
+        end
+
+        def on_route_to
+          @transition_to += 1
+        end
+
+        def on_route_from
+          @transition_away += 1
+        end
+      end
+
+      targets = Array.new(2) { component_class.new }
+
+      router = Router.new do
+        route 'articles' => targets[0] do
+          route ':article_id' => targets[1]
+        end
+      end
+
+      router.params('/articles/1')
+      router.set_outlets [targets[0], targets[1]]
+
+      router.params('/articles/2')
+      router.set_outlets [targets[0], targets[1]]
+
+      expect(targets[0].transition_to).to eq 1
+      expect(targets[1].transition_to).to eq 2
+    end
   end
 end
