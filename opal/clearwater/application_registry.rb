@@ -6,6 +6,10 @@ module Clearwater
       @apps = Set.new
     end
 
+    def each &block
+      @apps.each &block
+    end
+
     def << app
       @apps << app
     end

@@ -81,13 +81,22 @@ module Clearwater
     end
 
     def navigate_to path
+      old_path = current_path
       history.push path
       set_outlets
+      trigger_routing_callbacks path: path, previous_path: old_path
       render_application
     end
 
     def self.navigate_to path
+      old_path = current_path
       Bowser.window.history.push path
+      Clearwater::Application::AppRegistry.each do |app|
+        app.router.trigger_routing_callbacks(
+          path: path,
+          previous_path: old_path,
+        )
+      end
       render_all_apps
     end
 
@@ -99,11 +108,15 @@ module Clearwater
       history.back
     end
 
-    def set_outlets targets=targets_for_path(current_path)
-      @old_targets = @targets || []
-      @targets = targets
-      navigating_from = @old_targets - @targets
-      navigating_to = @targets - @old_targets
+    def trigger_routing_callbacks(path:, previous_path:)
+      targets = targets_for_path(path)
+      old_targets = targets_for_path(previous_path)
+      routes = routes_for_path(path)
+      old_params = params(previous_path)
+      new_params = params(path)
+
+      navigating_from = old_targets - targets
+      navigating_to = targets - old_targets
 
       navigating_from.each do |target|
         if target.respond_to? :on_route_from
@@ -117,6 +130,23 @@ module Clearwater
         end
       end
 
+      changed_dynamic_segments = new_params.select { |k, v| old_params[k] != v }
+      changed_dynamic_targets = changed_dynamic_segments.each_key.map do |key|
+        segment = ":#{key}"
+        route = routes.find { |route| route.key == segment }.target
+      end
+
+      # Don't process these again
+      changed_dynamic_targets -= navigating_from
+      changed_dynamic_targets -= navigating_to
+
+      changed_dynamic_targets.each do |target|
+        target.on_route_from if target.respond_to? :on_route_from
+        target.on_route_to if target.respond_to? :on_route_to
+      end
+    end
+
+    def set_outlets targets=targets_for_path(current_path)
       if targets.any?
         (targets.count).times do |index|
           targets[index].outlet = targets[index + 1]
