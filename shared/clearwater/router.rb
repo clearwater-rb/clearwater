@@ -81,22 +81,15 @@ module Clearwater
     end
 
     def navigate_to path
-      old_path = current_path
+      @previous_path = current_path
       history.push path
       set_outlets
-      trigger_routing_callbacks path: path, previous_path: old_path
       render_application
     end
 
     def self.navigate_to path
-      old_path = current_path
+      @previous_path = current_path
       Bowser.window.history.push path
-      Clearwater::Application::AppRegistry.each do |app|
-        app.router.trigger_routing_callbacks(
-          path: path,
-          previous_path: old_path,
-        )
-      end
       render_all_apps
     end
 
@@ -109,6 +102,7 @@ module Clearwater
     end
 
     def trigger_routing_callbacks(path:, previous_path:)
+      previous_path ||= ""
       targets = targets_for_path(path)
       old_targets = targets_for_path(previous_path)
       routes = routes_for_path(path)
@@ -147,6 +141,8 @@ module Clearwater
     end
 
     def set_outlets targets=targets_for_path(current_path)
+      trigger_routing_callbacks(path: current_path, previous_path: @previous_path)
+
       if targets.any?
         (targets.count).times do |index|
           targets[index].outlet = targets[index + 1]
