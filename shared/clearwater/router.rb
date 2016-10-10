@@ -81,23 +81,24 @@ module Clearwater
     end
 
     def navigate_to path
-      old_path = current_path
+      self.class.previous_path = current_path
       history.push path
       set_outlets
-      trigger_routing_callbacks path: path, previous_path: old_path
       render_application
     end
 
     def self.navigate_to path
-      old_path = current_path
+      self.previous_path = current_path
       Bowser.window.history.push path
-      Clearwater::Application::AppRegistry.each do |app|
-        app.router.trigger_routing_callbacks(
-          path: path,
-          previous_path: old_path,
-        )
-      end
       render_all_apps
+    end
+
+    def self.previous_path=(path)
+      @previous_path = path
+    end
+
+    def self.previous_path
+      @previous_path.to_s
     end
 
     def navigate_to_remote path
@@ -115,38 +116,29 @@ module Clearwater
       old_params = params(previous_path)
       new_params = params(path)
 
+      changed_dynamic_segments = new_params
+        .select { |k, v| old_params[k] != v }
+        .map { |key, _| ":#{key}" }
+
+      changed_dynamic_targets = routes.drop_while { |route|
+        !changed_dynamic_segments.include?(route.key)
+      }.map(&:target)
+
       navigating_from = old_targets - targets
       navigating_to = targets - old_targets
 
-      navigating_from.each do |target|
-        if target.respond_to? :on_route_from
-          target.on_route_from
-        end
-      end
-
-      navigating_to.each do |target|
-        if target.respond_to? :on_route_to
-          target.on_route_to
-        end
-      end
-
-      changed_dynamic_segments = new_params.select { |k, v| old_params[k] != v }
-      changed_dynamic_targets = changed_dynamic_segments.each_key.map do |key|
-        segment = ":#{key}"
-        route = routes.find { |route| route.key == segment }.target
-      end
-
-      # Don't process these again
-      changed_dynamic_targets -= navigating_from
-      changed_dynamic_targets -= navigating_to
-
-      changed_dynamic_targets.each do |target|
+      (navigating_from | changed_dynamic_targets).each do |target|
         target.on_route_from if target.respond_to? :on_route_from
+      end
+
+      (navigating_to | changed_dynamic_targets).each do |target|
         target.on_route_to if target.respond_to? :on_route_to
       end
     end
 
     def set_outlets targets=targets_for_path(current_path)
+      trigger_routing_callbacks(path: current_path, previous_path: self.class.previous_path)
+
       if targets.any?
         (targets.count).times do |index|
           targets[index].outlet = targets[index + 1]

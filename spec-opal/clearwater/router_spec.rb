@@ -64,67 +64,113 @@ module Clearwater
     end
 
     context "route transitions" do
-      let(:location) { double('Location', path: '/') }
       let(:component_class) do
         Class.new do
           include Clearwater::Component
 
-          attr_reader :transition_to, :transition_away
+          attr_reader :route_to, :route_from
 
           def initialize
-            @transition_to = 0
-            @transition_away = 0
+            @route_to = 0
+            @route_from = 0
           end
 
           def on_route_to
-            @transition_to += 1
+            @route_to += 1
           end
 
           def on_route_from
-            @transition_away += 1
+            @route_from += 1
           end
         end
       end
 
-      it 'calls route transitions on routing targets' do
-        targets = Array.new(3) { component_class.new }
+      let(:parent) { component_class.new }
+      let(:child) { component_class.new }
+      let(:sibling) { component_class.new }
+      let(:dynamic) { component_class.new }
+      let(:dynamic_child) { component_class.new }
 
-        router = Router.new(location: location) do
-          route 'articles' => targets[0] do
-            route 'new' => targets[1]
-            route 'recent' => targets[2]
+      let(:router) do
+        targets = [parent, child, sibling, dynamic, dynamic_child]
+        Router.new do
+          route 'parent' => targets[0] do
+            route 'child' => targets[1]
+            route 'sibling' => targets[2]
+            route ':id' => targets[3] do
+              route 'dynamic_child' => targets[4]
+            end
           end
         end
-
-        router.trigger_routing_callbacks path: '/articles/new', previous_path: '/articles'
-        router.trigger_routing_callbacks path: '/articles/recent', previous_path: '/articles/new'
-        router.trigger_routing_callbacks path: '/articles/new', previous_path: '/articles/recent'
-        router.trigger_routing_callbacks path: '/articles', previous_path: '/articles/new'
-
-        expect(targets[0].transition_to).to eq 1
-        expect(targets[0].transition_away).to eq 0
-        expect(targets[1].transition_to).to eq 2
-        expect(targets[1].transition_away).to eq 2
-        expect(targets[2].transition_to).to eq 1
-        expect(targets[2].transition_away).to eq 1
       end
 
-      it 'calls route transitions when path changes but targets do not' do
-        targets = Array.new(2) { component_class.new }
+      it '/parent => /parent/child' do
+        router.trigger_routing_callbacks previous_path: '/parent', path: '/parent/child'
 
-        router = Router.new(location: location) do
-          route 'articles' => targets[0] do
-            route ':article_id' => targets[1]
-          end
-        end
+        expect(child.route_to).to eq(1)
+        expect(parent.route_to).to eq(0)
+        expect(parent.route_from).to eq(0)
+      end
 
-        router.trigger_routing_callbacks path: '/articles', previous_path: '/articles/1'
-        router.trigger_routing_callbacks path: '/articles/1', previous_path: '/articles/2'
-        router.trigger_routing_callbacks path: '/articles/2', previous_path: '/articles'
-        router.trigger_routing_callbacks path: '/articles', previous_path: '/articles/2'
+      it '/parent/child => /parent' do
+        router.trigger_routing_callbacks previous_path: '/parent/child', path: '/parent'
 
-        expect(targets[0].transition_to).to eq 1
-        expect(targets[1].transition_to).to eq 3
+        expect(child.route_from).to eq(1)
+        expect(parent.route_to).to eq(0)
+        expect(parent.route_from).to eq(0)
+      end
+
+      it '/parent/child => /parent/sibling' do
+        router.trigger_routing_callbacks previous_path: '/parent/child', path: '/parent/sibling'
+
+        expect(sibling.route_to).to eq(1)
+        expect(child.route_from).to eq(1)
+        expect(parent.route_to).to eq(0)
+        expect(parent.route_from).to eq(0)
+      end
+
+      it '/parent => /parent/:id' do
+        router.trigger_routing_callbacks previous_path: '/parent', path: '/parent/1'
+
+        expect(dynamic.route_to).to eq(1)
+        expect(parent.route_from).to eq(0)
+      end
+
+      it '/parent/1 => /parent/2' do
+        router.trigger_routing_callbacks previous_path: '/parent/1', path: '/parent/2'
+        expect(dynamic.route_to).to eq(1)
+        expect(dynamic.route_from).to eq(1)
+      end
+
+      it '/parent/1 => /parent' do
+        router.trigger_routing_callbacks previous_path: '/parent/1', path: '/parent'
+
+        expect(dynamic.route_from).to eq(1)
+        expect(parent.route_to).to eq(0)
+      end
+
+      it '/parent/1 => /parent/1/dynamic_child' do
+        router.trigger_routing_callbacks previous_path: '/parent/1', path: '/parent/1/dynamic_child'
+
+        expect(dynamic_child.route_to).to eq(1)
+        expect(dynamic.route_from).to eq(0)
+      end
+
+      it '/parent/1 => /parent/2/dynamic_child' do
+        router.trigger_routing_callbacks previous_path: '/parent/1', path: '/parent/2/dynamic_child'
+
+        expect(dynamic_child.route_to).to eq(1)
+        expect(dynamic.route_from).to eq(1)
+        expect(dynamic.route_to).to eq(1)
+      end
+
+      it '/parent/1/dynamic_child => /parent/2/dynamic_child' do
+        router.trigger_routing_callbacks previous_path: '/parent/1/dynamic_child', path: '/parent/2/dynamic_child'
+
+        expect(dynamic_child.route_from).to eq(1)
+        expect(dynamic_child.route_to).to eq(1)
+        expect(dynamic.route_from).to eq(1)
+        expect(dynamic.route_to).to eq(1)
       end
     end
   end
