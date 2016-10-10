@@ -120,11 +120,9 @@ module Clearwater
         .select { |k, v| old_params[k] != v }
         .map { |key, _| ":#{key}" }
 
-      routes.dup.each do |route|
-        break if changed_dynamic_segments.include? route.key
-        routes.shift
-      end
-      changed_dynamic_targets = routes.map(&:target)
+      changed_dynamic_targets = routes.drop_while { |route|
+        !changed_dynamic_segments.include?(route.key)
+      }.map(&:target)
 
       navigating_from = old_targets - targets
       navigating_to = targets - old_targets
