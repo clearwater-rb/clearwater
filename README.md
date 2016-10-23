@@ -257,7 +257,7 @@ MyApp.call # Render the app.
 
 Contributing
 ============
-This project is governed by a [Code of Conduct](clearwater/CODE_OF_CONDUCT.md)
+This project is governed by a [Code of Conduct](CODE_OF_CONDUCT.md)
 
   1. Fork it
   1. Branch it
