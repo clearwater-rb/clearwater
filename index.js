@@ -7,11 +7,11 @@ var VText      = require('virtual-dom/vnode/vtext')
 var svg        = require('virtual-dom/virtual-hyperscript/svg')
 
 module.exports = {
-  diff,
-  patch,
-  h,
-  create,
-  VNode,
-  VText,
-  svg,
+  diff: diff,
+  patch: patch,
+  h: h,
+  create: create,
+  VNode: VNode,
+  VText: VText,
+  svg: svg,
 }
