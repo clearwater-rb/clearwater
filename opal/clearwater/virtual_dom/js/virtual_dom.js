@@ -8,13 +8,13 @@ var VText      = require('virtual-dom/vnode/vtext')
 var svg        = require('virtual-dom/virtual-hyperscript/svg')
 
 module.exports = {
-  diff,
-  patch,
-  h,
-  create,
-  VNode,
-  VText,
-  svg,
+  diff: diff,
+  patch: patch,
+  h: h,
+  create: create,
+  VNode: VNode,
+  VText: VText,
+  svg: svg,
 }
 
 },{"virtual-dom/create-element":8,"virtual-dom/diff":9,"virtual-dom/h":10,"virtual-dom/patch":11,"virtual-dom/virtual-hyperscript/svg":24,"virtual-dom/vnode/vnode":32,"virtual-dom/vnode/vtext":34}],2:[function(require,module,exports){
