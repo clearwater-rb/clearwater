@@ -13,6 +13,17 @@ module Clearwater
       expect(html).to eq('<div id="foo" class="bar"><p>baz</p></div>')
     end
 
+    it 'generates html for components rendering an array' do
+      component_class = Class.new do
+        include Clearwater::Component
+
+        def render
+          [ div({}, "1"), div({}, "2") ]
+        end
+      end
+      expect(component_class.new.to_s).to eq('<div>1</div><div>2</div>')
+    end
+
     it 'converts styles into strings' do
       html = component.div({
         style: {

@@ -27,12 +27,12 @@ module Clearwater
     end
 
     def to_s
-      html = render.to_s
-      if html.respond_to? :html_safe
-        html = html.html_safe
+      content = Array(render).map do |node|
+        html = node.to_s
+        html.respond_to?(:html_safe) ? html.html_safe : html
       end
 
-      html
+      content.join
     end
 
     def params
