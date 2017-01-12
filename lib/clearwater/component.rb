@@ -27,12 +27,8 @@ module Clearwater
     end
 
     def to_s
-      html = render.to_s
-      if html.respond_to? :html_safe
-        html = html.html_safe
-      end
-
-      html
+      html = Array(render).join
+      html.respond_to?(:html_safe) ? html.html_safe : html
     end
 
     def params
