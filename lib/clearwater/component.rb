@@ -27,12 +27,8 @@ module Clearwater
     end
 
     def to_s
-      content = Array(render).map do |node|
-        html = node.to_s
-        html.respond_to?(:html_safe) ? html.html_safe : html
-      end
-
-      content.join
+      html = Array(render).map(&:to_s).join
+      html.respond_to?(:html_safe) ? html.html_safe : html
     end
 
     def params
