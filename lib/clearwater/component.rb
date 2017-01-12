@@ -27,7 +27,7 @@ module Clearwater
     end
 
     def to_s
-      html = Array(render).map(&:to_s).join
+      html = Array(render).join
       html.respond_to?(:html_safe) ? html.html_safe : html
     end
 
