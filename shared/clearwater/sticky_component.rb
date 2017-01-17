@@ -127,6 +127,7 @@ module Clearwater
       # Called once before mount, never called again for this component.
       def node
         @component = @klass.new(@props, @children, &@block)
+        @component.will_mount
         @node = sanitize_component
       end
 
@@ -138,7 +139,6 @@ module Clearwater
         `#@vdom.tree = #{element.to_n}`
         `#@vdom.rendered = true`
 
-        component.will_mount element
         Bowser.window.animation_frame { component.did_mount element }
         component.renderer = self
       end
