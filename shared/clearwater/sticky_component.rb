@@ -11,6 +11,10 @@ module Clearwater
       end
     end
 
+    def initialize(*args)
+      update(*args)
+    end
+
     def should_update?(*args)
       true
     end
