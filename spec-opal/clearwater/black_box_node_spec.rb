@@ -56,9 +56,52 @@ module Clearwater
 
     it 'calls update when updated in the DOM' do
       r = renderable
-      `r.update({})`
+      previous_renderable = BlackBoxNode::Renderable.new(object.dup)
+
+      `r.update(#{previous_renderable}, {})`
 
       expect(object.last_update).not_to be_nil
+    end
+
+    it 'unmounts previous and fresh-mounts new instance on type change' do
+      previous = Class.new do
+        include Clearwater::BlackBoxNode
+
+        attr_reader :last_update
+
+        def node
+          VirtualDOM.node :span, { id: 'foo' }, ['hi']
+        end
+
+        def mount node
+          @mounted = true
+        end
+
+        def update
+          @last_update = Time.now
+        end
+
+        def unmount
+          @mounted = false
+          @unmounted = true
+        end
+
+        def mounted?
+          !!@mounted
+        end
+
+        def unmounted?
+          !!@unmounted
+        end
+      end.new
+      prev_renderable = BlackBoxNode::Renderable.new(previous)
+
+      previous.mount double # pass in a fake node, we don't care
+
+      `#{renderable}.update(#{prev_renderable}, {})`
+
+      expect(previous).to be_unmounted
+      expect(object).to be_mounted
     end
   end
 end

@@ -1,5 +1,6 @@
 require 'bowser/element'
 require 'clearwater/virtual_dom'
+require 'clearwater/component'
 
 module Clearwater
   module BlackBoxNode
@@ -21,8 +22,11 @@ module Clearwater
     end
 
     class Renderable
+      attr_reader :delegate
+
       def initialize delegate
         @delegate = delegate
+        @key = delegate.key if delegate.respond_to? :key
       end
 
       def wrap node
@@ -30,7 +34,9 @@ module Clearwater
       end
 
       def create_element
-        wrap(VirtualDOM.create_element(@delegate.node))
+        sanitized = Clearwater::Component.sanitize_content(@delegate.node)
+        vnode = VirtualDOM.create_element(sanitized)
+        wrap(vnode)
       end
 
       %x{
@@ -52,7 +58,16 @@ module Clearwater
         //   node: a Bowser-wrapped version of the DOM node
         Opal.defn(self, 'update', function(previous, node) {
           var self = this;
-          #{@delegate.update(`previous.delegate`, wrap(`node`))};
+          var element = #{wrap(`node`)};
+
+          // Only update if the delegates are the same class. This way, we don't
+          // treat all BlackBoxNodes the same.
+          if(#{@delegate.class} === #{`previous.delegate`.class}) {
+            #{@delegate.update(`previous.delegate`, `element`)};
+          } else {
+            #{`previous.delegate`.unmount `element`};
+            #{@delegate.mount `element`};
+          }
         });
 
         // virtual-dom destroy hook
