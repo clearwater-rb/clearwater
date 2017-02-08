@@ -22,21 +22,6 @@ module Clearwater
     def update(*args)
     end
 
-    def before_update
-    end
-
-    def after_update
-    end
-
-    def before_mount
-    end
-
-    def after_mount
-    end
-
-    def before_unmount
-    end
-
     class Wrapper
       attr_reader :component
 
@@ -57,18 +42,13 @@ module Clearwater
             self.component = previous.component;
 
             if(#{component.should_update?(*@args)}) {
-              #{component.before_update};
               #{component.update(*@args)};
-              #{Bowser.window.animation_frame { component.after_update }};
               return #{component.render};
             }
 
             return previous.vnode;
           } else {
             self.component = #{@block.call(*@args)};
-            #{component.before_mount};
-            #{Bowser.window.animation_frame { component.after_mount }};
-
             return #{component.render};
           }
         });
