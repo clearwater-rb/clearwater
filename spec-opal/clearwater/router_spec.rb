@@ -172,6 +172,12 @@ module Clearwater
         expect(dynamic.route_from).to eq(1)
         expect(dynamic.route_to).to eq(1)
       end
+
+      it 'does not trigger any callbacks when the path does not change' do
+        router.trigger_routing_callbacks previous_path: '/parent/1', path: '/parent/1'
+        expect(dynamic.route_from).to eq 0
+        expect(dynamic.route_to).to eq 0
+      end
     end
   end
 end

@@ -110,6 +110,9 @@ module Clearwater
     end
 
     def trigger_routing_callbacks(path:, previous_path:)
+      # If the paths are the same, there are no callbacks to trigger
+      return if path == previous_path
+
       targets = targets_for_path(path)
       old_targets = targets_for_path(previous_path)
       routes = routes_for_path(path)
