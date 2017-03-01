@@ -65,4 +65,48 @@ module Clearwater
       }
     end
   end
+
+  module Component
+    def sticky(klass, *args, &block)
+      Sticky.new(klass, args, block)
+    end
+
+    class Sticky
+      attr_reader :component
+
+      def initialize klass, args, block=nil
+        @klass = klass
+        @args = args
+        @block = block
+      end
+
+      %x{
+        Opal.defn(self, 'type', 'Thunk');
+        Opal.defn(self, 'render', function Sticky$render(previous) {
+          var self = this;
+
+          if(previous &&
+             previous.vnode &&
+             this.klass === previous.klass &&
+             previous.component) {
+            self.component = previous.component;
+
+            if(#{!component.respond_to?(:should_update?) || component.should_update?(*@args)}) {
+              if(#{component.respond_to?(:update)}) {
+                #{component.update(*@args)};
+              }
+              return #{component.render};
+            }
+
+            return previous.vnode;
+          } else {
+            self.component = #{@klass.new(*@args, &@block)};
+            return #{component.render};
+          }
+
+          #{puts component};
+        });
+      }
+    end
+  end
 end
