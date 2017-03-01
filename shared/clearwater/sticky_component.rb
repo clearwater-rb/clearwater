@@ -3,16 +3,23 @@ require 'clearwater/component'
 module Clearwater
   class StickyComponent
     include Clearwater::Component
+    include Clearwater::CachedRender
 
     class << self
-      alias_method :_new, :new
-      def new(*args)
-        Wrapper.new(*args) { |*arguments| _new(*arguments) }
+      def render(*args)
+        Wrapper.new(self, args) { new(*args) }
       end
     end
 
     def initialize(*args)
       update(*args)
+    end
+
+    def should_render? _
+      unless @@warned
+        warn "You used #{self.class}.new when you might've wanted #{self.class}.render"
+        @@warned = true
+      end
     end
 
     def should_update?(*args)
@@ -25,7 +32,8 @@ module Clearwater
     class Wrapper
       attr_reader :component
 
-      def initialize(*args, &block)
+      def initialize(klass, args, &block)
+        @klass = klass
         @args = args
         @block = block
       end
