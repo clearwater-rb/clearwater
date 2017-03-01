@@ -7,9 +7,9 @@ module Clearwater
 
     attr_reader :vnode
 
-    def initialize content
+    def initialize &content
       if content.is_a? Array
-        warn "#{self.class} cannot operate on an Array, so it will use the first element. If you need to use an array, you can wrap it inside a div or span element."
+        warn "#{self.class} cannot operate on an Array, so it will use the first element. If you need to use an array, you can wrap it inside another element."
         content = content.first
       end
 
@@ -32,10 +32,16 @@ module Clearwater
 
     def delayed_update from, element
       Bowser.window.animation_frame do
-        @vnode = Component.sanitize_content(@content)
+        @vnode = Component.sanitize_content(@content.call)
         diff = VirtualDOM.diff from, @vnode
         VirtualDOM.patch element.to_n, diff
       end
+    end
+  end
+
+  module Component
+    def async_render &block
+      AsyncRender.new &block
     end
   end
 end
