@@ -20,6 +20,8 @@ module Clearwater
         warn "You used #{self.class}.new when you might've wanted #{self.class}.render"
         @@warned = true
       end
+
+      true
     end
 
     def should_update?(*args)
