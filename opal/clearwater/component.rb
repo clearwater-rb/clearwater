@@ -43,10 +43,9 @@ module Clearwater
 
     def self.sanitize_content content
       %x{
+        // Is this a Ruby object?
         if(content && content.$$class) {
-          if(content.$$is_array) {
-            return #{content.map { |c| sanitize_content(c) }};
-          } else {
+          if(!content.$$is_array) {
             var render = content.$render;
 
             if(content.$$cached_render) {
@@ -56,7 +55,11 @@ module Clearwater
             } else {
               return content;
             }
+          } else {
+            return #{content.map { |c| sanitize_content(c) }};
           }
+
+        // If it's not a Ruby object, it's probably a virtual-dom node.
         } else {
           return content;
         }
@@ -82,11 +85,13 @@ module Clearwater
       end
     end
 
+    `var vdom = #{VirtualDOM}`
+    `var component = self`
     def tag tag_name, attributes=nil, content=nil
-      VirtualDOM.node(
+      `vdom`.node(
         tag_name,
-        Component.sanitize_attributes(attributes),
-        Component.sanitize_content(content)
+        `component`.sanitize_attributes(attributes),
+        `component`.sanitize_content(content)
       )
     end
 

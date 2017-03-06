@@ -2,11 +2,13 @@ require 'clearwater/virtual_dom/js/virtual_dom.js'
 
 module Clearwater
   module VirtualDOM
+    `var hash_utils;`
+
     def self.node(tag_name, attributes=nil, content=nil)
       %x{
         return virtualDom.h(
           tag_name,
-          #{HashUtils.camelized_native(attributes)},
+          #{`hash_utils`.camelized_native(attributes)},
           #{sanitize_content(content)}
         );
       }
@@ -91,6 +93,8 @@ module Clearwater
     end
 
     module HashUtils
+      `var string_utils = #{StringUtils}`
+
       def self.camelized_native hash
         return hash.to_n unless `!!hash.$$is_hash`
 
@@ -99,7 +103,7 @@ module Clearwater
           for(var index = 0; index < keys.length; index++) {
             key = keys[index];
             v = #{hash[`key`]};
-            js_obj[#{StringUtils.camelize(`key`)}] = v.$$is_hash
+            js_obj[#{`string_utils`.camelize(`key`)}] = v.$$is_hash
               ? self.$camelized_native(v)
               : (
                 (v && v.$$class) // If this is a Ruby object, nativize it
@@ -111,5 +115,6 @@ module Clearwater
         }
       end
     end
+    `hash_utils = #{HashUtils}`
   end
 end
