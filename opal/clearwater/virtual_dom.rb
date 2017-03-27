@@ -38,10 +38,10 @@ module Clearwater
 
     def self.sanitize_content content
       %x{
-        if(content === Opal.nil || content === undefined) return null;
+        if(content === #{nil} || content == null) return null;
         if(content.$$is_array)
           return #{content.map!{ |c| sanitize_content c }};
-        return content;
+        return content.valueOf();
       }
     end
 
