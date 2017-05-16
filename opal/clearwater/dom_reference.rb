@@ -1,5 +1,7 @@
 module Clearwater
   class DOMReference
+    attr_reader :node
+
     def mount node, previous
       @node = node
     end
