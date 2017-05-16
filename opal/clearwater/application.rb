@@ -47,11 +47,15 @@ module Clearwater
 
     def unmount
       AppRegistry.delete self
+      @window.off :popstate, &@popstate_listener
+
+      @popstate_listener = nil # Allow the proc to get GCed
+      @watching_url = false
     end
 
     def watch_url
       unless @watching_url
-        @window.on('popstate') { render_current_url }
+        @popstate_listener = @window.on(:popstate) { render_current_url }
         @watching_url = true
       end
     end
