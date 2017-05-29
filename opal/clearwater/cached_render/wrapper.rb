@@ -5,7 +5,7 @@ module Clearwater
 
       def initialize content
         @content = content
-        @key = content.key
+        @key = content.key if content.key
       end
 
       # Hook into vdom diff/patch

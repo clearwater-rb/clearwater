@@ -46,7 +46,7 @@ module Clearwater
     end
 
     class Document
-      def initialize(root=Bowser.document.create_element('div'))
+      def initialize(root=Bowser.document.create_element(:div))
         @root = root
       end
 
