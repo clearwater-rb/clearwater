@@ -56,7 +56,7 @@ module Clearwater
 
     it 'calls update when updated in the DOM' do
       r = renderable
-      `r.update({})`
+      `r.update(#{BlackBoxNode::Renderable.new(object)})`
 
       expect(object.last_update).not_to be_nil
     end
