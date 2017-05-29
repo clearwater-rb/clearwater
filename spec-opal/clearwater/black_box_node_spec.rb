@@ -29,7 +29,7 @@ module Clearwater
         end
       end.new
     }
-    let(:renderable) { BlackBoxNode::Renderable.new(object) }
+    let(:renderable) { object.render }
 
     it 'has the special type of "Widget"' do
       r = renderable
@@ -55,8 +55,7 @@ module Clearwater
     end
 
     it 'calls update when updated in the DOM' do
-      r = renderable
-      `r.update(#{BlackBoxNode::Renderable.new(object)})`
+      `#{renderable}.update(#{renderable.dup})`
 
       expect(object.last_update).not_to be_nil
     end
