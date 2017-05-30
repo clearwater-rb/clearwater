@@ -13,23 +13,13 @@ module Clearwater
       memoize[key]
     end
 
-    def initialize *args
-      @__args = args
-    end
-
-    def update *args
-      @__args = args
+    def update
     end
 
     def destroy
     end
 
-    def should_update? *args
-      args != @__args
-    end
-
     class Placeholder
-      # include Clearwater::CachedRender
       include Clearwater::BlackBoxNode
 
       attr_reader :klass, :key, :vdom
@@ -44,21 +34,6 @@ module Clearwater
         initialize @klass, args, block
         self
       end
-
-      # def should_render? previous
-      #   return true if klass != previous.klass
-
-      #   @component = previous.component
-
-      #   should_update = component.should_update?(*@args)
-      #   component.update(*@args, &@block) if should_update
-
-      #   should_update
-      # end
-
-      # def render
-      #   component.render
-      # end
 
       def [] key
         @key = key.to_s
@@ -75,6 +50,8 @@ module Clearwater
 
       def mount element
         @vdom = VirtualDOM::Document.new(element)
+
+        # TODO: add a public interface to generate a pre-initialized VDOM::Doc
         `#@vdom.tree = #{element.to_n}`
         `#@vdom.node = #{node}`
         `#@vdom.rendered = true`
