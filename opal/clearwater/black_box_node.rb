@@ -20,9 +20,15 @@ module Clearwater
       Renderable.new(self)
     end
 
+    def key
+    end
+
     class Renderable
       def initialize delegate
         @delegate = delegate
+        if delegate.key
+          @key = delegate.key
+        end
       end
 
       def wrap node
@@ -52,7 +58,14 @@ module Clearwater
         //   node: a Bowser-wrapped version of the DOM node
         Opal.defn(self, 'update', function(previous, node) {
           var self = this;
-          #{@delegate.update(`previous.delegate`, wrap(`node`))};
+          if(self.delegate.$$class === previous.delegate.$$class) {
+            #{@delegate.update(`previous.delegate`, wrap(`node`))};
+          } else {
+            previous.destroy(#{wrap(`node`)});
+            var new_node = #{create_element};
+            #{@delegate.mount(`new_node`)};
+            return new_node.native;
+          }
         });
 
         // virtual-dom destroy hook
