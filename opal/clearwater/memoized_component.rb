@@ -13,6 +13,10 @@ module Clearwater
       memoize[key]
     end
 
+    def should_update?
+      true
+    end
+
     def update
     end
 
