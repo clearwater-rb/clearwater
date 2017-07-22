@@ -89,7 +89,7 @@ end
 
 ## Using with Rails
 
-You can also use Clearwater as part of the Rails asset pipeline. First create your Clearwater application (replace `app/assets/application.js` with this file):
+You can also use Clearwater as part of the Rails asset pipeline. First create your Clearwater application (replace `app/assets/javascripts/application.js` with this file):
 
 ``` ruby
 # file: app/assets/javascripts/application.rb
@@ -126,7 +126,32 @@ Then, in `app/views/layouts/application.html.erb`:
 </html>
 ```
 
-Then just create a root route that renders a blank template and refresh the page. You should see "Hello, world!" in big, bold letters. Congrats! You've built your first Clearwater app on Rails!
+Then you need to get Rails to render a blank page, so add these two routes:
+
+## `config/routes.rb`
+```ruby
+root 'home#index'
+get '*all' => 'home#index'
+```
+
+You can omit the second line if your Clearwater app doesn't use routing. It just tells Rails to let your Clearwater app handle all routes.
+
+## `app/controllers/home_controller.rb`
+```ruby
+class HomeController < ApplicationController
+  def index
+  end
+end
+```
+
+## `app/views/home/index.html.erb`
+```html
+<!-- This page intentionally left blank -->
+```
+
+You can use the Rails generators to generate the controller and view (`rails g controller home index`), but it won't set up the root and catch-all routes, so you'll still need to do that manually.
+
+Once you've added those files, refresh the page. You should see "Hello, world!" in big, bold letters. Congrats! You've built your first Clearwater app on Rails!
 
 ### Example app
 
