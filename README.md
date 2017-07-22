@@ -91,8 +91,8 @@ end
 
 You can also use Clearwater as part of the Rails asset pipeline. First create your Clearwater application (replace `app/assets/javascripts/application.js` with this file):
 
-``` ruby
-# file: app/assets/javascripts/application.rb
+### `app/assets/javascripts/application.rb`
+```ruby
 require 'opal' # Not necessary if you load Opal from a CDN
 require 'clearwater'
 
@@ -108,7 +108,7 @@ app = Clearwater::Application.new(component: Layout.new)
 app.call
 ```
 
-Then, in `app/views/layouts/application.html.erb`:
+### `app/views/layouts/application.html.erb`
 
 ```erb
 <!DOCTYPE html>
@@ -128,7 +128,7 @@ Then, in `app/views/layouts/application.html.erb`:
 
 Then you need to get Rails to render a blank page, so add these two routes:
 
-## `config/routes.rb`
+### `config/routes.rb`
 ```ruby
 root 'home#index'
 get '*all' => 'home#index'
@@ -136,7 +136,7 @@ get '*all' => 'home#index'
 
 You can omit the second line if your Clearwater app doesn't use routing. It just tells Rails to let your Clearwater app handle all routes.
 
-## `app/controllers/home_controller.rb`
+### `app/controllers/home_controller.rb`
 ```ruby
 class HomeController < ApplicationController
   def index
@@ -144,7 +144,7 @@ class HomeController < ApplicationController
 end
 ```
 
-## `app/views/home/index.html.erb`
+### `app/views/home/index.html.erb`
 ```html
 <!-- This page intentionally left blank -->
 ```
