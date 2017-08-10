@@ -23,6 +23,10 @@ module Clearwater
     def destroy
     end
 
+    def render
+      div
+    end
+
     class Placeholder
       include Clearwater::BlackBoxNode
 
