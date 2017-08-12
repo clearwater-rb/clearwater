@@ -50,7 +50,7 @@ module Clearwater
           var self = this;
           var node = #{create_element};
           #{@delegate.mount(`node`)};
-          return node.native;
+          return node['native'];
         });
 
         // virtual-dom update hook
@@ -64,7 +64,7 @@ module Clearwater
             previous.destroy(#{wrap(`node`)});
             var new_node = #{create_element};
             #{@delegate.mount(`new_node`)};
-            return new_node.native;
+            return new_node['native'];
           }
         });
 

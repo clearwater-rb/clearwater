@@ -38,7 +38,7 @@ module Clearwater
 
     it 'uses the delegate node to render into the DOM' do
       r = renderable
-      expect(`#{renderable.create_element}.native.outerHTML`).to eq '<span id="foo">hi</span>'
+      expect(`#{renderable.create_element}['native'].outerHTML`).to eq '<span id="foo">hi</span>'
     end
 
     it 'calls mount when inserted into the DOM' do
