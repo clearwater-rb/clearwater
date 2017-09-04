@@ -1,5 +1,6 @@
 require 'clearwater/component/html_tags'
 require 'clearwater/dom_reference'
+require 'clearwater/cached_render'
 
 module Clearwater
   module Component
