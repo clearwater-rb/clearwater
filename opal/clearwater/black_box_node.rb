@@ -58,8 +58,13 @@ module Clearwater
         //   node: a Bowser-wrapped version of the DOM node
         Opal.defn(self, 'update', function(previous, node) {
           var self = this;
+
           if(self.delegate.$$class === previous.delegate.$$class) {
-            #{@delegate.update(`previous.delegate`, wrap(`node`))};
+            var result = #{@delegate.update(`previous.delegate`, wrap(`node`))};
+
+            if(result && result.$$class && #{Bowser::Element === `result`}) {
+              return #{`result`.to_n};
+            }
           } else {
             previous.destroy(#{wrap(`node`)});
             var new_node = #{create_element};

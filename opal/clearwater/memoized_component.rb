@@ -65,13 +65,22 @@ module Clearwater
         `#@vdom.rendered = true`
       end
 
-      def update previous
-        @vdom = previous.vdom
-        @component = previous.component
+      def update previous, element
+        # if we're looking at different classes, we need to start from scratch
+        if klass != previous.klass
+          previous.unmount element
 
-        if component.should_update?(*@args, &@block)
-          component.update(*@args, &@block)
-          @vdom.render component.render
+          new_element = render.create_element
+          mount new_element
+          new_element
+        else
+          @vdom = previous.vdom
+          @component = previous.component
+
+          if component.should_update?(*@args, &@block)
+            component.update(*@args, &@block)
+            @vdom.render component.render
+          end
         end
       end
 
