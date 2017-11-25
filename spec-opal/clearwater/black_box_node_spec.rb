@@ -1,35 +1,37 @@
 require 'clearwater/black_box_node'
 require 'clearwater/virtual_dom'
 
+bbn_class = Class.new do
+  include Clearwater::BlackBoxNode
+
+  attr_reader :last_update
+
+  def node
+    Clearwater::VirtualDOM.node :span, { id: 'foo' }, ['hi']
+  end
+
+  def mount node
+    @mounted = true
+  end
+
+  def update
+    @last_update = Time.now
+  end
+
+  def unmount
+    @mounted = false
+  end
+
+  def mounted?
+    !!@mounted
+  end
+
+  self
+end
+
 module Clearwater
   describe BlackBoxNode do
-    let(:object) {
-      Class.new do
-        include Clearwater::BlackBoxNode
-
-        attr_reader :last_update
-
-        def node
-          VirtualDOM.node :span, { id: 'foo' }, ['hi']
-        end
-
-        def mount node
-          @mounted = true
-        end
-
-        def update
-          @last_update = Time.now
-        end
-
-        def unmount
-          @mounted = false
-        end
-
-        def mounted?
-          !!@mounted
-        end
-      end.new
-    }
+    let(:object) { bbn_class.new }
     let(:renderable) { object.render }
     let(:node) { `{}` }
 
