@@ -1,4 +1,5 @@
 require 'clearwater/black_box_node'
+require 'clearwater/virtual_dom'
 
 module Clearwater
   describe BlackBoxNode do
@@ -30,6 +31,7 @@ module Clearwater
       end.new
     }
     let(:renderable) { object.render }
+    let(:node) { `{}` }
 
     it 'has the special type of "Widget"' do
       r = renderable
@@ -50,12 +52,12 @@ module Clearwater
     it 'calls unmount when removed from the DOM' do
       r = renderable
       `r.init()`
-      `r.destroy()`
+      `r.destroy(#{node})`
       expect(object).not_to be_mounted
     end
 
     it 'calls update when updated in the DOM' do
-      `#{renderable}.update(#{renderable.dup})`
+      `#{renderable}.update(#{renderable.dup}, #{node})`
 
       expect(object.last_update).not_to be_nil
     end
