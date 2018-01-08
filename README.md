@@ -11,17 +11,35 @@ Installing
 Add these lines to your application's Gemfile:
 
 ``` ruby
-gem 'clearwater', '~> 1.0.0.rc2'
-gem 'opal-rails' # Only needed for Rails apps
+gem 'clearwater'
+gem 'opal-rails' # Only if you're using Rails
 ```
 
 Using
 =====
 
+This is a minimum-viable Clearwater app:
+
+```ruby
+require 'opal'
+require 'clearwater'
+
+class HelloWorld
+  include Clearwater::Component
+  
+  def render
+    h1('Hello, world!')
+  end
+end
+
+app = Clearwater::Application.new(component: HelloWorld.new)
+app.call
+```
+
 Clearwater has three distinct parts:
 
 1. The component: the presenter and template engine
-1. The router: the dispatcher and control
+1. The router (optional): the dispatcher and control
 1. The application: the "Go" button
 
 **The Component**
@@ -153,132 +171,17 @@ You can use the Rails generators to generate the controller and view (`rails g c
 
 Once you've added those files, refresh the page. You should see "Hello, world!" in big, bold letters. Congrats! You've built your first Clearwater app on Rails!
 
-### Example app
+## Using with Roda
 
-```ruby
-require 'opal'
-require 'clearwater'
-require 'ostruct'
+If you're using Roda, you'll want to use the [`roda-opal_assets` gem](https://github.com/clearwater-rb/roda-opal_assets) to get an asset-pipeline-style workflow for compiling your Clearwater app into JavaScript.
 
-class Layout
-  include Clearwater::Component
+## Getting Started
 
-  def render
-    div({ id: 'app' }, [
-      header({ class_name: 'main-header' }, [
-        h1('Hello, world!'),
-      ]),
-      outlet, # This is what renders subordinate routes
-    ])
-  end
-end
+Use the [`clearwater-roda`](https://github.com/clearwater-rb/clearwater-roda) gem to generate a starter Clearwater app that demonstrates many components working together, routing, and even state management (via [`grand_central`](https://github.com/clearwater-rb/grand_central)).
 
-class Articles
-  include Clearwater::Component
+## Experiment!
 
-  def render
-    div({ id: 'articles-container '}, [
-      input({ class_name: 'search-articles', onkeyup: method(:search) }),
-      ul({ id: 'articles-index' }, articles.map { |article|
-        ArticlesListItem.new(article)
-      }),
-      outlet, # This is what renders subordinate routes (e.g. Article)
-    ])
-  end
-
-  def articles
-    @articles ||= MyStore.fetch_articles
-
-    if @query
-      @articles.select { |article| article.match?(@query) }
-    else
-      @articles
-    end
-  end
-
-  def search(event)
-    @query = event.target.value
-    call # Rerender the app
-  end
-end
-
-class ArticlesListItem
-  include Clearwater::Component
-
-  attr_reader :article
-
-  def initialize(article)
-    @article = article
-  end
-
-  def render
-    # Note the "key" key in this hash. This is a hint to the virtual DOM that
-    # if this node is moved around, it can still reuse the same element.
-    li({ key: article.id, class_name: 'article' }, [
-      # The Link component will rerender the app for the new URL on click
-      Link.new({ href: "/articles/#{article.id}" }, article.title),
-      time({ class_name: 'timestamp' }, article.timestamp.strftime('%m/%d/%Y')),
-    ])
-  end
-end
-
-class Article
-  include Clearwater::Component
-
-  def render
-    # In addition to using HTML5 tag names as methods, you can use the `tag`
-    # method with a query selector to generate a tag with those attributes.
-    tag('article.selected-article', nil, [
-      h1({ class_name: 'article-title' }, article.title),
-      time({ class_name: 'article-timestamp' }, article.timestamp.strftime('%m-%d-%Y')),
-      section({ class_name: 'article-body' }, article.body),
-    ])
-  end
-
-  def article
-    # params[:article_id] is the section of the URL that contains what would be
-    # the `:article_id` parameter in the router below.
-    MyStore.article(params[:article_id])
-  end
-
-  def match? query
-    query.split.all? { |token|
-      title.include?(token) || body.include?(token)
-    }
-  end
-end
-
-module MyStore
-  extend self
-  DB = 5.times.map do |n|
-    OpenStruct.new(id: n, timestamp: Time.new, title: "Random thoughts n.#{n}", body: 'Some deep stuff')
-  end
-
-  def fetch_articles
-    DB
-  end
-
-  def article(id)
-    id = id.to_i
-    DB.find {|a| a.id == id}
-  end
-end
-
-router = Clearwater::Router.new do
-  route 'articles' => Articles.new do
-    route ':article_id' => Article.new
-  end
-end
-
-MyApp = Clearwater::Application.new(
-  component: Layout.new,
-  router: router,
-  element: Bowser.document.body # This is the default target element
-)
-
-MyApp.call # Render the app.
-```
-
+You can experiment with Clearwater using the [Clearwater Playground](https://clearwater-rb-playground.herokuapp.com). You can also explore [other saved playground experiments](https://clearwater-rb-playground.herokuapp.com/playgrounds).
 
 Contributing
 ============
@@ -296,7 +199,7 @@ This project is governed by a [Code of Conduct](CODE_OF_CONDUCT.md)
 License
 =======
 
-Copyright (c) 2014-2015  Jamie Gaskins
+Copyright (c) 2014-2018  Jamie Gaskins
 
 MIT License
 
