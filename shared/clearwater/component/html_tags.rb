@@ -16,7 +16,6 @@ module Clearwater
       body
       br
       button
-      canvas
       caption
       cite
       code
