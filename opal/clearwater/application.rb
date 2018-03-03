@@ -1,6 +1,8 @@
 require 'bowser'
 require 'clearwater/router'
 require 'clearwater/application_registry'
+require 'clearwater/virtual_dom'
+require 'clearwater/component'
 require 'native'
 
 module Clearwater
