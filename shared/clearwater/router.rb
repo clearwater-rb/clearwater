@@ -140,6 +140,8 @@ module Clearwater
     end
 
     def set_outlets targets=targets_for_path(current_path)
+      return unless application.component.respond_to? :outlet=
+
       trigger_routing_callbacks(path: current_path, previous_path: self.class.previous_path)
 
       if targets.any?
