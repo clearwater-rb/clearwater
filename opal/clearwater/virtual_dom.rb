@@ -53,7 +53,7 @@ module Clearwater
       def render node
         if rendered?
           diff = VirtualDOM.diff @node, node
-          VirtualDOM.patch @tree, diff
+          @tree = VirtualDOM.patch @tree, diff
           @node = node
         else
           @node = node
