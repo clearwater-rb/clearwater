@@ -79,7 +79,7 @@ module Clearwater
 
           if component.should_update?(*@args, &@block)
             component.update(*@args, &@block)
-            @vdom.render component.render
+            @vdom.render Clearwater::Component.sanitize_content(component.render)
           end
         end
       end
