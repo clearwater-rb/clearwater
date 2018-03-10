@@ -16,7 +16,7 @@ module Clearwater
     end
 
     def initialize options={}
-      @router     = options.fetch(:router)     { Router.new }
+      @router     = options.fetch(:router)     { NullRouter.new }
       @component  = options.fetch(:component)  { nil }
       @element    = options.fetch(:element)    { nil }
       @document   = options.fetch(:document)   { Bowser.document }
@@ -135,6 +135,14 @@ module Clearwater
     def run_callbacks
       on_render.each(&:call)
       on_render.clear
+    end
+  end
+
+  class NullRouter
+    def set_outlets
+    end
+
+    def application= _
     end
   end
 end
