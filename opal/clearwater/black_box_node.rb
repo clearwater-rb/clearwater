@@ -32,7 +32,7 @@ module Clearwater
       end
 
       def wrap node
-        Bowser::Element.new(node)
+        Bowser::Element.new(node) if node
       end
 
       def create_element
