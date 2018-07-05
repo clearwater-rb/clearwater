@@ -1,6 +1,6 @@
 require 'clearwater/virtual_dom'
 require 'clearwater/component/html_tags'
-require 'clearwater/cached_render/wrapper'
+require 'clearwater/cached_render'
 
 module Clearwater
   module Component
@@ -39,8 +39,6 @@ module Clearwater
     # don't have to do it every time we need to sanitize a node's content.
     # This does need to happen at the JS level, though. If we use a Ruby
     # variable, we won't have access to it in the method.
-    %x{ var wrapper = #{CachedRender::Wrapper}; }
-
     def self.sanitize_content content
       %x{
         // Is this a Ruby object?
@@ -49,7 +47,7 @@ module Clearwater
             var render = content.$render;
 
             if(content.$$cached_render) {
-              return #{`wrapper`.new(content)};
+              return #{CachedRender::Wrapper.new(content)};
             } else if(render && !render.$$stub) {
               return #{sanitize_content(content.render)};
             } else {
