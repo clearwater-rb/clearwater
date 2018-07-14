@@ -48,11 +48,16 @@ module Clearwater
           if(!content.$$is_array) {
             var render = content.$render;
 
-            if(content.$$cached_render) {
+            if(content.$$is_string || content.$$is_number || content == nil) {
+              return content;
+            } else if(content.$$cached_render) {
               return #{`wrapper`.new(content)};
             } else if(render && !render.$$stub) {
               return #{sanitize_content(content.render)};
+            } else if(content.$$is_boolean) {
+              return nil;
             } else {
+              // #{warn "Unhandled content: #{content.inspect}"};
               return content;
             }
           } else {

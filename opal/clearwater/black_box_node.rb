@@ -1,5 +1,6 @@
 require 'bowser/element'
 require 'clearwater/virtual_dom'
+require 'clearwater/component'
 
 module Clearwater
   module BlackBoxNode
@@ -24,6 +25,8 @@ module Clearwater
     end
 
     class Renderable
+      attr_reader :delegate
+
       def initialize delegate
         @delegate = delegate
         if delegate.key
@@ -36,7 +39,9 @@ module Clearwater
       end
 
       def create_element
-        wrap(VirtualDOM.create_element(@delegate.node))
+        sanitized = Clearwater::Component.sanitize_content(@delegate.node)
+        vnode = VirtualDOM.create_element(sanitized)
+        wrap(vnode)
       end
 
       %x{

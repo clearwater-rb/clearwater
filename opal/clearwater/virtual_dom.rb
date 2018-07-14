@@ -1,4 +1,5 @@
 require 'clearwater/virtual_dom/js/virtual_dom.js'
+require 'native'
 
 module Clearwater
   module VirtualDOM
