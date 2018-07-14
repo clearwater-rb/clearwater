@@ -16,8 +16,7 @@ rvm:
 
 matrix:
   allow_failures:
-    rvm:
-      - 2.6
+  - rvm: 2.6
 
 before_install:
   # Keep track of which version of node and phantomjs we're running the specs against
