@@ -14,6 +14,10 @@ rvm:
   - jruby-9.1
   - jruby
 
+matrix:
+  allow_failures:
+  - rvm: 2.6
+
 before_install:
   # Keep track of which version of node and phantomjs we're running the specs against
   - gem update --system
