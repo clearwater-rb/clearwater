@@ -424,7 +424,7 @@ function removeNode(domNode, vNode) {
 function insertNode(parentNode, vNode, renderOptions) {
     var newNode = renderOptions.render(vNode, renderOptions)
 
-    if (parentNode) {
+    if (parentNode && newNode) {
         parentNode.appendChild(newNode)
     }
 
