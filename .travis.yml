@@ -16,5 +16,6 @@ rvm:
 
 before_install:
   # Keep track of which version of node and phantomjs we're running the specs against
+  - gem update --system
   - node -v
   - phantomjs -v
