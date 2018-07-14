@@ -9,7 +9,10 @@ rvm:
   - 2.2
   - 2.3
   - 2.4
-  - jruby-9.1.14.0
+  - 2.5
+  - 2.6
+  - jruby-9.1
+  - jruby
 
 before_install:
   # Keep track of which version of node and phantomjs we're running the specs against
