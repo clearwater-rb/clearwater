@@ -1,5 +1,7 @@
 module Clearwater
   class DOMReference
+    attr_reader :node
+
     def mount node, previous
       @node = node
     end
@@ -34,12 +36,12 @@ module Clearwater
     %x{
       Opal.defn(self, 'hook', function(node, name, previous) {
         var self = this;
-        #{mount(wrap(`node`), `previous`)};
+        #{mount(wrap(`node`), `previous == null ? nil : previous`)};
       });
 
       Opal.defn(self, 'unhook', function(node, name, previous) {
         var self = this;
-        #{unmount(wrap(`node`), `previous`)};
+        #{unmount(wrap(`node`),  `previous == null ? nil : previous`)};
       });
     }
   end

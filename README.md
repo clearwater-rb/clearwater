@@ -1,7 +1,7 @@
 clearwater
 ----------
 
-  [![Quality](http://img.shields.io/codeclimate/github/clearwater-rb/clearwater.svg?style=flat-square)](https://codeclimate.com/github/clearwater-rb/clearwater) [![Build](http://img.shields.io/travis-ci/clearwater-rb/clearwater.svg?style=flat-square)](https://travis-ci.org/clearwater-rb/clearwater) [![Downloads](http://img.shields.io/gem/dtv/clearwater.svg?style=flat-square)](https://rubygems.org/gems/clearwater) [![Issues](http://img.shields.io/github/issues/clearwater-rb/clearwater.svg?style=flat-square)](http://github.com/clearwater-rb/clearwater/issues) [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](http://opensource.org/licenses/MIT) [![Version](http://img.shields.io/gem/v/clearwater.svg?style=flat-square)](https://rubygems.org/gems/clearwater)
+ [![Join Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/clearwater-rb/clearwater) [![Quality](http://img.shields.io/codeclimate/github/clearwater-rb/clearwater.svg?style=flat-square)](https://codeclimate.com/github/clearwater-rb/clearwater) [![Build](http://img.shields.io/travis-ci/clearwater-rb/clearwater.svg?style=flat-square)](https://travis-ci.org/clearwater-rb/clearwater) [![Downloads](http://img.shields.io/gem/dtv/clearwater.svg?style=flat-square)](https://rubygems.org/gems/clearwater) [![Issues](http://img.shields.io/github/issues/clearwater-rb/clearwater.svg?style=flat-square)](http://github.com/clearwater-rb/clearwater/issues) [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](http://opensource.org/licenses/MIT) [![Version](http://img.shields.io/gem/v/clearwater.svg?style=flat-square)](https://rubygems.org/gems/clearwater)
 
 Clearwater is a rich front-end framework for building fast, reasonable, and easily composable browser applications in Ruby. It renders to a virtual DOM and applies the virtual DOM to the browser's actual DOM to update only what has changed on the page.
 
@@ -11,17 +11,35 @@ Installing
 Add these lines to your application's Gemfile:
 
 ``` ruby
-gem 'clearwater', '~> 1.0.0.rc2'
-gem 'opal-rails' # Only needed for Rails apps
+gem 'clearwater'
+gem 'opal-rails' # Only if you're using Rails
 ```
 
 Using
 =====
 
+This is a minimum-viable Clearwater app:
+
+```ruby
+require 'opal'
+require 'clearwater'
+
+class HelloWorld
+  include Clearwater::Component
+  
+  def render
+    h1('Hello, world!')
+  end
+end
+
+app = Clearwater::Application.new(component: HelloWorld.new)
+app.call
+```
+
 Clearwater has three distinct parts:
 
 1. The component: the presenter and template engine
-1. The router: the dispatcher and control
+1. The router (optional): the dispatcher and control
 1. The application: the "Go" button
 
 **The Component**
@@ -89,10 +107,10 @@ end
 
 ## Using with Rails
 
-You can also use Clearwater as part of the Rails asset pipeline. First create your Clearwater application (replace `app/assets/application.js` with this file):
+You can also use Clearwater as part of the Rails asset pipeline. First create your Clearwater application (replace `app/assets/javascripts/application.js` with this file):
 
-``` ruby
-# file: app/assets/javascripts/application.rb
+### `app/assets/javascripts/application.rb`
+```ruby
 require 'opal' # Not necessary if you load Opal from a CDN
 require 'clearwater'
 
@@ -108,7 +126,7 @@ app = Clearwater::Application.new(component: Layout.new)
 app.call
 ```
 
-Then, in `app/views/layouts/application.html.erb`:
+### `app/views/layouts/application.html.erb`
 
 ```erb
 <!DOCTYPE html>
@@ -126,134 +144,44 @@ Then, in `app/views/layouts/application.html.erb`:
 </html>
 ```
 
-Then just create a root route that renders a blank template and refresh the page. You should see "Hello, world!" in big, bold letters. Congrats! You've built your first Clearwater app on Rails!
+Then you need to get Rails to render a blank page, so add these two routes:
 
-### Example app
-
+### `config/routes.rb`
 ```ruby
-require 'opal'
-require 'clearwater'
-require 'ostruct'
-
-class Layout
-  include Clearwater::Component
-
-  def render
-    div({ id: 'app' }, [
-      header({ class_name: 'main-header' }, [
-        h1('Hello, world!'),
-      ]),
-      outlet, # This is what renders subordinate routes
-    ])
-  end
-end
-
-class Articles
-  include Clearwater::Component
-
-  def render
-    div({ id: 'articles-container '}, [
-      input({ class_name: 'search-articles', onkeyup: method(:search) }),
-      ul({ id: 'articles-index' }, articles.map { |article|
-        ArticlesListItem.new(article)
-      }),
-      outlet, # This is what renders subordinate routes (e.g. Article)
-    ])
-  end
-
-  def articles
-    @articles ||= MyStore.fetch_articles
-
-    if @query
-      @articles.select { |article| article.match?(@query) }
-    else
-      @articles
-    end
-  end
-
-  def search(event)
-    @query = event.target.value
-    call # Rerender the app
-  end
-end
-
-class ArticlesListItem
-  include Clearwater::Component
-
-  attr_reader :article
-
-  def initialize(article)
-    @article = article
-  end
-
-  def render
-    # Note the "key" key in this hash. This is a hint to the virtual DOM that
-    # if this node is moved around, it can still reuse the same element.
-    li({ key: article.id, class_name: 'article' }, [
-      # The Link component will rerender the app for the new URL on click
-      Link.new({ href: "/articles/#{article.id}" }, article.title),
-      time({ class_name: 'timestamp' }, article.timestamp.strftime('%m/%d/%Y')),
-    ])
-  end
-end
-
-class Article
-  include Clearwater::Component
-
-  def render
-    # In addition to using HTML5 tag names as methods, you can use the `tag`
-    # method with a query selector to generate a tag with those attributes.
-    tag('article.selected-article', nil, [
-      h1({ class_name: 'article-title' }, article.title),
-      time({ class_name: 'article-timestamp' }, article.timestamp.strftime('%m-%d-%Y')),
-      section({ class_name: 'article-body' }, article.body),
-    ])
-  end
-
-  def article
-    # params[:article_id] is the section of the URL that contains what would be
-    # the `:article_id` parameter in the router below.
-    MyStore.article(params[:article_id])
-  end
-
-  def match? query
-    query.split.all? { |token|
-      title.include?(token) || body.include?(token)
-    }
-  end
-end
-
-module MyStore
-  extend self
-  DB = 5.times.map do |n|
-    OpenStruct.new(id: n, timestamp: Time.new, title: "Random thoughts n.#{n}", body: 'Some deep stuff')
-  end
-
-  def fetch_articles
-    DB
-  end
-
-  def article(id)
-    id = id.to_i
-    DB.find {|a| a.id == id}
-  end
-end
-
-router = Clearwater::Router.new do
-  route 'articles' => Articles.new do
-    route ':article_id' => Article.new
-  end
-end
-
-MyApp = Clearwater::Application.new(
-  component: Layout.new,
-  router: router,
-  element: Bowser.document.body # This is the default target element
-)
-
-MyApp.call # Render the app.
+root 'home#index'
+get '*all' => 'home#index'
 ```
 
+You can omit the second line if your Clearwater app doesn't use routing. It just tells Rails to let your Clearwater app handle all routes.
+
+### `app/controllers/home_controller.rb`
+```ruby
+class HomeController < ApplicationController
+  def index
+  end
+end
+```
+
+### `app/views/home/index.html.erb`
+```html
+<!-- This page intentionally left blank -->
+```
+
+You can use the Rails generators to generate the controller and view (`rails g controller home index`), but it won't set up the root and catch-all routes, so you'll still need to do that manually.
+
+Once you've added those files, refresh the page. You should see "Hello, world!" in big, bold letters. Congrats! You've built your first Clearwater app on Rails!
+
+## Using with Roda
+
+If you're using Roda, you'll want to use the [`roda-opal_assets` gem](https://github.com/clearwater-rb/roda-opal_assets) to get an asset-pipeline-style workflow for compiling your Clearwater app into JavaScript.
+
+## Getting Started
+
+Use the [`clearwater-roda`](https://github.com/clearwater-rb/clearwater-roda) gem to generate a starter Clearwater app that demonstrates many components working together, routing, and even state management (via [`grand_central`](https://github.com/clearwater-rb/grand_central)).
+
+## Experiment!
+
+You can experiment with Clearwater using the [Clearwater Playground](https://clearwater-rb-playground.herokuapp.com). You can also explore [other saved playground experiments](https://clearwater-rb-playground.herokuapp.com/playgrounds).
 
 Contributing
 ============
@@ -271,7 +199,7 @@ This project is governed by a [Code of Conduct](CODE_OF_CONDUCT.md)
 License
 =======
 
-Copyright (c) 2014-2015  Jamie Gaskins
+Copyright (c) 2014-2018  Jamie Gaskins
 
 MIT License
 

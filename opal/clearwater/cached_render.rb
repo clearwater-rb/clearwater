@@ -13,7 +13,6 @@ module Clearwater
     end
 
     def key
-      `undefined`
     end
   end
 end

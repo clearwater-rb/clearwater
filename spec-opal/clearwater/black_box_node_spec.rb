@@ -1,35 +1,39 @@
 require 'clearwater/black_box_node'
+require 'clearwater/virtual_dom'
+
+bbn_class = Class.new do
+  include Clearwater::BlackBoxNode
+
+  attr_reader :last_update
+
+  def node
+    Clearwater::VirtualDOM.node :span, { id: 'foo' }, ['hi']
+  end
+
+  def mount node
+    @mounted = true
+  end
+
+  def update
+    @last_update = Time.now
+  end
+
+  def unmount
+    @mounted = false
+  end
+
+  def mounted?
+    !!@mounted
+  end
+
+  self
+end
 
 module Clearwater
   describe BlackBoxNode do
-    let(:object) {
-      Class.new do
-        include Clearwater::BlackBoxNode
-
-        attr_reader :last_update
-
-        def node
-          VirtualDOM.node :span, { id: 'foo' }, ['hi']
-        end
-
-        def mount node
-          @mounted = true
-        end
-
-        def update
-          @last_update = Time.now
-        end
-
-        def unmount
-          @mounted = false
-        end
-
-        def mounted?
-          !!@mounted
-        end
-      end.new
-    }
-    let(:renderable) { BlackBoxNode::Renderable.new(object) }
+    let(:object) { bbn_class.new }
+    let(:renderable) { object.render }
+    let(:node) { `{}` }
 
     it 'has the special type of "Widget"' do
       r = renderable
@@ -38,7 +42,7 @@ module Clearwater
 
     it 'uses the delegate node to render into the DOM' do
       r = renderable
-      expect(`#{renderable.create_element}.native.outerHTML`).to eq '<span id="foo">hi</span>'
+      expect(`#{renderable.create_element}['native'].outerHTML`).to eq '<span id="foo">hi</span>'
     end
 
     it 'calls mount when inserted into the DOM' do
@@ -50,15 +54,12 @@ module Clearwater
     it 'calls unmount when removed from the DOM' do
       r = renderable
       `r.init()`
-      `r.destroy()`
+      `r.destroy(#{node})`
       expect(object).not_to be_mounted
     end
 
     it 'calls update when updated in the DOM' do
-      r = renderable
-      previous_renderable = BlackBoxNode::Renderable.new(object.dup)
-
-      `r.update(#{previous_renderable}, {})`
+      `#{renderable}.update(#{renderable.dup}, #{node})`
 
       expect(object.last_update).not_to be_nil
     end

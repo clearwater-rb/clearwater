@@ -5,7 +5,7 @@ module Clearwater
 
       def initialize content
         @content = content
-        @key = content.key
+        @key = content.key if content.key
       end
 
       # Hook into vdom diff/patch
@@ -15,6 +15,7 @@ module Clearwater
           var self = this;
 
           if(prev && prev.vnode && #{!@content.should_render?(`prev.content`)}) {
+            #{ @content = `prev.content` }
             return prev.vnode;
           } else {
             var content = #{Component.sanitize_content(@content.render)};

@@ -21,16 +21,21 @@ module Clearwater
       Renderable.new(self)
     end
 
+    def key
+    end
+
     class Renderable
       attr_reader :delegate
 
       def initialize delegate
         @delegate = delegate
-        @key = delegate.key if delegate.respond_to? :key
+        if delegate.key
+          @key = delegate.key
+        end
       end
 
       def wrap node
-        Bowser::Element.new(node)
+        Bowser::Element.new(node) if node
       end
 
       def create_element
@@ -50,7 +55,7 @@ module Clearwater
           var self = this;
           var node = #{create_element};
           #{@delegate.mount(`node`)};
-          return node.native;
+          return node['native'];
         });
 
         // virtual-dom update hook
@@ -58,15 +63,18 @@ module Clearwater
         //   node: a Bowser-wrapped version of the DOM node
         Opal.defn(self, 'update', function(previous, node) {
           var self = this;
-          var element = #{wrap(`node`)};
 
-          // Only update if the delegates are the same class. This way, we don't
-          // treat all BlackBoxNodes the same.
-          if(#{@delegate.class} === #{`previous.delegate`.class}) {
-            #{@delegate.update(`previous.delegate`, `element`)};
+          if(self.delegate.$$class === previous.delegate.$$class) {
+            var result = #{@delegate.update(`previous.delegate`, wrap(`node`))};
+
+            if(result && result.$$class && #{Bowser::Element === `result`}) {
+              return #{`result`.to_n};
+            }
           } else {
-            #{`previous.delegate`.unmount `element`};
-            #{@delegate.mount `element`};
+            previous.destroy(#{wrap(`node`)});
+            var new_node = #{create_element};
+            #{@delegate.mount(`new_node`)};
+            return new_node['native'];
           }
         });
 

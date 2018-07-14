@@ -30,5 +30,29 @@ module Clearwater
     it 'raises an error if proxied methods are called on it before mount' do
       expect { ref.foo_bar }.to raise_error(TypeError)
     end
+
+    it 'does not pass undefined or null as the previous value' do
+      r = Class.new(DOMReference) {
+        attr_reader :previous, :next
+
+        def mount element, previous
+          super
+
+          @previous = previous
+        end
+
+        def unmount element, next_value
+          super
+
+          @next = next_value
+        end
+      }.new
+
+      `r.hook({}, undefined)`
+      `r.unhook({}, undefined)`
+
+      expect(`r.previous === nil`).to be_truthy
+      expect(`r.next === nil`).to be_truthy
+    end
   end
 end

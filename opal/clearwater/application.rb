@@ -1,6 +1,8 @@
 require 'bowser'
 require 'clearwater/router'
 require 'clearwater/application_registry'
+require 'clearwater/virtual_dom'
+require 'clearwater/component'
 require 'native'
 
 module Clearwater
@@ -14,7 +16,7 @@ module Clearwater
     end
 
     def initialize options={}
-      @router     = options.fetch(:router)     { Router.new }
+      @router     = options.fetch(:router)     { NullRouter.new }
       @component  = options.fetch(:component)  { nil }
       @element    = options.fetch(:element)    { nil }
       @document   = options.fetch(:document)   { Bowser.document }
@@ -47,11 +49,15 @@ module Clearwater
 
     def unmount
       AppRegistry.delete self
+      @window.off :popstate, &@popstate_listener
+
+      @popstate_listener = nil # Allow the proc to get GCed
+      @watching_url = false
     end
 
     def watch_url
       unless @watching_url
-        @window.on('popstate') { render_current_url }
+        @popstate_listener = @window.on(:popstate) { render_current_url }
         @watching_url = true
       end
     end
@@ -129,6 +135,14 @@ module Clearwater
     def run_callbacks
       on_render.each(&:call)
       on_render.clear
+    end
+  end
+
+  class NullRouter
+    def set_outlets
+    end
+
+    def application= _
     end
   end
 end
