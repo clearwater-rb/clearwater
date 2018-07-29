@@ -27,9 +27,11 @@ module Clearwater
 
     def delayed_update from, element
       Bowser.window.animation_frame do
-        @vnode = Component.sanitize_content(@content.call)
-        diff = VirtualDOM.diff from, @vnode
-        VirtualDOM.patch element.to_n, diff
+        if `document.body.contains(#{element.to_n})`
+          @vnode = Component.sanitize_content(@content.call)
+          diff = VirtualDOM.diff from, @vnode
+          VirtualDOM.patch element.to_n, diff
+        end
       end
     end
   end
