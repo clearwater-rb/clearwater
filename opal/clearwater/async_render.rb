@@ -8,11 +8,6 @@ module Clearwater
     attr_reader :vnode
 
     def initialize &content
-      if content.is_a? Array
-        warn "#{self.class} cannot operate on an Array, so it will use the first element. If you need to use an array, you can wrap it inside another element."
-        content = content.first
-      end
-
       @content = content
     end
 
