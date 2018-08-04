@@ -86,6 +86,7 @@ module Clearwater
 
       def unmount
         component.destroy
+        @vdom.render Clearwater::Component.div # Clean up vdom by removing everything
       end
     end
   end
