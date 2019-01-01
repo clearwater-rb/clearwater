@@ -57,12 +57,7 @@ module Clearwater
       end
 
       def mount element
-        @vdom = VirtualDOM::Document.new(element)
-
-        # TODO: add a public interface to generate a pre-initialized VDOM::Doc
-        `#@vdom.tree = #{element.to_n}`
-        `#@vdom.node = #{node}`
-        `#@vdom.rendered = true`
+        @vdom = VirtualDOM::Document.pre_rendered(element, node)
       end
 
       def update previous, element

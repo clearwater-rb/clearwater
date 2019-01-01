@@ -51,6 +51,16 @@ module Clearwater
         @root = root
       end
 
+      def self.pre_rendered element, node
+        new(element).tap do |doc|
+          %x{
+            #{doc}.tree = #{element.to_n};
+            #{doc}.node = #{node};
+            #{doc}.rendered = true;
+          }
+        end
+      end
+
       def render node
         if rendered?
           diff = VirtualDOM.diff @node, node
