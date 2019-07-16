@@ -6,8 +6,6 @@ cache:
   bundler: true
 
 rvm:
-  - 2.2
-  - 2.3
   - 2.4
   - 2.5
   - 2.6
@@ -16,7 +14,6 @@ rvm:
 
 matrix:
   allow_failures:
-  - rvm: 2.6
 
 before_install:
   # Keep track of which version of node and phantomjs we're running the specs against
