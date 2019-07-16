@@ -21,11 +21,11 @@ Gem::Specification.new do |spec|
   spec.test_files = Dir[File.join("test", "**", "*"), File.join("spec", "**", "*")]
   spec.require_paths = ["lib", "shared"]
 
-  spec.add_runtime_dependency "opal", "~> 0.7"
-  spec.add_runtime_dependency "bowser", "~> 1.0"
+  spec.add_runtime_dependency "opal", ">= 0.7.0", "< 2.0"
+  spec.add_runtime_dependency "bowser", "~> 1.1"
 
-  spec.add_development_dependency "opal-rspec", "~> 0.5.0"
+  spec.add_development_dependency "opal-rspec", "~> 0.7.0"
   spec.add_development_dependency "rspec", "~> 3.3"
-  spec.add_development_dependency "rake", "~> 10.1"
+  spec.add_development_dependency "rake", ">= 10.1"
   spec.add_development_dependency "pry", "~> 0.9"
 end

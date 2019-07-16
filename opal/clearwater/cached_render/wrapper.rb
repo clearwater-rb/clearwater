@@ -10,8 +10,8 @@ module Clearwater
 
       # Hook into vdom diff/patch
       %x{
-        def.type = 'Thunk';
-        def.render = function cached_render(prev) {
+        Opal.def(self, 'type', 'Thunk');
+        Opal.def(self, 'render', function cached_render(prev) {
           var self = this;
 
           if(prev && prev.vnode && #{!@content.should_render?(`prev.content`)}) {
@@ -26,7 +26,7 @@ module Clearwater
 
             return content;
           }
-        };
+        });
       }
     end
   end
