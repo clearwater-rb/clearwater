@@ -24,7 +24,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "opal", "~> 0.7"
   spec.add_runtime_dependency "bowser", "~> 1.0"
 
-  spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "opal-rspec", "~> 0.5.0"
   spec.add_development_dependency "rspec", "~> 3.3"
   spec.add_development_dependency "rake", "~> 10.1"
