@@ -46,22 +46,22 @@ module Clearwater
 
       %x{
         // Use the virtual-dom Widget type
-        Opal.defn(self, 'type', 'Widget');
+        (self.$$proto || self.prototype).type = 'Widget';
 
         // virtual-dom Widget init hook. Must return a real DOM node.
         // We call the Ruby-land #mount method so we can define hooks for this
         // in Ruby instead of requiring users to drop down to JS.
-        Opal.defn(self, 'init', function() {
+        (self.$$proto || self.prototype).init = function() {
           var self = this;
           var node = #{create_element};
           #{@delegate.mount(`node`)};
           return node['native'];
-        });
+        };
 
         // virtual-dom update hook
         //   previous: the instance of this object used in the previous render
         //   node: a Bowser-wrapped version of the DOM node
-        Opal.defn(self, 'update', function(previous, node) {
+        (self.$$proto || self.prototype).update = function(previous, node) {
           var self = this;
 
           if(self.delegate.$$class === previous.delegate.$$class) {
@@ -76,14 +76,14 @@ module Clearwater
             #{@delegate.mount(`new_node`)};
             return new_node['native'];
           }
-        });
+        };
 
         // virtual-dom destroy hook
         //   node: Bowser-wrapped version of the DOM node
-        Opal.defn(self, 'destroy', function(node) {
+        (self.$$proto || self.prototype).destroy = function(node) {
           var self = this;
           #{@delegate.unmount(wrap(`node`))};
-        });
+        };
       }
     end
   end
