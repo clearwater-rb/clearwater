@@ -10,8 +10,8 @@ module Clearwater
 
       # Hook into vdom diff/patch
       %x{
-        self.prototype.type = 'Thunk';
-        self.prototype.render = function cached_render(prev) {
+        (self.$$proto || self.prototype).type = 'Thunk';
+        (self.$$proto || self.prototype).render = function cached_render(prev) {
           var self = this;
 
           if(prev && prev.vnode && #{!@content.should_render?(`prev.content`)}) {
