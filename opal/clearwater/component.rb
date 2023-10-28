@@ -1,6 +1,7 @@
 require 'clearwater/virtual_dom'
 require 'clearwater/component/html_tags'
 require 'clearwater/cached_render/wrapper'
+require 'clearwater/node_builder'
 
 module Clearwater
   module Component
@@ -78,13 +79,19 @@ module Clearwater
     module_function
 
     HTML_TAGS.each do |tag_name|
-      define_method(tag_name) do |attributes, content|
+      define_method(tag_name) do |attributes, content, &block|
         %x{
           if(!(attributes === nil || attributes.$$is_hash)) {
             content = attributes;
             attributes = nil;
           }
         }
+
+        if block then
+          attributes ||= {}
+          content    ||= []
+          block.call(NodeBuilder.new(tag_name, attributes, content))
+        end
 
         tag(tag_name, attributes, content)
       end
